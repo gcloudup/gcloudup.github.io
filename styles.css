@@ -1209,6 +1209,518 @@ footer {
         padding: 0;
     }
 
+/* =========================================
+   LIVE SESSIONS PAGE -- Just for sessions
+========================================= */
+
+.page-hero {
+  padding: 90px 7%;
+  text-align: center;
+  background: linear-gradient(
+    135deg,
+    #f4f8fd,
+    #eef7ff
+  );
+}
+
+.page-hero-content {
+  max-width: 800px;
+  margin: auto;
+}
+
+.page-hero h1 {
+  font-size: 44px;
+  margin: 12px 0;
+  color: #10233f;
+}
+
+.page-hero p {
+  color: #5e6d80;
+  line-height: 1.7;
+  font-size: 17px;
+}
+
+
+/* Sessions */
+
+.sessions-page {
+  padding: 80px 7%;
+  background: #ffffff;
+}
+
+.sessions-container {
+  max-width: 1000px;
+  margin: auto;
+}
+
+.sessions-page .section-heading {
+  text-align: center;
+  max-width: 750px;
+  margin: 0 auto 45px;
+}
+
+
+/* Session List */
+
+.session-list-card {
+  display: flex;
+  gap: 25px;
+
+  padding: 28px;
+
+  margin-bottom: 22px;
+
+  background: #ffffff;
+
+  border: 1px solid #dce5f0;
+
+  border-radius: 18px;
+
+  box-shadow: 0 12px 35px rgba(24, 62, 110, 0.07);
+}
+
+.session-badge {
+  width: 64px;
+  height: 64px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 14px;
+
+  background: #1769e0;
+
+  color: #ffffff;
+
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.session-list-content {
+  flex: 1;
+}
+
+.session-list-content h3 {
+  margin: 8px 0 10px;
+
+  font-size: 25px;
+
+  color: #10233f;
+}
+
+.session-list-content p {
+  color: #5e6d80;
+
+  line-height: 1.6;
+
+  margin-bottom: 16px;
+}
+
+.session-topics {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-bottom: 20px;
+}
+
+.session-topics span {
+  padding: 6px 10px;
+
+  background: #f4f8fd;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+
+  color: #1769e0;
+
+  font-weight: 700;
+}
+
+.secondary-button {
+  background: #eef2f7;
+
+  color: #69778a;
+
+  pointer-events: none;
+}
+
+
+/* =========================================
+   SESSION DETAIL PAGE
+========================================= */
+
+.breadcrumb {
+  max-width: 1100px;
+
+  margin: 0 auto;
+
+  padding: 22px 7% 0;
+}
+
+.breadcrumb a {
+  color: #1769e0;
+
+  text-decoration: none;
+
+  font-weight: 700;
+
+  font-size: 14px;
+}
+
+.session-detail-hero {
+  padding: 65px 7% 50px;
+
+  background: #ffffff;
+}
+
+.session-detail-container {
+  max-width: 1100px;
+
+  margin: auto;
+}
+
+.session-detail-container h1 {
+  font-size: 44px;
+
+  color: #10233f;
+
+  margin: 10px 0;
+}
+
+.session-detail-container p {
+  color: #5e6d80;
+
+  font-size: 18px;
+}
+
+
+/* Main */
+
+.session-detail {
+  max-width: 1100px;
+
+  margin: auto;
+
+  padding: 0 7% 80px;
+}
+
+.session-detail-grid {
+  display: grid;
+
+  grid-template-columns: 1.5fr 1fr;
+
+  gap: 30px;
+}
+
+
+/* Video */
+
+.session-video-card {
+  background: #ffffff;
+
+  border: 1px solid #dce5f0;
+
+  border-radius: 20px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 18px 50px rgba(24, 62, 110, 0.10);
+}
+
+.session-youtube {
+  display: block;
+
+  text-decoration: none;
+}
+
+.youtube-placeholder {
+  aspect-ratio: 16 / 9;
+
+  background:
+    linear-gradient(
+      135deg,
+      #10233f,
+      #1769e0
+    );
+
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+.youtube-play {
+  width: 78px;
+  height: 78px;
+
+  border-radius: 50%;
+
+  background: #ff0000;
+
+  color: white;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 30px;
+
+  padding-left: 4px;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.3);
+}
+
+.youtube-text {
+  position: absolute;
+
+  bottom: 20px;
+  left: 25px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+
+  color: #ffffff;
+}
+
+.youtube-text strong {
+  font-size: 18px;
+}
+
+.youtube-text span {
+  font-size: 13px;
+
+  opacity: .8;
+}
+
+
+/* Video Info */
+
+.video-info {
+  padding: 30px;
+}
+
+.video-info h2 {
+  margin: 8px 0 12px;
+
+  color: #10233f;
+}
+
+.video-info p {
+  color: #5e6d80;
+
+  line-height: 1.7;
+}
+
+.youtube-button {
+  display: inline-block;
+
+  margin-top: 12px;
+
+  padding: 13px 20px;
+
+  background: #1769e0;
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  border-radius: 9px;
+
+  font-weight: 700;
+}
+
+.youtube-button:hover {
+  background: #0d55bd;
+}
+
+
+/* Sidebar */
+
+.session-sidebar {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 20px;
+}
+
+.learning-card {
+  padding: 28px;
+
+  background: #ffffff;
+
+  border: 1px solid #dce5f0;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 12px 35px rgba(24, 62, 110, .07);
+}
+
+.learning-card h3 {
+  margin-top: 0;
+
+  color: #10233f;
+}
+
+.learning-card ul {
+  padding-left: 20px;
+
+  margin-bottom: 0;
+}
+
+.learning-card li {
+  margin-bottom: 12px;
+
+  color: #5e6d80;
+
+  line-height: 1.5;
+}
+
+
+/* Beginner */
+
+.beginner-card {
+  display: flex;
+
+  gap: 15px;
+
+  padding: 20px;
+
+  background: #f4f8fd;
+
+  border-left: 4px solid #1769e0;
+
+  border-radius: 12px;
+}
+
+.beginner-icon {
+  font-size: 25px;
+}
+
+.beginner-card strong {
+  color: #10233f;
+}
+
+.beginner-card p {
+  margin: 5px 0 0;
+
+  color: #5e6d80;
+}
+
+
+/* Overview */
+
+.session-overview {
+  margin-top: 60px;
+
+  max-width: 850px;
+}
+
+.session-overview h2 {
+  color: #10233f;
+
+  font-size: 32px;
+}
+
+.session-overview p {
+  color: #5e6d80;
+
+  line-height: 1.8;
+
+  font-size: 16px;
+}
+
+
+/* Next Session */
+
+.next-session {
+  margin-top: 60px;
+
+  padding: 35px;
+
+  background: #f4f8fd;
+
+  border-radius: 20px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 25px;
+}
+
+.next-session h2 {
+  color: #10233f;
+
+  margin: 8px 0;
+}
+
+.next-session p {
+  color: #5e6d80;
+}
+
+
+/* Mobile */
+
+@media (max-width: 850px) {
+
+  .session-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-hero h1,
+  .session-detail-container h1 {
+    font-size: 34px;
+  }
+
+  .next-session {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .session-list-card {
+    flex-direction: column;
+  }
+
+  .session-badge {
+    width: 55px;
+    height: 55px;
+  }
+
+  .session-detail {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+
+  .breadcrumb {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
 
 
 }

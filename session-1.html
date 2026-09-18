@@ -1,50 +1,705 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta
-    name="description"
-    content="Session 1 - Introduction to Salesforce by GCloudUp Tech."
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Session 1 - Introduction to Salesforce | GCloudUp Tech</title>
 
-  <link rel="stylesheet" href="styles.css">
+  <meta
+    name="description"
+    content="Salesforce Session 1 - Introduction to Salesforce by GCloudUp Tech. Learn Salesforce, CRM basics, Salesforce platform, career opportunities and how to start your Salesforce journey."
+  >
 
+  <style>
+
+    /* =========================
+       GLOBAL
+    ========================= */
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f6f9fc;
+      color: #10233f;
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .s1-header {
+      background: #ffffff;
+      border-bottom: 1px solid #e6edf5;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .s1-header-container {
+      max-width: 1180px;
+      margin: auto;
+      padding: 15px 24px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 30px;
+    }
+
+    .s1-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      color: #10233f;
+      font-size: 21px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .s1-logo-icon {
+      width: 38px;
+      height: 38px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 10px;
+
+      color: #ffffff;
+      font-size: 21px;
+      font-weight: 800;
+
+      background: linear-gradient(135deg, #0176d3, #00a1e0);
+    }
+
+    .s1-nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .s1-nav a {
+      color: #43566f;
+      font-size: 15px;
+      font-weight: 600;
+
+      transition: 0.2s;
+    }
+
+    .s1-nav a:hover {
+      color: #0176d3;
+    }
+
+    .s1-nav a.active {
+      color: #0176d3;
+    }
+
+
+    /* =========================
+       BREADCRUMB
+    ========================= */
+
+    .s1-breadcrumb-wrapper {
+      max-width: 1180px;
+      margin: auto;
+      padding: 28px 24px 0;
+    }
+
+    .s1-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      color: #0176d3;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .s1-back:hover {
+      text-decoration: underline;
+    }
+
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .s1-hero {
+      max-width: 1180px;
+      margin: auto;
+      padding: 35px 24px 40px;
+    }
+
+    .s1-label {
+      display: inline-block;
+
+      padding: 7px 13px;
+      margin-bottom: 14px;
+
+      border-radius: 30px;
+
+      background: #e8f3ff;
+      color: #0176d3;
+
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .s1-hero h1 {
+      font-size: 42px;
+      line-height: 1.15;
+      margin-bottom: 15px;
+      color: #10233f;
+    }
+
+    .s1-hero p {
+      max-width: 780px;
+
+      font-size: 18px;
+      color: #60748c;
+    }
+
+
+    /* =========================
+       MAIN CONTENT
+    ========================= */
+
+    .s1-main {
+      max-width: 1180px;
+      margin: auto;
+      padding: 0 24px 70px;
+    }
+
+    .s1-grid {
+      display: grid;
+      grid-template-columns: 1.45fr 0.9fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+
+    /* =========================
+       VIDEO CARD
+    ========================= */
+
+    .s1-video-card {
+      background: #ffffff;
+
+      border-radius: 18px;
+
+      overflow: hidden;
+
+      border: 1px solid #e4ebf3;
+
+      box-shadow: 0 12px 35px rgba(25, 60, 100, 0.08);
+    }
+
+    .s1-video-wrapper {
+      position: relative;
+
+      width: 100%;
+      aspect-ratio: 16 / 9;
+
+      background: #101828;
+
+      overflow: hidden;
+    }
+
+    .s1-thumbnail {
+      width: 100%;
+      height: 100%;
+
+      object-fit: cover;
+
+      display: block;
+
+      transition: transform 0.3s ease;
+    }
+
+    .s1-video-link:hover .s1-thumbnail {
+      transform: scale(1.03);
+    }
+
+    /* Dark overlay */
+
+    .s1-video-overlay {
+      position: absolute;
+
+      inset: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: rgba(0, 0, 0, 0.18);
+
+      transition: 0.25s;
+    }
+
+    .s1-video-link:hover .s1-video-overlay {
+      background: rgba(0, 0, 0, 0.30);
+    }
+
+
+    /* Play Button */
+
+    .s1-play-button {
+      width: 78px;
+      height: 55px;
+
+      border-radius: 14px;
+
+      background: #ff0000;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.30);
+
+      transition: transform 0.25s;
+    }
+
+    .s1-video-link:hover .s1-play-button {
+      transform: scale(1.1);
+    }
+
+    .s1-play-icon {
+      width: 0;
+      height: 0;
+
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      border-left: 16px solid #ffffff;
+
+      margin-left: 4px;
+    }
+
+
+    /* Video bottom info */
+
+    .s1-video-info {
+      padding: 22px 24px 24px;
+    }
+
+    .s1-youtube-label {
+      color: #ff0000;
+
+      font-size: 12px;
+      font-weight: 800;
+
+      letter-spacing: 0.7px;
+
+      margin-bottom: 7px;
+    }
+
+    .s1-video-info h2 {
+      font-size: 23px;
+      margin-bottom: 8px;
+      color: #10233f;
+    }
+
+    .s1-video-info p {
+      color: #687b91;
+      font-size: 15px;
+      margin-bottom: 18px;
+    }
+
+    .s1-watch-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      padding: 11px 18px;
+
+      border-radius: 8px;
+
+      background: #0176d3;
+      color: #ffffff;
+
+      font-size: 14px;
+      font-weight: 700;
+
+      transition: 0.2s;
+    }
+
+    .s1-watch-button:hover {
+      background: #005fb2;
+      transform: translateY(-1px);
+    }
+
+
+    /* =========================
+       LEARN CARD
+    ========================= */
+
+    .s1-learn-card {
+      background: #ffffff;
+
+      border: 1px solid #e4ebf3;
+
+      border-radius: 18px;
+
+      padding: 27px;
+
+      box-shadow: 0 12px 35px rgba(25, 60, 100, 0.06);
+    }
+
+    .s1-learn-card h2 {
+      font-size: 23px;
+      margin-bottom: 20px;
+    }
+
+    .s1-learning-list {
+      list-style: none;
+    }
+
+    .s1-learning-list li {
+      position: relative;
+
+      padding: 11px 0 11px 31px;
+
+      border-bottom: 1px solid #edf1f5;
+
+      color: #536980;
+
+      font-size: 15px;
+    }
+
+    .s1-learning-list li:last-child {
+      border-bottom: none;
+    }
+
+    .s1-learning-list li::before {
+      content: "✓";
+
+      position: absolute;
+      left: 0;
+      top: 10px;
+
+      width: 22px;
+      height: 22px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 50%;
+
+      background: #e7f5ee;
+      color: #16804b;
+
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+
+    /* =========================
+       TOPICS
+    ========================= */
+
+    .s1-section {
+      margin-top: 35px;
+    }
+
+    .s1-section-title {
+      font-size: 26px;
+      margin-bottom: 18px;
+    }
+
+    .s1-topic-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .s1-topic {
+      background: #ffffff;
+
+      border: 1px solid #e4ebf3;
+
+      border-radius: 12px;
+
+      padding: 18px;
+
+      color: #304963;
+
+      font-size: 14px;
+      font-weight: 600;
+
+      box-shadow: 0 5px 18px rgba(25, 60, 100, 0.04);
+    }
+
+
+    /* =========================
+       SESSION OVERVIEW
+    ========================= */
+
+    .s1-overview {
+      margin-top: 35px;
+
+      background: #ffffff;
+
+      border: 1px solid #e4ebf3;
+
+      border-radius: 18px;
+
+      padding: 30px;
+
+      box-shadow: 0 10px 30px rgba(25, 60, 100, 0.05);
+    }
+
+    .s1-overview h2 {
+      font-size: 26px;
+      margin-bottom: 15px;
+    }
+
+    .s1-overview p {
+      color: #60748c;
+      font-size: 16px;
+      max-width: 900px;
+    }
+
+
+    /* =========================
+       BEGINNER NOTE
+    ========================= */
+
+    .s1-note {
+      margin-top: 25px;
+
+      padding: 22px 24px;
+
+      border-radius: 14px;
+
+      background: #edf7ff;
+
+      border-left: 5px solid #0176d3;
+    }
+
+    .s1-note strong {
+      display: block;
+
+      margin-bottom: 5px;
+
+      color: #10233f;
+    }
+
+    .s1-note p {
+      color: #526981;
+      font-size: 14px;
+    }
+
+
+    /* =========================
+       NEXT SESSION
+    ========================= */
+
+    .s1-next {
+      margin-top: 40px;
+
+      padding: 30px;
+
+      border-radius: 18px;
+
+      background: linear-gradient(135deg, #0b3b68, #0176d3);
+
+      color: #ffffff;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 25px;
+    }
+
+    .s1-next-text small {
+      display: block;
+
+      opacity: 0.8;
+
+      font-size: 12px;
+      font-weight: 700;
+
+      letter-spacing: 1px;
+
+      margin-bottom: 5px;
+    }
+
+    .s1-next-text h2 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .s1-next-text p {
+      opacity: 0.85;
+      font-size: 14px;
+    }
+
+    .s1-next-button {
+      flex-shrink: 0;
+
+      background: #ffffff;
+      color: #0176d3;
+
+      padding: 12px 20px;
+
+      border-radius: 8px;
+
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    .s1-footer {
+      background: #0d2038;
+
+      color: #ffffff;
+
+      padding: 28px 24px;
+
+      text-align: center;
+    }
+
+    .s1-footer p {
+      font-size: 14px;
+      opacity: 0.75;
+    }
+
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 900px) {
+
+      .s1-header-container {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .s1-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px 22px;
+      }
+
+      .s1-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .s1-topic-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+    }
+
+
+    @media (max-width: 600px) {
+
+      .s1-header-container {
+        padding: 14px 18px;
+      }
+
+      .s1-nav {
+        gap: 10px 16px;
+      }
+
+      .s1-nav a {
+        font-size: 13px;
+      }
+
+      .s1-hero {
+        padding: 28px 18px 30px;
+      }
+
+      .s1-hero h1 {
+        font-size: 32px;
+      }
+
+      .s1-hero p {
+        font-size: 16px;
+      }
+
+      .s1-main {
+        padding: 0 18px 50px;
+      }
+
+      .s1-topic-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .s1-video-info {
+        padding: 18px;
+      }
+
+      .s1-learn-card {
+        padding: 22px;
+      }
+
+      .s1-overview {
+        padding: 22px;
+      }
+
+      .s1-next {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .s1-next-button {
+        width: 100%;
+        text-align: center;
+      }
+
+    }
+
+  </style>
 </head>
 
 
 <body>
 
 
-  <!-- HEADER -->
+  <!-- =========================
+       HEADER
+  ========================= -->
 
-  <header class="site-header">
+  <header class="s1-header">
 
-    <div class="nav-container">
+    <div class="s1-header-container">
 
-      <a href="index.html" class="brand">
+      <a href="index.html" class="s1-logo">
 
-        <span class="brand-icon">
-          G
-        </span>
+        <span class="s1-logo-icon">G</span>
 
-        <span>
-          GCloudUp Tech
-        </span>
+        <span>GCloudUp Tech</span>
 
       </a>
 
 
-      <nav class="nav-links">
+      <nav class="s1-nav">
 
         <a href="index.html">
           Home
@@ -54,10 +709,7 @@
           Salesforce Videos
         </a>
 
-        <a
-          href="live-sessions.html"
-          class="active"
-        >
+        <a href="live-sessions.html" class="active">
           Live Sessions
         </a>
 
@@ -77,11 +729,13 @@
 
 
 
-  <!-- BREADCRUMB -->
+  <!-- =========================
+       BACK LINK
+  ========================= -->
 
-  <div class="breadcrumb">
+  <div class="s1-breadcrumb-wrapper">
 
-    <a href="live-sessions.html">
+    <a href="live-sessions.html" class="s1-back">
       ← Back to Live Sessions
     </a>
 
@@ -89,64 +743,81 @@
 
 
 
-  <!-- SESSION HERO -->
+  <!-- =========================
+       HERO
+  ========================= -->
 
-  <section class="session-detail-hero">
+  <section class="s1-hero">
 
-    <div class="session-detail-container">
+    <span class="s1-label">
+      SALESFORCE LIVE SESSION • SESSION 01
+    </span>
 
-      <span class="eyebrow">
-        LIVE SESSION 01
-      </span>
+    <h1>
+      Introduction to Salesforce
+    </h1>
 
-      <h1>
-        Introduction to Salesforce
-      </h1>
-
-      <p>
-        Your first step towards becoming a Salesforce
-        professional.
-      </p>
-
-    </div>
+    <p>
+      Start your Salesforce journey from the basics.
+      Understand CRM, Salesforce platform, Salesforce Clouds,
+      career opportunities and the roadmap to become a Salesforce professional.
+    </p>
 
   </section>
 
 
 
-  <!-- MAIN CONTENT -->
+  <!-- =========================
+       MAIN
+  ========================= -->
 
-  <main class="session-detail">
-
-    <div class="session-detail-grid">
+  <main class="s1-main">
 
 
-      <!-- VIDEO -->
+    <!-- VIDEO + LEARN -->
 
-      <div class="session-video-card">
+    <div class="s1-grid">
+
+
+      <!-- =========================
+           YOUTUBE VIDEO CARD
+      ========================= -->
+
+      <div class="s1-video-card">
 
         <a
           href="https://www.youtube.com/@GCloudUpLnTD"
           target="_blank"
           rel="noopener noreferrer"
-          class="session-youtube"
+          class="s1-video-link"
         >
 
-          <div class="youtube-placeholder">
+          <div class="s1-video-wrapper">
 
-            <div class="youtube-play">
-              ▶
-            </div>
+            <!--
+              REPLACE YOUR_VIDEO_ID
 
-            <div class="youtube-text">
+              Example:
+              https://www.youtube.com/watch?v=ABC123XYZ
 
-              <strong>
-                Introduction to Salesforce
-              </strong>
+              Video ID:
+              ABC123XYZ
 
-              <span>
-                Session 1 • GCloudUp Tech
-              </span>
+              Thumbnail:
+              https://img.youtube.com/vi/ABC123XYZ/maxresdefault.jpg
+            -->
+
+            <img
+              class="s1-thumbnail"
+              src="https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg"
+              alt="Introduction to Salesforce - GCloudUp Tech"
+            >
+
+            <div class="s1-video-overlay">
+
+              <div class="s1-play-button">
+                <span class="s1-play-icon"></span>
+              </div>
 
             </div>
 
@@ -155,31 +826,28 @@
         </a>
 
 
-        <div class="video-info">
+        <div class="s1-video-info">
 
-          <span class="session-number">
-            SESSION 01
-          </span>
+          <div class="s1-youtube-label">
+            ▶ YOUTUBE LIVE SESSION
+          </div>
 
           <h2>
             Introduction to Salesforce
           </h2>
 
           <p>
-            In this session, we start from the very basics
-            of Salesforce and understand the foundation
-            required before moving into Salesforce Admin
-            and Development.
+            Watch Session 1 on YouTube and learn the fundamentals
+            of Salesforce in a beginner-friendly way.
           </p>
-
 
           <a
             href="https://www.youtube.com/@GCloudUpLnTD"
             target="_blank"
             rel="noopener noreferrer"
-            class="youtube-button"
+            class="s1-watch-button"
           >
-            ▶ Watch Full Video on YouTube
+            ▶ Watch on YouTube
           </a>
 
         </div>
@@ -188,146 +856,181 @@
 
 
 
-      <!-- RIGHT SIDE -->
+      <!-- =========================
+           WHAT YOU WILL LEARN
+      ========================= -->
 
-      <aside class="session-sidebar">
+      <div class="s1-learn-card">
 
+        <h2>
+          What You Will Learn
+        </h2>
 
-        <!-- LEARNING -->
+        <ul class="s1-learning-list">
 
-        <div class="learning-card">
+          <li>
+            What is Salesforce?
+          </li>
 
-          <h3>
-            What You Will Learn
-          </h3>
+          <li>
+            What is CRM?
+          </li>
 
-          <ul>
+          <li>
+            Why companies use Salesforce
+          </li>
 
-            <li>
-              What is Salesforce?
-            </li>
+          <li>
+            Salesforce Platform overview
+          </li>
 
-            <li>
-              What is CRM?
-            </li>
+          <li>
+            Salesforce Clouds
+          </li>
 
-            <li>
-              Why companies use Salesforce
-            </li>
+          <li>
+            Salesforce Admin vs Developer
+          </li>
 
-            <li>
-              Salesforce Platform overview
-            </li>
+          <li>
+            Objects and Records
+          </li>
 
-            <li>
-              Salesforce Clouds
-            </li>
+          <li>
+            Salesforce career opportunities
+          </li>
 
-            <li>
-              Admin vs Developer
-            </li>
+          <li>
+            How to start learning Salesforce
+          </li>
 
-            <li>
-              Salesforce Objects & Records
-            </li>
+        </ul>
 
-            <li>
-              Salesforce career opportunities
-            </li>
-
-            <li>
-              How to start learning Salesforce
-            </li>
-
-          </ul>
-
-        </div>
-
-
-
-        <!-- BEGINNER -->
-
-        <div class="beginner-card">
-
-          <div class="beginner-icon">
-            👨‍💻
-          </div>
-
-          <div>
-
-            <strong>
-              Beginner Friendly
-            </strong>
-
-            <p>
-              No previous Salesforce experience
-              is required.
-            </p>
-
-          </div>
-
-        </div>
-
-
-      </aside>
+      </div>
 
     </div>
 
 
 
-    <!-- SESSION OVERVIEW -->
+    <!-- =========================
+         TOPICS
+    ========================= -->
 
-    <section class="session-overview">
+    <section class="s1-section">
 
-      <span class="eyebrow">
-        SESSION OVERVIEW
-      </span>
-
-      <h2>
-        Why Start With Salesforce?
+      <h2 class="s1-section-title">
+        Session Topics
       </h2>
 
-      <p>
-        Salesforce is a cloud-based CRM platform used
-        by organizations to manage customer relationships,
-        business processes and data.
-      </p>
 
-      <p>
-        In this session, we build the foundation needed
-        to understand Salesforce before moving into
-        configuration, automation and development.
-      </p>
+      <div class="s1-topic-grid">
+
+        <div class="s1-topic">
+          ☁️ Salesforce Basics
+        </div>
+
+        <div class="s1-topic">
+          👥 CRM Fundamentals
+        </div>
+
+        <div class="s1-topic">
+          🏢 Salesforce Platform
+        </div>
+
+        <div class="s1-topic">
+          🌎 Salesforce Clouds
+        </div>
+
+        <div class="s1-topic">
+          ⚙️ Salesforce Admin
+        </div>
+
+        <div class="s1-topic">
+          💻 Salesforce Development
+        </div>
+
+        <div class="s1-topic">
+          📊 Objects & Records
+        </div>
+
+        <div class="s1-topic">
+          🚀 Career Roadmap
+        </div>
+
+      </div>
 
     </section>
 
 
 
-    <!-- NEXT SESSION -->
+    <!-- =========================
+         SESSION OVERVIEW
+    ========================= -->
 
-    <section class="next-session">
+    <section class="s1-overview">
 
-      <div>
+      <h2>
+        Session Overview
+      </h2>
 
-        <span class="eyebrow">
-          NEXT SESSION
-        </span>
+      <p>
+        Salesforce is one of the most widely used CRM platforms in the world.
+        In this first session, we will build a strong foundation by
+        understanding what Salesforce is, how CRM works, why organizations
+        use Salesforce and what different career opportunities are available
+        in the Salesforce ecosystem.
+      </p>
 
-        <h2>
-          Continue Your Salesforce Journey
-        </h2>
+      <br>
+
+      <p>
+        This session is designed especially for freshers and beginners.
+        You don't need prior Salesforce experience to follow this session.
+      </p>
+
+
+      <div class="s1-note">
+
+        <strong>
+          💡 Beginner Friendly
+        </strong>
 
         <p>
-          Explore the next session in the GCloudUp Tech
-          Salesforce Fresher Roadmap.
+          If you are completely new to Salesforce, start here.
+          Follow the sessions step-by-step and practice each concept
+          along the way.
         </p>
 
       </div>
 
-      <a
-        href="live-sessions.html"
-        class="watch-button"
-      >
+    </section>
+
+
+
+    <!-- =========================
+         NEXT SESSION
+    ========================= -->
+
+    <section class="s1-next">
+
+      <div class="s1-next-text">
+
+        <small>
+          NEXT SESSION
+        </small>
+
+        <h2>
+          Session 2 — Cloud Computing
+        </h2>
+
+        <p>
+          Understand cloud computing concepts before going deeper into Salesforce.
+        </p>
+
+      </div>
+
+
+      <a href="live-sessions.html" class="s1-next-button">
         View All Sessions →
       </a>
 
@@ -338,9 +1041,11 @@
 
 
 
-  <!-- FOOTER -->
+  <!-- =========================
+       FOOTER
+  ========================= -->
 
-  <footer class="site-footer">
+  <footer class="s1-footer">
 
     <p>
       © 2026 GCloudUp Tech.
@@ -351,5 +1056,4 @@
 
 
 </body>
-
 </html>

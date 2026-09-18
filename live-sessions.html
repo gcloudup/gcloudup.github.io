@@ -1,38 +1,567 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta
-    name="description"
-    content="GCloudUp Tech Salesforce Live Sessions for freshers and IT professionals."
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Live Sessions | GCloudUp Tech</title>
 
-  <link rel="stylesheet" href="styles.css">
+  <meta
+    name="description"
+    content="GCloudUp Tech Salesforce Live Sessions for beginners and freshers."
+  >
+
+  <style>
+    /* ================================
+       RESET
+    ================================= */
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f7faff;
+      color: #10233f;
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+
+    /* ================================
+       HEADER
+    ================================= */
+
+    .ls-header {
+      background: #ffffff;
+      border-bottom: 1px solid #e4eaf2;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .ls-header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 25px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 30px;
+    }
+
+
+    /* Logo */
+
+    .ls-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      color: #10233f;
+      font-size: 21px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .ls-logo-icon {
+      width: 40px;
+      height: 40px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 10px;
+
+      background: linear-gradient(
+        135deg,
+        #1769e0,
+        #12a4c7
+      );
+
+      color: white;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+
+    /* Navigation */
+
+    .ls-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ls-nav a {
+      padding: 9px 13px;
+
+      color: #526174;
+
+      font-size: 14px;
+      font-weight: 600;
+
+      border-radius: 8px;
+
+      transition: 0.2s ease;
+    }
+
+    .ls-nav a:hover {
+      color: #1769e0;
+      background: #f1f6fc;
+    }
+
+    .ls-nav a.active {
+      color: #1769e0;
+      background: #eef5ff;
+    }
+
+
+    /* ================================
+       HERO
+    ================================= */
+
+    .ls-hero {
+      background:
+        radial-gradient(
+          circle at 15% 20%,
+          rgba(23, 105, 224, 0.10),
+          transparent 35%
+        ),
+        linear-gradient(
+          135deg,
+          #f3f8ff,
+          #ffffff
+        );
+
+      padding: 85px 25px 75px;
+
+      text-align: center;
+    }
+
+    .ls-hero-inner {
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    .ls-eyebrow {
+      display: inline-block;
+
+      color: #1769e0;
+
+      font-size: 12px;
+      font-weight: 800;
+
+      letter-spacing: 1.6px;
+
+      margin-bottom: 12px;
+    }
+
+    .ls-hero h1 {
+      font-size: 46px;
+      line-height: 1.15;
+
+      margin-bottom: 18px;
+
+      color: #10233f;
+    }
+
+    .ls-hero p {
+      max-width: 720px;
+      margin: 0 auto;
+
+      color: #5e6d80;
+
+      font-size: 17px;
+    }
+
+
+    /* ================================
+       MAIN
+    ================================= */
+
+    .ls-main {
+      max-width: 1050px;
+
+      margin: 0 auto;
+
+      padding: 75px 25px 90px;
+    }
+
+
+    /* Section Heading */
+
+    .ls-section-heading {
+      text-align: center;
+
+      max-width: 750px;
+
+      margin: 0 auto 45px;
+    }
+
+    .ls-section-heading h2 {
+      font-size: 32px;
+
+      margin-bottom: 12px;
+
+      color: #10233f;
+    }
+
+    .ls-section-heading p {
+      color: #667589;
+    }
+
+
+    /* ================================
+       SESSION CARD
+    ================================= */
+
+    .ls-session-card {
+      display: flex;
+
+      gap: 25px;
+
+      background: #ffffff;
+
+      border: 1px solid #dce5f0;
+
+      border-radius: 18px;
+
+      padding: 28px;
+
+      margin-bottom: 22px;
+
+      box-shadow:
+        0 12px 35px rgba(24, 62, 110, 0.07);
+
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .ls-session-card:hover {
+      transform: translateY(-3px);
+
+      box-shadow:
+        0 18px 45px rgba(24, 62, 110, 0.12);
+    }
+
+
+    /* Number */
+
+    .ls-session-number {
+      width: 65px;
+      height: 65px;
+
+      min-width: 65px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 14px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #1769e0,
+          #12a4c7
+        );
+
+      color: #ffffff;
+
+      font-size: 21px;
+
+      font-weight: 800;
+    }
+
+
+    /* Content */
+
+    .ls-session-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .ls-session-label {
+      color: #1769e0;
+
+      font-size: 11px;
+
+      font-weight: 800;
+
+      letter-spacing: 1.4px;
+    }
+
+    .ls-session-content h3 {
+      font-size: 25px;
+
+      margin: 6px 0 8px;
+
+      color: #10233f;
+    }
+
+    .ls-session-content p {
+      color: #5e6d80;
+
+      margin-bottom: 16px;
+
+      max-width: 750px;
+    }
+
+
+    /* Topics */
+
+    .ls-topics {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 8px;
+
+      margin-bottom: 20px;
+    }
+
+    .ls-topic {
+      background: #f2f7fd;
+
+      color: #1769e0;
+
+      padding: 6px 11px;
+
+      border-radius: 20px;
+
+      font-size: 12px;
+
+      font-weight: 700;
+    }
+
+
+    /* Button */
+
+    .ls-button {
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 11px 18px;
+
+      border-radius: 9px;
+
+      background: #1769e0;
+
+      color: #ffffff;
+
+      font-size: 14px;
+
+      font-weight: 700;
+
+      transition: 0.2s ease;
+    }
+
+    .ls-button:hover {
+      background: #0d55bd;
+    }
+
+    .ls-button.disabled {
+      background: #edf1f6;
+
+      color: #8491a1;
+
+      cursor: default;
+    }
+
+
+    /* ================================
+       ROADMAP BANNER
+    ================================= */
+
+    .ls-roadmap {
+      margin-top: 55px;
+
+      padding: 35px;
+
+      border-radius: 20px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #10233f,
+          #174d88
+        );
+
+      color: #ffffff;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 30px;
+    }
+
+    .ls-roadmap h2 {
+      font-size: 25px;
+
+      margin-bottom: 8px;
+    }
+
+    .ls-roadmap p {
+      color: rgba(255,255,255,0.78);
+
+      max-width: 650px;
+    }
+
+    .ls-roadmap-button {
+      white-space: nowrap;
+
+      background: #ffffff;
+
+      color: #1769e0;
+
+      padding: 12px 18px;
+
+      border-radius: 9px;
+
+      font-weight: 700;
+    }
+
+
+    /* ================================
+       FOOTER
+    ================================= */
+
+    .ls-footer {
+      background: #10233f;
+
+      color: rgba(255,255,255,0.75);
+
+      text-align: center;
+
+      padding: 28px 20px;
+
+      font-size: 14px;
+    }
+
+
+    /* ================================
+       MOBILE
+    ================================= */
+
+    @media (max-width: 800px) {
+
+      .ls-header-container {
+        flex-direction: column;
+
+        gap: 12px;
+      }
+
+      .ls-nav {
+        flex-wrap: wrap;
+
+        justify-content: center;
+      }
+
+      .ls-hero {
+        padding: 65px 20px;
+      }
+
+      .ls-hero h1 {
+        font-size: 36px;
+      }
+
+      .ls-session-card {
+        flex-direction: column;
+      }
+
+      .ls-session-number {
+        width: 58px;
+        height: 58px;
+        min-width: 58px;
+      }
+
+      .ls-roadmap {
+        flex-direction: column;
+
+        align-items: flex-start;
+      }
+
+    }
+
+
+    @media (max-width: 500px) {
+
+      .ls-nav {
+        gap: 3px;
+      }
+
+      .ls-nav a {
+        font-size: 12px;
+        padding: 7px 8px;
+      }
+
+      .ls-hero h1 {
+        font-size: 30px;
+      }
+
+      .ls-section-heading h2 {
+        font-size: 27px;
+      }
+
+      .ls-session-content h3 {
+        font-size: 21px;
+      }
+
+      .ls-session-card {
+        padding: 22px;
+      }
+
+    }
+
+  </style>
 </head>
+
 
 <body>
 
-  <!-- HEADER -->
 
-  <header class="site-header">
+  <!-- =================================
+       HEADER
+  ================================== -->
 
-    <div class="nav-container">
+  <header class="ls-header">
 
-      <a href="index.html" class="brand">
-        <span class="brand-icon">G</span>
-        <span>GCloudUp Tech</span>
+    <div class="ls-header-container">
+
+      <a href="index.html" class="ls-logo">
+
+        <span class="ls-logo-icon">
+          G
+        </span>
+
+        <span>
+          GCloudUp Tech
+        </span>
+
       </a>
 
-      <nav class="nav-links">
+
+      <nav class="ls-nav">
 
         <a href="index.html">
           Home
@@ -42,7 +571,10 @@
           Salesforce Videos
         </a>
 
-        <a href="live-sessions.html" class="active">
+        <a
+          href="live-sessions.html"
+          class="active"
+        >
           Live Sessions
         </a>
 
@@ -61,14 +593,17 @@
   </header>
 
 
-  <!-- PAGE HERO -->
 
-  <section class="page-hero">
+  <!-- =================================
+       HERO
+  ================================== -->
 
-    <div class="page-hero-content">
+  <section class="ls-hero">
 
-      <span class="eyebrow">
-        GCloudUp Tech
+    <div class="ls-hero-inner">
+
+      <span class="ls-eyebrow">
+        GCLOUDUP TECH
       </span>
 
       <h1>
@@ -77,7 +612,8 @@
 
       <p>
         Learn Salesforce step-by-step through practical
-        live sessions designed for freshers and beginners.
+        sessions designed especially for freshers,
+        beginners and aspiring Salesforce professionals.
       </p>
 
     </div>
@@ -85,168 +621,241 @@
   </section>
 
 
-  <!-- SESSIONS -->
 
-  <section class="sessions-page">
+  <!-- =================================
+       MAIN
+  ================================== -->
 
-    <div class="sessions-container">
+  <main class="ls-main">
 
-      <div class="section-heading">
 
-        <span class="eyebrow">
-          SALESFORCE FRESHER ROADMAP
+    <div class="ls-section-heading">
+
+      <span class="ls-eyebrow">
+        SALESFORCE FRESHER ROADMAP
+      </span>
+
+      <h2>
+        Start Your Salesforce Journey
+      </h2>
+
+      <p>
+        Follow the sessions in sequence and build your
+        Salesforce knowledge from fundamentals to advanced topics.
+      </p>
+
+    </div>
+
+
+
+    <!-- =================================
+         SESSION 1
+    ================================== -->
+
+    <article class="ls-session-card">
+
+      <div class="ls-session-number">
+        01
+      </div>
+
+
+      <div class="ls-session-content">
+
+        <span class="ls-session-label">
+          SESSION 01
         </span>
 
+        <h3>
+          Introduction to Salesforce
+        </h3>
+
+        <p>
+          Understand what Salesforce is, what CRM means,
+          why organizations use Salesforce and how you
+          can start your Salesforce career.
+        </p>
+
+
+        <div class="ls-topics">
+
+          <span class="ls-topic">
+            Salesforce Basics
+          </span>
+
+          <span class="ls-topic">
+            CRM
+          </span>
+
+          <span class="ls-topic">
+            Salesforce Platform
+          </span>
+
+          <span class="ls-topic">
+            Career Roadmap
+          </span>
+
+        </div>
+
+
+        <a
+          href="session-1.html"
+          class="ls-button"
+        >
+          View Session →
+        </a>
+
+      </div>
+
+    </article>
+
+
+
+    <!-- =================================
+         SESSION 2
+    ================================== -->
+
+    <article class="ls-session-card">
+
+      <div class="ls-session-number">
+        02
+      </div>
+
+
+      <div class="ls-session-content">
+
+        <span class="ls-session-label">
+          SESSION 02
+        </span>
+
+        <h3>
+          Cloud Computing
+        </h3>
+
+        <p>
+          Understand cloud computing fundamentals and
+          how cloud technology powers Salesforce.
+        </p>
+
+
+        <div class="ls-topics">
+
+          <span class="ls-topic">
+            Cloud Computing
+          </span>
+
+          <span class="ls-topic">
+            SaaS
+          </span>
+
+          <span class="ls-topic">
+            Salesforce
+          </span>
+
+        </div>
+
+
+        <span class="ls-button disabled">
+          Coming Soon
+        </span>
+
+      </div>
+
+    </article>
+
+
+
+    <!-- =================================
+         SESSION 3
+    ================================== -->
+
+    <article class="ls-session-card">
+
+      <div class="ls-session-number">
+        03
+      </div>
+
+
+      <div class="ls-session-content">
+
+        <span class="ls-session-label">
+          SESSION 03
+        </span>
+
+        <h3>
+          Salesforce Editions
+        </h3>
+
+        <p>
+          Learn about Salesforce editions and understand
+          the different options available for organizations.
+        </p>
+
+
+        <div class="ls-topics">
+
+          <span class="ls-topic">
+            Editions
+          </span>
+
+          <span class="ls-topic">
+            Salesforce Org
+          </span>
+
+        </div>
+
+
+        <span class="ls-button disabled">
+          Coming Soon
+        </span>
+
+      </div>
+
+    </article>
+
+
+
+    <!-- =================================
+         ROADMAP
+    ================================== -->
+
+    <section class="ls-roadmap">
+
+      <div>
+
         <h2>
-          Start Learning Salesforce
+          🚀 Follow the Complete Salesforce Roadmap
         </h2>
 
         <p>
-          Follow our sessions from Salesforce fundamentals
-          to development, AI and interview preparation.
+          Learn Admin, Apex, SOQL, LWC, Flows,
+          Integrations, AI, Agentforce, Projects
+          and Interview Preparation.
         </p>
 
       </div>
 
 
-      <!-- SESSION 1 -->
+      <a
+        href="https://www.youtube.com/@GCloudUpLnTD"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="ls-roadmap-button"
+      >
+        Visit YouTube →
+      </a>
 
-      <div class="session-list-card">
-
-        <div class="session-badge">
-          01
-        </div>
-
-        <div class="session-list-content">
-
-          <span class="session-number">
-            SESSION 01
-          </span>
-
-          <h3>
-            Introduction to Salesforce
-          </h3>
-
-          <p>
-            Learn what Salesforce is, understand CRM,
-            explore the Salesforce platform and learn
-            how to start your Salesforce career.
-          </p>
-
-          <div class="session-topics">
-
-            <span>Salesforce Basics</span>
-            <span>CRM</span>
-            <span>Platform</span>
-            <span>Career Roadmap</span>
-
-          </div>
-
-          <a
-            href="session-1.html"
-            class="watch-button"
-          >
-            View Session →
-          </a>
-
-        </div>
-
-      </div>
+    </section>
 
 
-      <!-- SESSION 2 -->
-
-      <div class="session-list-card">
-
-        <div class="session-badge">
-          02
-        </div>
-
-        <div class="session-list-content">
-
-          <span class="session-number">
-            SESSION 02
-          </span>
-
-          <h3>
-            Salesforce CRM & Cloud Computing
-          </h3>
-
-          <p>
-            Understand cloud computing and how Salesforce
-            delivers CRM capabilities through the cloud.
-          </p>
-
-          <div class="session-topics">
-
-            <span>Cloud Computing</span>
-            <span>CRM</span>
-            <span>Salesforce</span>
-
-          </div>
-
-          <a
-            href="#"
-            class="watch-button secondary-button"
-          >
-            Coming Soon
-          </a>
-
-        </div>
-
-      </div>
+  </main>
 
 
-      <!-- SESSION 3 -->
 
-      <div class="session-list-card">
+  <!-- =================================
+       FOOTER
+  ================================== -->
 
-        <div class="session-badge">
-          03
-        </div>
-
-        <div class="session-list-content">
-
-          <span class="session-number">
-            SESSION 03
-          </span>
-
-          <h3>
-            Salesforce Editions
-          </h3>
-
-          <p>
-            Learn about Salesforce editions and understand
-            how organizations choose Salesforce based on
-            their business requirements.
-          </p>
-
-          <div class="session-topics">
-
-            <span>Salesforce Editions</span>
-            <span>Org Basics</span>
-
-          </div>
-
-          <a
-            href="#"
-            class="watch-button secondary-button"
-          >
-            Coming Soon
-          </a>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- FOOTER -->
-
-  <footer class="site-footer">
+  <footer class="ls-footer">
 
     <p>
       © 2026 GCloudUp Tech.
@@ -254,6 +863,7 @@
     </p>
 
   </footer>
+
 
 </body>
 

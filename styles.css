@@ -1209,22 +1209,21 @@ footer {
         padding: 0;
     }
     /* =========================
-       FOOTER
-    ========================= */
+   COMMON FOOTER
+========================= */
 
-    .s1-footer {
-      background: #0d2038;
+.site-footer {
+  background: #0d2038;
+  color: #ffffff;
+  padding: 28px 24px;
+  text-align: center;
+  margin-top: 50px;
+}
 
-      color: #ffffff;
-
-      padding: 28px 24px;
-
-      text-align: center;
-    }
-
-    .s1-footer p {
-      font-size: 14px;
-      opacity: 0.75;
-    }
+.site-footer p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.75;
+}
 
 }

@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Salesforce Videos | GCloudUp Tech</title>
+
+  <meta
+    name="description"
+    content="Learn Salesforce through beginner-friendly videos covering Admin, Development, Apex, SOQL, LWC, Flows, Agentforce, AI and interview preparation."
+  >
+
+  <style>
+
+    /* =========================
+       GLOBAL
+    ========================= */
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f6f9fc;
+      color: #10233f;
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .vid-header {
+      background: #ffffff;
+      border-bottom: 1px solid #e6edf5;
+
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .vid-header-container {
+      max-width: 1180px;
+      margin: auto;
+      padding: 15px 24px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 30px;
+    }
+
+    .vid-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      color: #10233f;
+
+      font-size: 21px;
+      font-weight: 700;
+
+      white-space: nowrap;
+    }
+
+    .vid-logo-icon {
+      width: 38px;
+      height: 38px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 10px;
+
+      background: linear-gradient(135deg, #0176d3, #00a1e0);
+
+      color: #ffffff;
+
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .vid-nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .vid-nav a {
+      color: #43566f;
+
+      font-size: 15px;
+      font-weight: 600;
+
+      transition: 0.2s;
+    }
+
+    .vid-nav a:hover,
+    .vid-nav a.active {
+      color: #0176d3;
+    }
+
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .vid-hero {
+      background: linear-gradient(
+        135deg,
+        #eef7ff,
+        #f8fbff
+      );
+
+      padding: 65px 24px;
+    }
+
+    .vid-hero-inner {
+      max-width: 1180px;
+      margin: auto;
+    }
+
+    .vid-label {
+      display: inline-block;
+
+      padding: 7px 13px;
+
+      margin-bottom: 15px;
+
+      border-radius: 30px;
+
+      background: #e2f1ff;
+
+      color: #0176d3;
+
+      font-size: 12px;
+      font-weight: 800;
+
+      letter-spacing: 1px;
+    }
+
+    .vid-hero h1 {
+      font-size: 44px;
+      line-height: 1.15;
+
+      margin-bottom: 15px;
+    }
+
+    .vid-hero p {
+      max-width: 750px;
+
+      color: #60748c;
+
+      font-size: 18px;
+    }
+
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .vid-main {
+      max-width: 1180px;
+
+      margin: auto;
+
+      padding: 55px 24px 70px;
+    }
+
+    .vid-section-title {
+      margin-bottom: 25px;
+    }
+
+    .vid-section-title h2 {
+      font-size: 28px;
+
+      margin-bottom: 7px;
+    }
+
+    .vid-section-title p {
+      color: #687b91;
+
+      font-size: 15px;
+    }
+
+
+    /* =========================
+       VIDEO GRID
+    ========================= */
+
+    .vid-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 25px;
+    }
+
+    .vid-card {
+      background: #ffffff;
+
+      border-radius: 16px;
+
+      overflow: hidden;
+
+      border: 1px solid #e3eaf2;
+
+      box-shadow:
+        0 10px 28px
+        rgba(20, 60, 100, 0.07);
+
+      transition: 0.25s;
+    }
+
+    .vid-card:hover {
+      transform: translateY(-5px);
+
+      box-shadow:
+        0 16px 35px
+        rgba(20, 60, 100, 0.12);
+    }
+
+
+    /* =========================
+       THUMBNAIL
+    ========================= */
+
+    .vid-thumbnail {
+      position: relative;
+
+      aspect-ratio: 16 / 9;
+
+      overflow: hidden;
+
+      background: #10233f;
+    }
+
+    .vid-thumbnail img {
+      width: 100%;
+      height: 100%;
+
+      object-fit: cover;
+
+      display: block;
+
+      transition: 0.3s;
+    }
+
+    .vid-card:hover .vid-thumbnail img {
+      transform: scale(1.04);
+    }
+
+    .vid-play {
+      position: absolute;
+
+      top: 50%;
+      left: 50%;
+
+      transform:
+        translate(-50%, -50%);
+
+      width: 62px;
+      height: 45px;
+
+      border-radius: 11px;
+
+      background: #ff0000;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      box-shadow:
+        0 6px 20px
+        rgba(0, 0, 0, 0.3);
+    }
+
+    .vid-play-icon {
+      width: 0;
+      height: 0;
+
+      border-top:
+        9px solid transparent;
+
+      border-bottom:
+        9px solid transparent;
+
+      border-left:
+        14px solid #ffffff;
+
+      margin-left: 3px;
+    }
+
+
+    /* =========================
+       CARD CONTENT
+    ========================= */
+
+    .vid-content {
+      padding: 20px;
+    }
+
+    .vid-content small {
+      color: #0176d3;
+
+      font-size: 11px;
+
+      font-weight: 800;
+
+      letter-spacing: 0.8px;
+    }
+
+    .vid-content h3 {
+      font-size: 18px;
+
+      line-height: 1.35;
+
+      margin: 7px 0;
+    }
+
+    .vid-content p {
+      color: #687b91;
+
+      font-size: 14px;
+
+      margin-bottom: 15px;
+    }
+
+    .vid-watch {
+      display: inline-block;
+
+      color: #0176d3;
+
+      font-size: 14px;
+
+      font-weight: 700;
+    }
+
+    .vid-watch:hover {
+      text-decoration: underline;
+    }
+
+
+    /* =========================
+       YOUTUBE CTA
+    ========================= */
+
+    .vid-cta {
+      margin-top: 50px;
+
+      padding: 35px;
+
+      border-radius: 18px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #0b3b68,
+          #0176d3
+        );
+
+      color: #ffffff;
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      gap: 25px;
+    }
+
+    .vid-cta h2 {
+      font-size: 25px;
+
+      margin-bottom: 5px;
+    }
+
+    .vid-cta p {
+      opacity: 0.85;
+
+      font-size: 14px;
+    }
+
+    .vid-cta-button {
+      flex-shrink: 0;
+
+      background: #ffffff;
+
+      color: #0176d3;
+
+      padding: 12px 20px;
+
+      border-radius: 8px;
+
+      font-weight: 700;
+
+      font-size: 14px;
+    }
+
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    .site-footer {
+      background: #0d2038;
+
+      color: #ffffff;
+
+      padding: 28px 24px;
+
+      text-align: center;
+    }
+
+    .site-footer p {
+      margin: 0;
+
+      font-size: 14px;
+
+      opacity: 0.75;
+    }
+
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 900px) {
+
+      .vid-header-container {
+        flex-direction: column;
+
+        gap: 15px;
+      }
+
+      .vid-nav {
+        flex-wrap: wrap;
+
+        justify-content: center;
+
+        gap: 12px 20px;
+      }
+
+      .vid-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+    }
+
+
+    @media (max-width: 600px) {
+
+      .vid-hero {
+        padding: 45px 20px;
+      }
+
+      .vid-hero h1 {
+        font-size: 34px;
+      }
+
+      .vid-hero p {
+        font-size: 16px;
+      }
+
+      .vid-main {
+        padding: 40px 18px 55px;
+      }
+
+      .vid-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .vid-cta {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        padding: 25px;
+      }
+
+      .vid-cta-button {
+        width: 100%;
+
+        text-align: center;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <!-- HEADER -->
+
+  <header class="vid-header">
+
+    <div class="vid-header-container">
+
+      <a href="index.html" class="vid-logo">
+
+        <span class="vid-logo-icon">G</span>
+
+        <span>GCloudUp Tech</span>
+
+      </a>
+
+
+      <nav class="vid-nav">
+
+        <a href="Home.html">
+          Home
+        </a>
+
+        <a href="videos.html" class="active">
+          Salesforce Videos
+        </a>
+
+        <a href="live-sessions.html">
+          Live Sessions
+        </a>
+
+        <a href="blogs.html">
+          Blogs
+        </a>
+
+        <a href="contact.html">
+          Contact
+        </a>
+
+      </nav>
+
+    </div>
+
+  </header>
+
+
+
+  <!-- HERO -->
+
+  <section class="vid-hero">
+
+    <div class="vid-hero-inner">
+
+      <span class="vid-label">
+        GCLOUDUP TECH
+      </span>
+
+      <h1>
+        Salesforce Videos
+      </h1>
+
+      <p>
+        Learn Salesforce step-by-step through practical,
+        beginner-friendly videos covering Admin, Development,
+        AI, Agentforce, Projects and Interview Preparation.
+      </p>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- MAIN -->
+
+  <main class="vid-main">
+
+
+    <div class="vid-section-title">
+
+      <h2>
+        Latest Salesforce Content
+      </h2>
+
+      <p>
+        Explore our videos and start learning Salesforce today.
+      </p>
+
+    </div>
+
+
+    <div class="vid-grid">
+
+
+      <!-- VIDEO 1 -->
+
+      <article class="vid-card">
+
+        <a
+          href="https://www.youtube.com/@GCloudUpLnTD"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+
+          <div class="vid-thumbnail">
+
+            <img
+              src="https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg"
+              alt="Introduction to Salesforce"
+            >
+
+            <div class="vid-play">
+
+              <span class="vid-play-icon"></span>
+
+            </div>
+
+          </div>
+
+        </a>
+
+
+        <div class="vid-content">
+
+          <small>
+            BEGINNER
+          </small>
+
+          <h3>
+            Introduction to Salesforce
+          </h3>
+
+          <p>
+            Understand Salesforce, CRM and the Salesforce platform.
+          </p>
+
+          <a
+            href="https://www.youtube.com/@GCloudUpLnTD"
+            target="_blank"
+            class="vid-watch"
+          >
+            Watch Video →
+          </a>
+
+        </div>
+
+      </article>
+
+
+
+      <!-- VIDEO 2 -->
+
+      <article class="vid-card">
+
+        <a
+          href="https://www.youtube.com/@GCloudUpLnTD"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+
+          <div class="vid-thumbnail">
+
+            <img
+              src="https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg"
+              alt="Salesforce Admin Basics"
+            >
+
+            <div class="vid-play">
+
+              <span class="vid-play-icon"></span>
+
+            </div>
+
+          </div>
+
+        </a>
+
+
+        <div class="vid-content">
+
+          <small>
+            SALESFORCE ADMIN
+          </small>
+
+          <h3>
+            Salesforce Admin Basics
+          </h3>
+
+          <p>
+            Learn important Salesforce Admin concepts from scratch.
+          </p>
+
+          <a
+            href="https://www.youtube.com/@GCloudUpLnTD"
+            target="_blank"
+            class="vid-watch"
+          >
+            Watch Video →
+          </a>
+
+        </div>
+
+      </article>
+
+
+
+      <!-- VIDEO 3 -->
+
+      <article class="vid-card">
+
+        <a
+          href="https://www.youtube.com/@GCloudUpLnTD"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+
+          <div class="vid-thumbnail">
+
+            <img
+              src="https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg"
+              alt="Salesforce Development"
+            >
+
+            <div class="vid-play">
+
+              <span class="vid-play-icon"></span>
+
+            </div>
+
+          </div>
+
+        </a>
+
+
+        <div class="vid-content">
+
+          <small>
+            DEVELOPMENT
+          </small>
+
+          <h3>
+            Salesforce Development
+          </h3>
+
+          <p>
+            Explore Apex, SOQL, LWC, Triggers and development concepts.
+          </p>
+
+          <a
+            href="https://www.youtube.com/@GCloudUpLnTD"
+            target="_blank"
+            class="vid-watch"
+          >
+            Watch Video →
+          </a>
+
+        </div>
+
+      </article>
+
+
+
+      <!-- VIDEO 4 -->
+
+      <article class="vid-card">
+
+        <a
+          href="https://www.youtube.com/@GCloudUpLnTD"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+
+          <div class="vid-thumbnail">
+
+            <img
+              src="https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg"
+              alt="Salesforce Agentforce"
+            >
+
+            <div class="vid-play">
+
+              <span class="vid-play-icon"></span>
+
+            </div>
+
+          </div>
+
+        </a>
+
+
+        <div class="vid-content">
+
+          <small>
+            AI & AGENTFORCE
+          </small>
+
+          <h3>
+            Salesforce Agentforce & AI
+          </h3>
+
+          <p>
+            Understand Agentforce, AI concepts and the future of Salesforce.
+          </p>
+
+          <a
+            href="https://www.youtube.com/@GCloudUpLnTD"
+            target="_blank"
+            class="vid-watch"
+          >
+            Watch Video →
+          </a>
+
+        </div>
+
+      </article>
+
+
+
+      <!-- VIDEO 5 -->
+
+      <article class="vid-card">
+
+        <a
+          href="https://www.youtube.com/@GCloudUpLnTD"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+
+          <div class="vid-thumbnail">
+
+            <img
+              src="https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg"
+              alt="Salesforce Interview Preparation"
+            >
+
+            <div class="vid-play">
+
+              <span class="vid-play-icon"></span>
+
+            </div>
+
+          </div>
+
+        </a>
+
+
+        <div class="vid-content">
+
+          <small>
+            INTERVIEW PREP
+          </small>
+
+          <h3>
+            Salesforce Interview Preparation
+          </h3>
+
+          <p>
+            Prepare for Salesforce interviews with practical questions.
+          </p>
+
+          <a
+            href="https://www.youtube.com/@GCloudUpLnTD"
+            target="_blank"
+            class="vid-watch"
+          >
+            Watch Video →
+          </a>
+
+        </div>
+
+      </article>
+
+
+
+      <!-- VIDEO 6 -->
+
+      <article class="vid-card">
+
+        <a
+          href="https://www.youtube.com/@GCloudUpLnTD"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+
+          <div class="vid-thumbnail">
+
+            <img
+              src="https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg"
+              alt="Salesforce Fresher Roadmap"
+            >
+
+            <div class="vid-play">
+
+              <span class="vid-play-icon"></span>
+
+            </div>
+
+          </div>
+
+        </a>
+
+
+        <div class="vid-content">
+
+          <small>
+            CAREER
+          </small>
+
+          <h3>
+            Salesforce Fresher Roadmap 2026
+          </h3>
+
+          <p>
+            Follow a step-by-step roadmap from beginner to Salesforce professional.
+          </p>
+
+          <a
+            href="https://www.youtube.com/@GCloudUpLnTD"
+            target="_blank"
+            class="vid-watch"
+          >
+            Watch Video →
+          </a>
+
+        </div>
+
+      </article>
+
+
+    </div>
+
+
+
+    <!-- CTA -->
+
+    <section class="vid-cta">
+
+      <div>
+
+        <h2>
+          🚀 More Salesforce Videos on YouTube
+        </h2>
+
+        <p>
+          Subscribe to GCloudUp Tech and keep learning,
+          practicing and building your Salesforce skills.
+        </p>
+
+      </div>
+
+
+      <a
+        href="https://www.youtube.com/@GCloudUpLnTD"
+        target="_blank"
+        class="vid-cta-button"
+      >
+        Visit YouTube Channel →
+      </a>
+
+    </section>
+
+
+  </main>
+
+
+
+  <!-- FOOTER -->
+
+  <footer class="site-footer">
+
+    <p>
+      © 2026 GCloudUp Tech. Learn • Practice • Build • Succeed.
+    </p>
+
+  </footer>
+
+
+</body>
+</html>

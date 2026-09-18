@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Blogs | GCloudUp Tech</title>
+
+  <meta
+    name="description"
+    content="Salesforce blogs, tutorials, career guidance, interview preparation and technology articles from GCloudUp Tech."
+  >
+
+  <style>
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+
+      background: #f6f9fc;
+
+      color: #10233f;
+
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+
+    /* HEADER */
+
+    .blog-header {
+      background: #ffffff;
+
+      border-bottom: 1px solid #e6edf5;
+
+      position: sticky;
+      top: 0;
+
+      z-index: 1000;
+    }
+
+    .blog-header-container {
+      max-width: 1180px;
+
+      margin: auto;
+
+      padding: 15px 24px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 30px;
+    }
+
+    .blog-logo {
+      display: flex;
+
+      align-items: center;
+
+      gap: 10px;
+
+      color: #10233f;
+
+      font-size: 21px;
+
+      font-weight: 700;
+    }
+
+    .blog-logo-icon {
+      width: 38px;
+      height: 38px;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 10px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #0176d3,
+          #00a1e0
+        );
+
+      color: #ffffff;
+
+      font-weight: 800;
+    }
+
+    .blog-nav {
+      display: flex;
+
+      gap: 28px;
+    }
+
+    .blog-nav a {
+      color: #43566f;
+
+      font-size: 15px;
+
+      font-weight: 600;
+    }
+
+    .blog-nav a:hover,
+    .blog-nav a.active {
+      color: #0176d3;
+    }
+
+
+    /* HERO */
+
+    .blog-hero {
+      background:
+        linear-gradient(
+          135deg,
+          #eef7ff,
+          #f8fbff
+        );
+
+      padding: 65px 24px;
+    }
+
+    .blog-hero-inner {
+      max-width: 1180px;
+
+      margin: auto;
+    }
+
+    .blog-label {
+      display: inline-block;
+
+      padding: 7px 13px;
+
+      border-radius: 30px;
+
+      background: #e2f1ff;
+
+      color: #0176d3;
+
+      font-size: 12px;
+
+      font-weight: 800;
+
+      letter-spacing: 1px;
+
+      margin-bottom: 15px;
+    }
+
+    .blog-hero h1 {
+      font-size: 44px;
+
+      margin-bottom: 15px;
+    }
+
+    .blog-hero p {
+      max-width: 750px;
+
+      color: #60748c;
+
+      font-size: 18px;
+    }
+
+
+    /* MAIN */
+
+    .blog-main {
+      max-width: 1180px;
+
+      margin: auto;
+
+      padding: 55px 24px 70px;
+    }
+
+    .blog-section-title {
+      margin-bottom: 25px;
+    }
+
+    .blog-section-title h2 {
+      font-size: 28px;
+
+      margin-bottom: 7px;
+    }
+
+    .blog-section-title p {
+      color: #687b91;
+    }
+
+
+    /* BLOG GRID */
+
+    .blog-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 25px;
+    }
+
+    .blog-card {
+      background: #ffffff;
+
+      border-radius: 16px;
+
+      border: 1px solid #e3eaf2;
+
+      overflow: hidden;
+
+      box-shadow:
+        0 10px 28px
+        rgba(20, 60, 100, 0.07);
+
+      transition: 0.25s;
+    }
+
+    .blog-card:hover {
+      transform: translateY(-5px);
+
+      box-shadow:
+        0 16px 35px
+        rgba(20, 60, 100, 0.12);
+    }
+
+
+    /* BLOG IMAGE */
+
+    .blog-image {
+      height: 190px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      background:
+        linear-gradient(
+          135deg,
+          #0176d3,
+          #00a1e0
+        );
+
+      color: #ffffff;
+
+      font-size: 48px;
+
+      font-weight: 700;
+    }
+
+
+    /* BLOG CONTENT */
+
+    .blog-content {
+      padding: 22px;
+    }
+
+    .blog-category {
+      color: #0176d3;
+
+      font-size: 11px;
+
+      font-weight: 800;
+
+      letter-spacing: 0.8px;
+    }
+
+    .blog-content h3 {
+      font-size: 19px;
+
+      line-height: 1.35;
+
+      margin: 8px 0;
+    }
+
+    .blog-content p {
+      color: #687b91;
+
+      font-size: 14px;
+
+      margin-bottom: 17px;
+    }
+
+    .blog-read {
+      color: #0176d3;
+
+      font-size: 14px;
+
+      font-weight: 700;
+    }
+
+    .blog-read:hover {
+      text-decoration: underline;
+    }
+
+
+    /* COMING SOON */
+
+    .blog-coming {
+      margin-top: 50px;
+
+      background: #ffffff;
+
+      border: 1px solid #e3eaf2;
+
+      border-radius: 18px;
+
+      padding: 35px;
+
+      text-align: center;
+    }
+
+    .blog-coming h2 {
+      font-size: 25px;
+
+      margin-bottom: 8px;
+    }
+
+    .blog-coming p {
+      color: #687b91;
+
+      max-width: 650px;
+
+      margin: auto;
+    }
+
+
+    /* FOOTER */
+
+    .site-footer {
+      background: #0d2038;
+
+      color: #ffffff;
+
+      padding: 28px 24px;
+
+      text-align: center;
+    }
+
+    .site-footer p {
+      margin: 0;
+
+      font-size: 14px;
+
+      opacity: 0.75;
+    }
+
+
+    /* RESPONSIVE */
+
+    @media (max-width: 900px) {
+
+      .blog-header-container {
+        flex-direction: column;
+      }
+
+      .blog-nav {
+        flex-wrap: wrap;
+
+        justify-content: center;
+
+        gap: 12px 20px;
+      }
+
+      .blog-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+    }
+
+
+    @media (max-width: 600px) {
+
+      .blog-hero {
+        padding: 45px 20px;
+      }
+
+      .blog-hero h1 {
+        font-size: 34px;
+      }
+
+      .blog-main {
+        padding: 40px 18px 55px;
+      }
+
+      .blog-grid {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <!-- HEADER -->
+
+  <header class="blog-header">
+
+    <div class="blog-header-container">
+
+      <a href="Home.html" class="blog-logo">
+
+        <span class="blog-logo-icon">G</span>
+
+        <span>GCloudUp Tech</span>
+
+      </a>
+
+
+      <nav class="blog-nav">
+
+        <a href="Home.html">
+          Home
+        </a>
+
+        <a href="videos.html">
+          Salesforce Videos
+        </a>
+
+        <a href="live-sessions.html">
+          Live Sessions
+        </a>
+
+        <a href="blogs.html" class="active">
+          Blogs
+        </a>
+
+        <a href="contact.html">
+          Contact
+        </a>
+
+      </nav>
+
+    </div>
+
+  </header>
+
+
+
+  <!-- HERO -->
+
+  <section class="blog-hero">
+
+    <div class="blog-hero-inner">
+
+      <span class="blog-label">
+        GCLOUDUP TECH
+      </span>
+
+      <h1>
+        Salesforce & Technology Blogs
+      </h1>
+
+      <p>
+        Practical articles, Salesforce tutorials, career guidance,
+        interview preparation and technology insights for students
+        and IT professionals.
+      </p>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- MAIN -->
+
+  <main class="blog-main">
+
+
+    <div class="blog-section-title">
+
+      <h2>
+        Latest Blogs
+      </h2>
+
+      <p>
+        Learn something new and strengthen your technology skills.
+      </p>
+
+    </div>
+
+
+    <div class="blog-grid">
+
+
+      <article class="blog-card">
+
+        <div class="blog-image">
+          ☁️
+        </div>
+
+        <div class="blog-content">
+
+          <span class="blog-category">
+            SALESFORCE
+          </span>
+
+          <h3>
+            What is Salesforce? Complete Beginner Guide
+          </h3>
+
+          <p>
+            Understand Salesforce, CRM, Salesforce Clouds and
+            how the Salesforce platform works.
+          </p>
+
+          <a href="#" class="blog-read">
+            Read Article →
+          </a>
+
+        </div>
+
+      </article>
+
+
+
+      <article class="blog-card">
+
+        <div class="blog-image">
+          🚀
+        </div>
+
+        <div class="blog-content">
+
+          <span class="blog-category">
+            CAREER
+          </span>
+
+          <h3>
+            Salesforce Fresher Roadmap 2026
+          </h3>
+
+          <p>
+            A step-by-step learning roadmap for freshers
+            who want to start a Salesforce career.
+          </p>
+
+          <a href="#" class="blog-read">
+            Read Article →
+          </a>
+
+        </div>
+
+      </article>
+
+
+
+      <article class="blog-card">
+
+        <div class="blog-image">
+          💻
+        </div>
+
+        <div class="blog-content">
+
+          <span class="blog-category">
+            DEVELOPMENT
+          </span>
+
+          <h3>
+            Apex vs LWC: What Should You Learn First?
+          </h3>
+
+          <p>
+            Understand the role of Apex and Lightning Web Components
+            in Salesforce development.
+          </p>
+
+          <a href="#" class="blog-read">
+            Read Article →
+          </a>
+
+        </div>
+
+      </article>
+
+
+
+      <article class="blog-card">
+
+        <div class="blog-image">
+          🤖
+        </div>
+
+        <div class="blog-content">
+
+          <span class="blog-category">
+            AI
+          </span>
+
+          <h3>
+            Salesforce Agentforce Explained
+          </h3>
+
+          <p>
+            Learn the basics of Salesforce Agentforce and
+            how AI is changing CRM.
+          </p>
+
+          <a href="#" class="blog-read">
+            Read Article →
+          </a>
+
+        </div>
+
+      </article>
+
+
+
+      <article class="blog-card">
+
+        <div class="blog-image">
+          🎯
+        </div>
+
+        <div class="blog-content">
+
+          <span class="blog-category">
+            INTERVIEW
+          </span>
+
+          <h3>
+            Salesforce Interview Preparation Guide
+          </h3>
+
+          <p>
+            Important areas freshers should prepare before
+            attending Salesforce interviews.
+          </p>
+
+          <a href="#" class="blog-read">
+            Read Article →
+          </a>
+
+        </div>
+
+      </article>
+
+
+
+      <article class="blog-card">
+
+        <div class="blog-image">
+          🧑‍💻
+        </div>
+
+        <div class="blog-content">
+
+          <span class="blog-category">
+            IT CAREER
+          </span>
+
+          <h3>
+            How to Choose Your Technology Career
+          </h3>
+
+          <p>
+            Understand how to select a technology based on
+            your interests and career goals.
+          </p>
+
+          <a href="#" class="blog-read">
+            Read Article →
+          </a>
+
+        </div>
+
+      </article>
+
+
+    </div>
+
+
+
+    <section class="blog-coming">
+
+      <h2>
+        ✍️ More Blogs Coming Soon
+      </h2>
+
+      <p>
+        We are working on practical Salesforce and technology
+        articles to help students, freshers and IT professionals
+        learn better and prepare for their careers.
+      </p>
+
+    </section>
+
+
+  </main>
+
+
+
+  <!-- FOOTER -->
+
+  <footer class="site-footer">
+
+    <p>
+      © 2026 GCloudUp Tech. Learn • Practice • Build • Succeed.
+    </p>
+
+  </footer>
+
+
+</body>
+</html>

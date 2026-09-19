@@ -345,6 +345,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -367,29 +368,62 @@
 
   </header>  -->
 
-  <header class="site-header">
+  <!-- ================= HEADER ================= -->
 
-  <div class="site-logo">
-    <a href="index.html">GCloudUp Tech</a>
-  </div>
+<header class="site-header">
 
-  <button class="menu-toggle" id="menuToggle">
-    ☰
-  </button>
+    <div class="container nav-wrap">
 
-  <nav class="site-nav" id="siteNav">
+        <a class="brand"
+           href="Home.html"
+           aria-label="GCloudUp Tech Home">
 
-    <a href="index.html">Home</a>
+            <span class="brand-mark">
+                G
+            </span>
 
-    <a href="videos.html">Salesforce Videos</a>
+            <span>
+                GCloudUp <b>Tech</b>
+            </span>
 
-    <a href="live-sessions.html">Live Sessions</a>
+        </a>
 
-    <a href="blogs.html">Blogs</a>
 
-    <a href="contact.html">Contact</a>
+        <button
+            class="menu-btn"
+            aria-label="Open Menu"
+            onclick="toggleMenu()">
 
-  </nav>
+            ☰
+
+        </button>
+
+
+        <nav id="nav">
+
+            <a href="Home.html">
+                Home
+            </a>
+
+            <a href="videos.html">
+                Salesforce Videos
+            </a>
+
+            <a href="live-sessions.html">
+                Live Sessions
+            </a>
+
+            <a href="blogs.html">
+                Blogs
+            </a>
+
+            <a href="contact.html">
+                Contact
+            </a>
+
+        </nav>
+
+    </div>
 
 </header>
 
@@ -682,7 +716,31 @@ Thank you.`;
 
       });
 
-  </script>
+    function toggleMenu() {
 
+    document
+        .getElementById("nav")
+        .classList
+        .toggle("open");
+
+}
+
+
+document
+    .querySelectorAll("#nav a")
+    .forEach(function (link) {
+
+        link.addEventListener("click", function () {
+
+            document
+                .getElementById("nav")
+                .classList
+                .remove("open");
+
+        });
+
+    });
+
+  </script>
 </body>
 </html>

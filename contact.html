@@ -22,7 +22,7 @@
 
     /* ================= HEADER ================= */
 
-    .con-header {
+  /*  .con-header {
       background: #ffffff;
       padding: 18px 6%;
       display: flex;
@@ -54,7 +54,100 @@
 
     .con-nav a:hover {
       color: #0875e1;
-    }
+    } */
+
+    /* ================= RESPONSIVE HEADER ================= */
+
+.site-header {
+  background: #ffffff;
+  padding: 16px 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.site-logo a {
+  text-decoration: none;
+  font-size: 26px;
+  font-weight: bold;
+  color: #0875e1;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.site-nav a {
+  text-decoration: none;
+  color: #263746;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.site-nav a:hover {
+  color: #0875e1;
+}
+
+/* Hamburger button */
+
+.menu-toggle {
+  display: none;
+  border: none;
+  background: transparent;
+  font-size: 28px;
+  cursor: pointer;
+  color: #0d2038;
+}
+
+/* ================= MOBILE NAVBAR ================= */
+
+@media (max-width: 800px) {
+
+  .site-header {
+    padding: 15px 20px;
+  }
+
+  .site-logo a {
+    font-size: 22px;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .site-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.10);
+  }
+
+  .site-nav.active {
+    display: flex;
+  }
+
+  .site-nav a {
+    padding: 15px 25px;
+    border-bottom: 1px solid #eeeeee;
+  }
+
+  .site-nav a:hover {
+    background: #f5f8fc;
+  }
+
+}
 
     /* ================= HERO ================= */
 
@@ -258,7 +351,7 @@
 
   <!-- ================= HEADER ================= -->
 
-  <header class="con-header">
+ <!-- <header class="con-header">
 
     <div class="con-logo">
       GCloudUp Tech
@@ -272,7 +365,33 @@
       <a href="contact.html">Contact</a>
     </nav>
 
-  </header>
+  </header>  -->
+
+  <header class="site-header">
+
+  <div class="site-logo">
+    <a href="index.html">GCloudUp Tech</a>
+  </div>
+
+  <button class="menu-toggle" id="menuToggle">
+    ☰
+  </button>
+
+  <nav class="site-nav" id="siteNav">
+
+    <a href="index.html">Home</a>
+
+    <a href="videos.html">Salesforce Videos</a>
+
+    <a href="live-sessions.html">Live Sessions</a>
+
+    <a href="blogs.html">Blogs</a>
+
+    <a href="contact.html">Contact</a>
+
+  </nav>
+
+</header>
 
 
   <!-- ================= HERO ================= -->

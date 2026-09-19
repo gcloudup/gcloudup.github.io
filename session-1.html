@@ -676,6 +676,7 @@
     }
 
   </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 
@@ -686,46 +687,62 @@
        HEADER
   ========================= -->
 
-  <header class="s1-header">
+  <header class="site-header">
 
-    <div class="s1-header-container">
+    <div class="container nav-wrap">
 
-      <a href="index.html" class="s1-logo">
+        <a class="brand"
+           href="Home.html"
+           aria-label="GCloudUp Tech Home">
 
-        <span class="s1-logo-icon">G</span>
+            <span class="brand-mark">
+                G
+            </span>
 
-        <span>GCloudUp Tech</span>
+            <span>
+                GCloudUp <b>Tech</b>
+            </span>
 
-      </a>
-
-
-      <nav class="s1-nav">
-
-        <a href="Home.html">
-          Home
         </a>
 
-        <a href="videos.html">
-          Salesforce Videos
-        </a>
 
-        <a href="live-sessions.html" class="active">
-          Live Sessions
-        </a>
+        <button
+            class="menu-btn"
+            aria-label="Open Menu"
+            onclick="toggleMenu()">
 
-        <a href="blogs.html">
-          Blogs
-        </a>
+            ☰
 
-        <a href="contact.html">
-          Contact
-        </a>
+        </button>
 
-      </nav>
+
+        <nav id="nav">
+
+            <a href="Home.html">
+                Home
+            </a>
+
+            <a href="videos.html">
+                Salesforce Videos
+            </a>
+
+            <a href="live-sessions.html">
+                Live Sessions
+            </a>
+
+            <a href="blogs.html">
+                Blogs
+            </a>
+
+            <a href="contact.html">
+                Contact
+            </a>
+
+        </nav>
 
     </div>
 
-  </header>
+</header>
 
 
 
@@ -1054,6 +1071,32 @@
 
   </footer>
 
+<script>
+function toggleMenu() {
 
+    document
+        .getElementById("nav")
+        .classList
+        .toggle("open");
+
+}
+
+
+document
+    .querySelectorAll("#nav a")
+    .forEach(function (link) {
+
+        link.addEventListener("click", function () {
+
+            document
+                .getElementById("nav")
+                .classList
+                .remove("open");
+
+        });
+
+    });
+
+  </script>
 </body>
 </html>

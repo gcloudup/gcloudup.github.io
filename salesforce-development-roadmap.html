@@ -56,13 +56,29 @@
   header .decor.d1 { width: 340px; height: 340px; top: -160px; right: -90px; }
   header .decor.d2 { width: 200px; height: 200px; top: 40px; right: 140px; background: rgba(255,255,255,0.04); }
   .header-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; padding-top: 2.2rem; }
+
+  .top-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem;
+  }
   .badge {
     display: inline-flex; align-items: center; gap: 0.4rem;
     background: var(--coral); color: #fff; font-weight: 700;
     font-size: 0.72rem; letter-spacing: 0.06em;
-    padding: 0.4rem 0.9rem; border-radius: 999px; margin-bottom: 1rem;
+    padding: 0.4rem 0.9rem; border-radius: 999px;
   }
   .badge .dot { width: 7px; height: 7px; border-radius: 50%; background: #fff; }
+
+  .subscribe-btn {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    background: var(--yt); color: #fff; text-decoration: none;
+    font-weight: 700; font-size: 0.78rem;
+    padding: 0.45rem 1rem 0.45rem 0.8rem; border-radius: 999px;
+    box-shadow: 0 3px 10px rgba(255,0,0,0.35);
+  }
+  .subscribe-btn svg { width: 16px; height: 16px; fill: #fff; flex: 0 0 auto; }
+  .subscribe-btn:active { transform: scale(0.98); }
+
   h1 {
     font-family: Cambria, Georgia, serif;
     font-size: clamp(1.7rem, 5.5vw, 2.6rem);
@@ -194,7 +210,14 @@
   <div class="decor d1"></div>
   <div class="decor d2"></div>
   <div class="header-inner">
-    <span class="badge"><span class="dot"></span>LIVE SESSION SERIES</span>
+    <div class="top-row">
+      <span class="badge"><span class="dot"></span>LIVE SESSION SERIES</span>
+      <!-- EDIT: replace with your real channel URL -->
+      <a class="subscribe-btn" href="https://www.youtube.com/@GCloudUp?sub_confirmation=1" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+        Subscribe
+      </a>
+    </div>
     <h1>Salesforce Development<br>Live Session Roadmap</h1>
     <p class="subtitle">A 16-session, phase-by-phase path from platform fundamentals to a full end-to-end capstone build — Apex, triggers, async, integrations, LWC, security and deployment.</p>
     <div class="stat-row">
@@ -227,7 +250,7 @@ const data = [
     phase: "Phase 1", title: "Architecture & Dev Environment",
     sessions: [
       { t: "Salesforce Architecture & Dev Environment", s: "Session 1",
-        yt: "https://www.youtube.com/watch?v=JOpmN0HPot0&t=2436s",
+        yt: "",
         topics: [
           "Multi-tenant architecture, metadata-driven platform",
           "Org types & sandboxes: Developer, Partial, Full",
@@ -392,13 +415,12 @@ const data = [
 const YT_ICON = '<svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>';
 const CHECK_ICON = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l6 6L20 6"/></svg>';
 
-// A session counts as "done" only when yt is a non-empty, real-looking URL.
 function isRealLink(url) {
   if (!url) return false;
-  const trimmed = url.trim();
+  var trimmed = url.trim();
   if (!trimmed) return false;
   if (!/^https?:\/\//i.test(trimmed)) return false;
-  if (/SESSION_\d+_ID/i.test(trimmed)) return false; // guards against leftover placeholders
+  if (/SESSION_\d+_ID/i.test(trimmed)) return false;
   return true;
 }
 

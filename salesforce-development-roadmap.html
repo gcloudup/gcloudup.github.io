@@ -18,6 +18,8 @@
     --card-bg: #FFFFFF;
     --page-bg: #F6FAFD;
     --border: #E1EBF3;
+    --disabled-bg: #EEF2F5;
+    --disabled-text: #A9B9C4;
     --shadow: 0 4px 18px rgba(3,45,96,0.07);
     box-sizing: border-box;
     padding-top: env(safe-area-inset-top, 0px);
@@ -28,6 +30,7 @@
       --card-bg: #0E2A47; --page-bg: #071C33; --ink: #E7F2FA;
       --muted: #9FC2DC; --border: #163A5C; --sky: #0E3357;
       --green-bg: #10301F;
+      --disabled-bg: #14304C; --disabled-text: #5B7A94;
       --shadow: 0 4px 18px rgba(0,0,0,0.35);
     }
   }
@@ -35,6 +38,7 @@
     --card-bg: #0E2A47; --page-bg: #071C33; --ink: #E7F2FA;
     --muted: #9FC2DC; --border: #163A5C; --sky: #0E3357;
     --green-bg: #10301F;
+    --disabled-bg: #14304C; --disabled-text: #5B7A94;
     --shadow: 0 4px 18px rgba(0,0,0,0.35);
   }
   html { scroll-padding-top: env(safe-area-inset-top, 0px); }
@@ -162,7 +166,7 @@
   .session-card.open .chevron { transform: rotate(180deg); }
 
   .session-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-  .session-card.open .session-body { max-height: 500px; }
+  .session-card.open .session-body { max-height: 520px; }
   .session-body-inner { padding: 0 1.3rem 1.1rem 1.3rem; }
   .session-body-inner ul {
     margin: 0 0 0.9rem; padding-left: 1.1rem;
@@ -170,6 +174,8 @@
   }
   .session-body-inner li { margin-bottom: 0.3rem; }
   .session-body-inner li::marker { color: var(--blue); }
+
+  .link-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
 
   .yt-btn {
     display: inline-flex; align-items: center; gap: 0.5rem;
@@ -187,6 +193,21 @@
     cursor: default;
   }
   .yt-pending svg { width: 16px; height: 16px; fill: var(--muted); flex: 0 0 auto; }
+
+  /* ---- Article button ---- */
+  .article-btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--blue); color: #fff; text-decoration: none;
+    font-size: 0.82rem; font-weight: 700;
+    padding: 0.5rem 0.95rem; border-radius: 8px;
+    border: none;
+  }
+  .article-btn svg { width: 15px; height: 15px; fill: none; stroke: #fff; stroke-width: 2; flex: 0 0 auto; }
+  .article-btn.disabled {
+    background: var(--disabled-bg); color: var(--disabled-text);
+    cursor: not-allowed; pointer-events: none;
+  }
+  .article-btn.disabled svg { stroke: var(--disabled-text); }
 
   footer {
     text-align: center;
@@ -235,22 +256,22 @@
 
 <footer>
   Tap a session to expand its topics.<br>
-  Paste a real recording URL into a session's <code>yt</code> field — it automatically turns clickable and gets marked <strong>Completed</strong>. Leave it empty and it stays <strong>Coming soon</strong>.
+  Fill in <code>article</code> and <code>yt</code> per session — each link only turns active once a real URL is set; otherwise it stays disabled / "Coming soon".
 </footer>
 
 <script>
 /* ============================================================
-   EDIT HERE — leave yt: "" until a session is actually recorded.
-   The moment you paste a real URL in, that session alone becomes
-   clickable and shows as Completed. Everything else stays
-   "Coming soon" automatically — no other change needed.
+   EDIT HERE per session:
+   - article: "" → disabled grey button. Add a real URL to enable it.
+   - yt: ""      → "Coming soon" chip. Add a real URL to mark the
+                    session Completed and enable the YouTube button.
    ============================================================ */
 const data = [
   {
     phase: "Phase 1", title: "Architecture & Dev Environment",
     sessions: [
       { t: "Salesforce Architecture & Dev Environment", s: "Session 1",
-        yt: "",
+        article: "", yt: "",
         topics: [
           "Multi-tenant architecture, metadata-driven platform",
           "Org types & sandboxes: Developer, Partial, Full",
@@ -263,7 +284,7 @@ const data = [
     phase: "Phase 2", title: "Data Model for Developers",
     sessions: [
       { t: "Data Model for Developers", s: "Session 2",
-        yt: "",
+        article: "", yt: "",
         topics: [
           "Objects, fields, relationships — recap from a dev lens",
           "Schema Builder & API names",
@@ -275,14 +296,14 @@ const data = [
     phase: "Phase 3", title: "Apex Fundamentals",
     sessions: [
       { t: "Apex Basics I", s: "Session 3",
-        yt: "",
+        article: "", yt: "",
         topics: [
           "Variables, data types, operators, control flow",
           "Collections: List, Set, Map",
           "Classes, methods, constructors, access modifiers"
         ]},
       { t: "Apex Basics II: SOQL & SOSL", s: "Session 4",
-        yt: "",
+        article: "", yt: "",
         topics: [
           "Writing SOQL queries, relationship queries (parent-child, child-parent)",
           "SOSL basics",
@@ -295,14 +316,14 @@ const data = [
     phase: "Phase 4", title: "Apex Triggers",
     sessions: [
       { t: "Apex Triggers I", s: "Session 5",
-        yt: "",
+        article: "", yt: "",
         topics: [
           "Trigger syntax & context variables (Trigger.new, Trigger.old)",
           "Before vs after — insert/update/delete/undelete events",
           "Order of execution walkthrough"
         ]},
       { t: "Apex Triggers II: Best Practices", s: "Session 6",
-        yt: "",
+        article: "", yt: "",
         topics: [
           "One trigger per object + handler class pattern",
           "Bulkification — avoiding SOQL/DML in loops",
@@ -314,7 +335,7 @@ const data = [
     phase: "Phase 5", title: "Testing & Async Apex",
     sessions: [
       { t: "Testing in Apex", s: "Session 7",
-        yt: "",
+        article: "", yt: "",
         topics: [
           "Test classes & @isTest annotation",
           "Test.startTest / stopTest, generating test data",
@@ -322,7 +343,7 @@ const data = [
           "Mocking with HttpCalloutMock"
         ]},
       { t: "Asynchronous Apex", s: "Session 8",
-        yt: "",
+        article: "", yt: "",
         topics: [
           "Future methods",
           "Queueable Apex",
@@ -335,7 +356,7 @@ const data = [
     phase: "Phase 6", title: "Advanced Patterns",
     sessions: [
       { t: "Advanced Apex Patterns", s: "Session 9",
-        yt: "",
+        article: "", yt: "",
         topics: [
           "Service layer / Selector layer patterns",
           "Custom exceptions",
@@ -347,7 +368,7 @@ const data = [
     phase: "Phase 7", title: "Integration",
     sessions: [
       { t: "Integration I: Callouts", s: "Session 10",
-        yt: "",
+        article: "", yt: "",
         topics: [
           "REST vs SOAP overview",
           "HTTP classes for outbound callouts",
@@ -355,7 +376,7 @@ const data = [
           "JSON serialization / deserialization"
         ]},
       { t: "Integration II: Exposing & Events", s: "Session 11",
-        yt: "",
+        article: "", yt: "",
         topics: [
           "Exposing Apex as REST endpoints (@RestResource)",
           "Platform Events",
@@ -367,21 +388,21 @@ const data = [
     phase: "Phase 8", title: "Lightning Web Components",
     sessions: [
       { t: "Lightning Web Components I", s: "Session 12",
-        yt: "",
+        article: "", yt: "",
         topics: [
           "LWC architecture & file structure",
           "Decorators: @api, @track, @wire",
           "SLDS styling basics"
         ]},
       { t: "Lightning Web Components II", s: "Session 13",
-        yt: "",
+        article: "", yt: "",
         topics: [
           "Calling Apex from LWC (imperative + wired)",
           "Component communication: props, events, pub-sub",
           "Lifecycle hooks"
         ]},
       { t: "Flow + Apex Together", s: "Session 14",
-        yt: "",
+        article: "", yt: "",
         topics: [
           "Record-Triggered Flow deep dive",
           "Invocable Apex methods called from Flow",
@@ -393,7 +414,7 @@ const data = [
     phase: "Phase 9", title: "Security, Deployment & Capstone",
     sessions: [
       { t: "Security & Deployment", s: "Session 15",
-        yt: "",
+        article: "", yt: "",
         topics: [
           "Profiles, Permission Sets, OWD, sharing rules",
           "\"with sharing\" vs \"without sharing\", enforcing FLS/CRUD in Apex",
@@ -401,7 +422,7 @@ const data = [
           "Intro to CI/CD & Git for Salesforce"
         ]},
       { t: "Capstone Project", s: "Session 16",
-        yt: "",
+        article: "", yt: "",
         capstone: true,
         topics: [
           "Build a full feature end-to-end: custom object → trigger → Apex service → LWC UI",
@@ -414,6 +435,7 @@ const data = [
 
 const YT_ICON = '<svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>';
 const CHECK_ICON = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l6 6L20 6"/></svg>';
+const ARTICLE_ICON = '<svg viewBox="0 0 24 24"><path d="M4 4h12l4 4v12H4z"/><path d="M16 4v4h4"/><path d="M8 12h8M8 16h8M8 9h3"/></svg>';
 
 function isRealLink(url) {
   if (!url) return false;
@@ -421,6 +443,7 @@ function isRealLink(url) {
   if (!trimmed) return false;
   if (!/^https?:\/\//i.test(trimmed)) return false;
   if (/SESSION_\d+_ID/i.test(trimmed)) return false;
+  if (/ARTICLE_\d+_URL/i.test(trimmed)) return false;
   return true;
 }
 
@@ -451,20 +474,25 @@ data.forEach(function (phase, pi) {
   timeline.className = 'timeline';
 
   phase.sessions.forEach(function (sess) {
-    var done = isRealLink(sess.yt);
-    if (done) completedCount++;
+    var videoDone = isRealLink(sess.yt);
+    var articleDone = isRealLink(sess.article);
+    if (videoDone) completedCount++;
 
     var card = document.createElement('div');
-    card.className = 'session-card' + (sess.capstone ? ' capstone' : '') + (done ? ' completed' : '');
+    card.className = 'session-card' + (sess.capstone ? ' capstone' : '') + (videoDone ? ' completed' : '');
 
     var num = sess.s.replace('Session ', '');
     var topicsHtml = sess.topics.map(function (t) { return '<li>' + t + '</li>'; }).join('');
 
-    var statusTag = done
+    var statusTag = videoDone
       ? '<span class="status-tag completed">' + CHECK_ICON + 'Completed</span>'
       : '<span class="status-tag pending">Coming soon</span>';
 
-    var linkHtml = done
+    var articleHtml = articleDone
+      ? '<a class="article-btn" href="' + sess.article + '" target="_blank" rel="noopener noreferrer">' + ARTICLE_ICON + 'Learning Article</a>'
+      : '<button class="article-btn disabled" type="button" disabled aria-disabled="true">' + ARTICLE_ICON + 'Learning Article</button>';
+
+    var videoHtml = videoDone
       ? '<a class="yt-btn" href="' + sess.yt + '" target="_blank" rel="noopener noreferrer">' + YT_ICON + 'Watch on YouTube</a>'
       : '<span class="yt-pending">' + YT_ICON + 'Recording not available yet</span>';
 
@@ -481,7 +509,8 @@ data.forEach(function (phase, pi) {
         '<span class="chevron">&#9662;</span>' +
       '</button>' +
       '<div class="session-body"><div class="session-body-inner">' +
-        '<ul>' + topicsHtml + '</ul>' + linkHtml +
+        '<ul>' + topicsHtml + '</ul>' +
+        '<div class="link-row">' + articleHtml + videoHtml + '</div>' +
       '</div></div>';
 
     var btn = card.querySelector('.session-head');

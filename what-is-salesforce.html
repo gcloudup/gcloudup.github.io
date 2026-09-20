@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Understanding Salesforce Field Types — GCloudUp Tech Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  :root {
+    --navy: #032D60;
+    --blue: #00A1E0;
+    --sky: #E8F4FC;
+    --coral: #FF6B4A;
+    --gold: #FFB75D;
+    --yt: #FF0000;
+    --ink: #0B2A45;
+    --muted: #5B7A94;
+    --card-bg: #FFFFFF;
+    --page-bg: #F6FAFD;
+    --border: #E1EBF3;
+    --shadow: 0 4px 18px rgba(3,45,96,0.07);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --card-bg: #0E2A47; --page-bg: #071C33; --ink: #E7F2FA;
+      --muted: #9FC2DC; --border: #163A5C; --sky: #0E3357;
+      --shadow: 0 4px 18px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --card-bg: #0E2A47; --page-bg: #071C33; --ink: #E7F2FA;
+    --muted: #9FC2DC; --border: #163A5C; --sky: #0E3357;
+    --shadow: 0 4px 18px rgba(0,0,0,0.35);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Calibri, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    background: var(--page-bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    padding: env(safe-area-inset-top, 0px) 1.25rem 0;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .topbar-inner {
+    max-width: 760px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.85rem 0;
+  }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: var(--sky); color: var(--blue);
+    text-decoration: none; font-weight: 700; font-size: 0.82rem;
+    padding: 0.5rem 0.95rem; border-radius: 8px; border: none; cursor: pointer;
+    font-family: inherit;
+  }
+  .back-btn svg { width: 15px; height: 15px; fill: none; stroke: var(--blue); stroke-width: 2.4; }
+  .topbar-brand {
+    display: flex; align-items: center; gap: 0.4rem;
+    font-family: Cambria, serif; font-weight: 700; font-size: 0.95rem; color: var(--navy);
+  }
+  .topbar-brand .mark {
+    width: 26px; height: 26px; border-radius: 7px; background: var(--blue);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700;
+  }
+
+  /* ---------- Article shell ---------- */
+  main { max-width: 760px; margin: 0 auto; padding: 1.75rem 1.25rem 3rem; }
+
+  .category-chip {
+    display: inline-block;
+    background: var(--sky); color: var(--blue);
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 0.3rem 0.7rem; border-radius: 999px; margin-bottom: 0.9rem;
+  }
+
+  h1.post-title {
+    font-family: Cambria, Georgia, serif;
+    font-size: clamp(1.6rem, 5vw, 2.15rem);
+    line-height: 1.25; font-weight: 700; margin: 0 0 1rem; color: var(--navy);
+  }
+
+  .meta-row {
+    display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .meta-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--navy); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: Cambria, serif; font-weight: 700; font-size: 0.85rem; flex: 0 0 auto;
+  }
+  .meta-text { line-height: 1.35; }
+  .meta-author { font-size: 0.85rem; font-weight: 700; color: var(--ink); }
+  .meta-date { font-size: 0.78rem; color: var(--muted); }
+
+  /* ---------- Hero image with action overlay ---------- */
+  .hero-wrap {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    min-height: 200px; /* fallback for engines without aspect-ratio support */
+    margin-bottom: 1.75rem;
+    box-shadow: var(--shadow);
+    background: linear-gradient(135deg, var(--navy) 0%, #0B3D73 55%, var(--blue) 100%);
+  }
+  .hero-decor {
+    position: absolute; border-radius: 50%; background: rgba(255,255,255,0.08);
+  }
+  .hero-decor.h1 { width: 220px; height: 220px; top: -90px; right: -60px; }
+  .hero-decor.h2 { width: 140px; height: 140px; bottom: -60px; left: -30px; background: rgba(255,255,255,0.06); }
+  .hero-caption {
+    position: absolute; left: 1.25rem; bottom: 1.1rem; right: 1.25rem;
+    color: #fff;
+  }
+  .hero-caption .tag {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #CFE9FB; margin-bottom: 0.3rem;
+  }
+  .hero-caption .headline {
+    font-family: Cambria, serif; font-weight: 700; font-size: 1.05rem;
+  }
+  .hero-action {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(3,45,96,0.15);
+    cursor: pointer; border: none; padding: 0; width: 100%;
+  }
+  .play-btn {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: rgba(255,255,255,0.95);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    transition: transform 0.2s ease;
+  }
+  .hero-action:hover .play-btn { transform: scale(1.06); }
+  .play-btn svg { width: 26px; height: 26px; fill: var(--yt); margin-left: 4px; }
+  .hero-action-label {
+    position: absolute; top: 1rem; right: 1rem;
+    background: rgba(0,0,0,0.4); color: #fff;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.03em;
+    padding: 0.35rem 0.7rem; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 0.35rem;
+  }
+  .hero-action-label svg { width: 12px; height: 12px; fill: #fff; }
+
+  /* ---------- Article body ---------- */
+  .post-body { font-size: 1rem; line-height: 1.75; color: var(--ink); }
+  .post-body p { margin: 0 0 1.1rem; }
+  .post-body h2 {
+    font-family: Cambria, serif; font-size: 1.35rem; font-weight: 700;
+    color: var(--navy); margin: 2rem 0 0.9rem;
+  }
+  .post-body h3 {
+    font-size: 1.05rem; font-weight: 700; color: var(--navy); margin: 1.5rem 0 0.6rem;
+  }
+  .post-body ul, .post-body ol { padding-left: 1.3rem; margin: 0 0 1.1rem; }
+  .post-body li { margin-bottom: 0.45rem; }
+  .post-body li::marker { color: var(--blue); }
+  .post-body code {
+    background: var(--sky); color: var(--navy);
+    padding: 0.12rem 0.4rem; border-radius: 5px; font-size: 0.88em;
+  }
+  .post-body pre {
+    background: var(--navy); color: #E7F2FA;
+    border-radius: 10px; padding: 1rem 1.1rem; overflow-x: auto;
+    font-size: 0.85rem; line-height: 1.6; margin: 0 0 1.3rem;
+  }
+  .post-body pre code { background: none; color: inherit; padding: 0; }
+  .post-body blockquote {
+    margin: 0 0 1.3rem; padding: 0.2rem 0 0.2rem 1rem;
+    border-left: 3px solid var(--blue); color: var(--muted); font-style: italic;
+  }
+
+  /* ---------- Related video section ---------- */
+  .video-section {
+    margin: 2.4rem 0; padding: 1.5rem;
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 16px; box-shadow: var(--shadow);
+  }
+  .video-section-head {
+    display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem;
+  }
+  .video-section-head .yt-mark {
+    width: 34px; height: 34px; border-radius: 9px; background: var(--yt);
+    display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  }
+  .video-section-head .yt-mark svg { width: 17px; height: 17px; fill: #fff; }
+  .video-section-head h3 { margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--navy); }
+  .video-section-head p { margin: 0.1rem 0 0; font-size: 0.8rem; color: var(--muted); }
+
+  .video-frame-wrap {
+    position: relative; width: 100%; aspect-ratio: 16 / 9;
+    min-height: 200px; /* fallback for engines without aspect-ratio support */
+    border-radius: 12px; overflow: hidden; background: #000;
+  }
+  .video-frame-wrap iframe {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+  .video-unavailable {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 0.6rem; background: var(--sky); color: var(--muted); text-align: center; padding: 1rem;
+  }
+  .video-unavailable svg { width: 28px; height: 28px; fill: var(--muted); }
+  .video-unavailable span { font-size: 0.85rem; font-weight: 600; }
+
+  .watch-yt-link {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    margin-top: 1rem; background: var(--yt); color: #fff; text-decoration: none;
+    font-size: 0.82rem; font-weight: 700; padding: 0.55rem 1rem; border-radius: 8px;
+  }
+  .watch-yt-link svg { width: 15px; height: 15px; fill: #fff; }
+
+  /* ---------- Author box / CTA back ---------- */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 2.2rem 0; }
+
+  .back-cta-row { text-align: center; margin: 2rem 0 0.5rem; }
+  .back-cta {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--navy); color: #fff; text-decoration: none;
+    font-weight: 700; font-size: 0.88rem;
+    padding: 0.75rem 1.4rem; border-radius: 999px; border: none; cursor: pointer;
+    font-family: inherit;
+  }
+  .back-cta svg { width: 15px; height: 15px; fill: none; stroke: #fff; stroke-width: 2.4; }
+  .back-cta:active { transform: scale(0.98); }
+
+  /* ---------- Footer (brand) ---------- */
+  footer.brand-footer {
+    background: linear-gradient(135deg, var(--navy) 0%, #0B3D73 100%);
+    color: #CFE9FB; padding: 2rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    text-align: center;
+  }
+  footer.brand-footer .fname {
+    font-family: Cambria, serif; font-weight: 700; color: #fff; font-size: 1rem; margin-bottom: 0.3rem;
+  }
+  footer.brand-footer p { margin: 0; font-size: 0.78rem; color: #8AA9C2; }
+
+  @media (max-width: 480px) {
+    .play-btn { width: 60px; height: 60px; }
+    .play-btn svg { width: 22px; height: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= Top bar ================= -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <!-- EDIT: point this to your blog listing page -->
+    <button class="back-btn" type="button" onclick="location.href='blog.html'">
+      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      Back to Blog
+    </button>
+    <div class="topbar-brand">
+      <span class="mark">GC</span>
+      GCloudUp Tech
+    </div>
+  </div>
+</div>
+
+<main>
+  <span class="category-chip">Salesforce Admin</span>
+  <h1 class="post-title">Understanding Salesforce Field Types: A Complete Beginner's Guide</h1>
+
+  <div class="meta-row">
+    <div class="meta-avatar">GC</div>
+    <div class="meta-text">
+      <div class="meta-author">GCloudUp Tech</div>
+      <!-- EDIT: set the real posted date -->
+      <div class="meta-date">Posted on <span id="postedDate">September 20, 2026</span></div>
+    </div>
+  </div>
+
+  <!-- ================= Hero image with click-to-watch action ================= -->
+  <div class="hero-wrap">
+    <div class="hero-decor h1"></div>
+    <div class="hero-decor h2"></div>
+    <span class="hero-action-label">
+      <svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.6L21 9.3l-5 4.8L17.4 21 12 17.4 6.6 21 8 14.1l-5-4.8 6.4-.7z"/></svg>
+      Featured
+    </span>
+    <div class="hero-caption">
+      <div class="tag">Session 4 · Live Series</div>
+      <div class="headline">Fields & Field Types — Complete Beginner Guide</div>
+    </div>
+    <!-- Clicking the image scrolls to and plays the related video below -->
+    <button class="hero-action" type="button" onclick="jumpToVideo()" aria-label="Play related video">
+      <span class="play-btn">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </span>
+    </button>
+  </div>
+
+  <!-- ================= Article body ================= -->
+  <article class="post-body">
+    <p>
+      If you're new to Salesforce, fields are the very first building block you need to understand.
+      Every object — Account, Contact, or a custom object you create — is really just a collection of
+      fields, and each field decides what kind of data can live inside it.
+    </p>
+
+    <h2>What exactly is a field?</h2>
+    <p>
+      Think of an object as a spreadsheet and a field as a single column in that spreadsheet.
+      Every record is a row, and every field is a column that holds one piece of information about that
+      row — a name, a date, an amount, or a status.
+    </p>
+
+    <h2>Standard vs. custom fields</h2>
+    <p>
+      Salesforce ships with a set of <strong>standard fields</strong> on every object — things like
+      <code>CreatedDate</code>, <code>OwnerId</code>, or <code>Name</code>. When those don't cover your
+      business need, you create <strong>custom fields</strong>, which always end in <code>__c</code>.
+    </p>
+    <ul>
+      <li>Standard fields can't be deleted — only hidden or adjusted</li>
+      <li>Custom fields are fully editable — type, label, and properties</li>
+      <li>Custom fields give you full control over your org's data model</li>
+    </ul>
+
+    <h2>The five field type families</h2>
+    <p>Once you're placing a new field, you'll be choosing from five broad families:</p>
+    <ol>
+      <li><strong>Text</strong> — names, notes, free-form entry</li>
+      <li><strong>Number & Currency</strong> — amounts, percentages, math</li>
+      <li><strong>Date & Time</strong> — deadlines and timestamps</li>
+      <li><strong>Selection</strong> — picklists and checkboxes</li>
+      <li><strong>Relationship</strong> — Lookup and Master-Detail links between objects</li>
+    </ol>
+
+    <blockquote>
+      A clean field naming convention today saves hours of confusion for the next admin who inherits
+      your org.
+    </blockquote>
+
+    <h3>A quick example</h3>
+    <p>Here's what a simple Apex snippet looks like when it reads one of your custom fields:</p>
+    <pre><code>Account acc = [SELECT Id, Loyalty_Tier__c FROM Account LIMIT 1];
+System.debug(acc.Loyalty_Tier__c);</code></pre>
+
+    <p>
+      We cover all of this — plus a live, hands-on demo of building a picklist field from scratch — in
+      the full recording below.
+    </p>
+  </article>
+
+  <!-- ================= Related YouTube video ================= -->
+  <div class="video-section" id="videoSection">
+    <div class="video-section-head">
+      <span class="yt-mark">
+        <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+      </span>
+      <div>
+        <h3>Watch the live session</h3>
+        <p>Session 4 · Salesforce Fields & Field Types</p>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         EDIT HERE: set the real YouTube video ID for this blog post.
+         Leave it empty ("") to show the "not available yet" state.
+         ============================================================ -->
+    <div class="video-frame-wrap" id="videoFrameWrap"></div>
+
+    <a class="watch-yt-link" id="watchLink" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
+      <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+      Open on YouTube
+    </a>
+  </div>
+
+  <hr class="divider">
+
+  <div class="back-cta-row">
+    <!-- EDIT: point this to your blog listing page -->
+    <button class="back-cta" type="button" onclick="location.href='blog.html'">
+      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      Back to Blog Main Page
+    </button>
+  </div>
+</main>
+
+<footer class="brand-footer">
+  <div class="fname">GCloudUp Tech</div>
+  <p>© <span id="footerYear"></span> GCloudUp Tech. All rights reserved.</p>
+</footer>
+
+<script>
+document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+/* Set the real YouTube video ID here once the recording is live */
+const YOUTUBE_VIDEO_ID = ""; // e.g. "dQw4w9WgXcQ"
+
+function isRealId(id) {
+  return !!(id && id.trim() && !/SESSION_\d+_ID/i.test(id));
+}
+
+const videoWrapEl = document.getElementById('videoFrameWrap');
+const watchLinkEl = document.getElementById('watchLink');
+
+if (isRealId(YOUTUBE_VIDEO_ID)) {
+  const iframe = document.createElement('iframe');
+  iframe.src = 'https://www.youtube.com/embed/' + YOUTUBE_VIDEO_ID;
+  iframe.title = 'Session video';
+  iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+  iframe.allowFullscreen = true;
+  videoWrapEl.appendChild(iframe);
+
+  watchLinkEl.href = 'https://www.youtube.com/watch?v=' + YOUTUBE_VIDEO_ID;
+  watchLinkEl.style.display = 'inline-flex';
+} else {
+  videoWrapEl.innerHTML =
+    '<div class="video-unavailable">' +
+      '<svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>' +
+      '<span>Video not available yet — check back soon</span>' +
+    '</div>';
+}
+
+function jumpToVideo() {
+  document.getElementById('videoSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+</script>
+
+</body>
+</html>

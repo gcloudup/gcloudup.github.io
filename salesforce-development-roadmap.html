@@ -194,7 +194,6 @@
   }
   .yt-pending svg { width: 16px; height: 16px; fill: var(--muted); flex: 0 0 auto; }
 
-  /* ---- Article button ---- */
   .article-btn {
     display: inline-flex; align-items: center; gap: 0.5rem;
     background: var(--blue); color: #fff; text-decoration: none;
@@ -209,20 +208,85 @@
   }
   .article-btn.disabled svg { stroke: var(--disabled-text); }
 
-  footer {
-    text-align: center;
-    padding: 2rem 1.25rem calc(2rem + env(safe-area-inset-bottom, 0px));
-    font-size: 0.78rem; color: var(--muted); line-height: 1.6;
+  /* ================= GCloudUp Tech Footer ================= */
+  footer.brand-footer {
+    background: linear-gradient(135deg, var(--navy) 0%, #0B3D73 100%);
+    color: #CFE9FB;
+    position: relative;
+    overflow: hidden;
+    padding: 2.75rem 1.25rem 0;
   }
-  footer code {
-    background: var(--sky); color: var(--blue);
-    padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.75rem;
+  footer.brand-footer .decor {
+    position: absolute; border-radius: 50%; background: rgba(255,255,255,0.05);
+  }
+  footer.brand-footer .decor.f1 { width: 260px; height: 260px; bottom: -140px; left: -80px; }
+  footer.brand-footer .decor.f2 { width: 180px; height: 180px; top: -60px; right: -40px; background: rgba(255,255,255,0.04); }
+
+  .footer-inner {
+    max-width: 900px; margin: 0 auto; position: relative; z-index: 1;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 1.75rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+  @media (max-width: 620px) {
+    .footer-grid { grid-template-columns: 1fr; gap: 1.5rem; }
   }
 
-  @media (max-width: 480px) {
-    .timeline { padding-left: 1.8rem; }
-    .session-num { left: -1.8rem; width: 1.7rem; height: 1.7rem; font-size: 0.72rem; }
+  .footer-brand-name {
+    display: flex; align-items: center; gap: 0.55rem;
+    font-family: Cambria, serif; font-weight: 700; font-size: 1.25rem;
+    color: #fff; margin-bottom: 0.6rem;
   }
+  .footer-brand-mark {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-family: Cambria, serif; font-weight: 700; font-size: 1rem; color: #fff;
+    flex: 0 0 auto;
+  }
+  .footer-tagline {
+    font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--coral); font-weight: 700; margin: -0.35rem 0 0.9rem;
+  }
+  .footer-blurb {
+    font-size: 0.85rem; line-height: 1.6; color: #AFCBE3; max-width: 320px;
+  }
+  .footer-socials { display: flex; gap: 0.6rem; margin-top: 1.1rem; }
+  .footer-socials a {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; text-decoration: none; transition: background 0.2s ease;
+  }
+  .footer-socials a:hover { background: rgba(255,255,255,0.18); }
+  .footer-socials svg { width: 16px; height: 16px; fill: currentColor; }
+
+  .footer-col h4 {
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: #fff; margin: 0 0 0.9rem;
+  }
+  .footer-col ul { list-style: none; margin: 0; padding: 0; }
+  .footer-col li { margin-bottom: 0.65rem; }
+  .footer-col a {
+    color: #AFCBE3; text-decoration: none; font-size: 0.85rem;
+  }
+  .footer-col a:hover { color: #fff; text-decoration: underline; }
+
+  .footer-bottom {
+    max-width: 900px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 0.6rem;
+    padding: 1.25rem 0 calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    font-size: 0.75rem; color: #8AA9C2;
+    position: relative; z-index: 1;
+  }
+  .footer-bottom a { color: #8AA9C2; text-decoration: none; }
+  .footer-bottom a:hover { color: #fff; text-decoration: underline; }
+  .footer-legal { display: flex; gap: 1.1rem; flex-wrap: wrap; }
 </style>
 </head>
 <body>
@@ -254,12 +318,73 @@
   <div id="roadmap"></div>
 </main>
 
-<footer>
-  Tap a session to expand its topics.<br>
-  Fill in <code>article</code> and <code>yt</code> per session — each link only turns active once a real URL is set; otherwise it stays disabled / "Coming soon".
+<!-- ================= GCloudUp Tech Footer ================= -->
+<footer class="brand-footer">
+  <div class="decor f1"></div>
+  <div class="decor f2"></div>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-name">
+          <span class="footer-brand-mark">GC</span>
+          GCloudUp Tech
+        </div>
+        <div class="footer-tagline">Learn · Build · Deploy on Salesforce</div>
+        <p class="footer-blurb">
+          GCloudUp Tech runs free live sessions on Salesforce administration and development —
+          from your first custom field to production-grade Apex and Lightning Web Components.
+        </p>
+        <div class="footer-socials">
+          <!-- EDIT: swap in your real profile URLs -->
+          <a href="https://www.youtube.com/@YOUR_CHANNEL_HANDLE" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/company/YOUR_LINKEDIN" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2 3.77-2 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.6c0-1.34-.02-3.06-1.87-3.06-1.87 0-2.16 1.46-2.16 2.96V21H9z"/></svg>
+          </a>
+          <a href="https://twitter.com/YOUR_HANDLE" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter">
+            <svg viewBox="0 0 24 24"><path d="M18.9 2H22l-7.6 8.7L23 22h-6.9l-5.4-6.6L4.5 22H1.3l8.1-9.3L1 2h7.1l4.9 6.1L18.9 2zm-1.2 18h1.9L7.4 4H5.4l12.3 16z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/YOUR_HANDLE" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.85.07 1.2.06 2.05.25 2.5.42.6.24 1.03.53 1.48.98.45.45.74.88.98 1.48.17.45.36 1.3.42 2.5.07 1.25.07 1.65.07 4.85s0 3.6-.07 4.85c-.06 1.2-.25 2.05-.42 2.5-.24.6-.53 1.03-.98 1.48-.45.45-.88.74-1.48.98-.45.17-1.3.36-2.5.42-1.25.07-1.65.07-4.85.07s-3.6 0-4.85-.07c-1.2-.06-2.05-.25-2.5-.42-.6-.24-1.03-.53-1.48-.98-.45-.45-.74-.88-.98-1.48-.17-.45-.36-1.3-.42-2.5C2.2 15.6 2.2 15.2 2.2 12s0-3.6.07-4.85c.06-1.2.25-2.05.42-2.5.24-.6.53-1.03.98-1.48.45-.45.88-.74 1.48-.98.45-.17 1.3-.36 2.5-.42C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.14 0-3.5 0-4.74.07-1 .05-1.55.22-1.9.36-.48.19-.82.41-1.18.77-.36.36-.58.7-.77 1.18-.14.35-.31.9-.36 1.9C3.98 8.5 3.98 8.86 3.98 12s0 3.5.07 4.74c.05 1 .22 1.55.36 1.9.19.48.41.82.77 1.18.36.36.7.58 1.18.77.35.14.9.31 1.9.36 1.24.07 1.6.07 4.74.07s3.5 0 4.74-.07c1-.05 1.55-.22 1.9-.36.48-.19.82-.41 1.18-.77.36-.36.58-.7.77-1.18.14-.35.31-.9.36-1.9.07-1.24.07-1.6.07-4.74s0-3.5-.07-4.74c-.05-1-.22-1.55-.36-1.9-.19-.48-.41-.82-.77-1.18a3.24 3.24 0 0 0-1.18-.77c-.35-.14-.9-.31-1.9-.36C15.5 4 15.14 4 12 4zm0 3.4a4.6 4.6 0 1 1 0 9.2 4.6 4.6 0 0 1 0-9.2zm0 1.8a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6zm5.85-2a1.08 1.08 0 1 1-2.16 0 1.08 1.08 0 0 1 2.16 0z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Live Series</h4>
+        <ul>
+          <li><a href="#phase-0">Salesforce Development</a></li>
+          <li><a href="#">Salesforce Admin</a></li>
+          <li><a href="#">Session Recordings</a></li>
+          <li><a href="#">Learning Articles</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Community</h4>
+        <ul>
+          <li><a href="https://www.youtube.com/@YOUR_CHANNEL_HANDLE?sub_confirmation=1" target="_blank" rel="noopener noreferrer">Subscribe on YouTube</a></li>
+          <li><a href="#">Join Discord / Slack</a></li>
+          <li><a href="#">Suggest a Topic</a></li>
+          <li><a href="mailto:hello@gcloudup.tech">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>© <span id="footerYear"></span> GCloudUp Tech. All rights reserved.</span>
+    <div class="footer-legal">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms</a>
+    </div>
+  </div>
 </footer>
 
 <script>
+document.getElementById('footerYear').textContent = new Date().getFullYear();
+
 /* ============================================================
    EDIT HERE per session:
    - article: "" → disabled grey button. Add a real URL to enable it.

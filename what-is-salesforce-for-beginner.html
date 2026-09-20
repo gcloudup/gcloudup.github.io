@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>What is Salesforce? — GCloudUp Tech Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  :root {
+    --navy: #032D60;
+    --blue: #00A1E0;
+    --sky: #E8F4FC;
+    --coral: #FF6B4A;
+    --gold: #FFB75D;
+    --yt: #FF0000;
+    --ink: #0B2A45;
+    --muted: #5B7A94;
+    --card-bg: #FFFFFF;
+    --page-bg: #F6FAFD;
+    --border: #E1EBF3;
+    --shadow: 0 4px 18px rgba(3,45,96,0.07);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --card-bg: #0E2A47; --page-bg: #071C33; --ink: #E7F2FA;
+      --muted: #9FC2DC; --border: #163A5C; --sky: #0E3357;
+      --shadow: 0 4px 18px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --card-bg: #0E2A47; --page-bg: #071C33; --ink: #E7F2FA;
+    --muted: #9FC2DC; --border: #163A5C; --sky: #0E3357;
+    --shadow: 0 4px 18px rgba(0,0,0,0.35);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Calibri, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    background: var(--page-bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    padding: env(safe-area-inset-top, 0px) 1.25rem 0;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .topbar-inner {
+    max-width: 760px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.85rem 0;
+  }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: var(--sky); color: var(--blue);
+    text-decoration: none; font-weight: 700; font-size: 0.82rem;
+    padding: 0.5rem 0.95rem; border-radius: 8px; border: none; cursor: pointer;
+    font-family: inherit;
+  }
+  .back-btn svg { width: 15px; height: 15px; fill: none; stroke: var(--blue); stroke-width: 2.4; }
+  .topbar-brand {
+    display: flex; align-items: center; gap: 0.4rem;
+    font-family: Cambria, serif; font-weight: 700; font-size: 0.95rem; color: var(--navy);
+  }
+  :root[data-theme="dark"] .topbar-brand { color: var(--ink); }
+  .topbar-brand .mark {
+    width: 26px; height: 26px; border-radius: 7px; background: var(--blue);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700;
+  }
+
+  /* ---------- Article shell ---------- */
+  main { max-width: 760px; margin: 0 auto; padding: 1.75rem 1.25rem 3rem; }
+
+  .category-chip {
+    display: inline-block;
+    background: var(--sky); color: var(--blue);
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 0.3rem 0.7rem; border-radius: 999px; margin-bottom: 0.9rem;
+  }
+
+  h1.post-title {
+    font-family: Cambria, Georgia, serif;
+    font-size: clamp(1.6rem, 5vw, 2.15rem);
+    line-height: 1.25; font-weight: 700; margin: 0 0 1rem; color: var(--navy);
+  }
+
+  .meta-row {
+    display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .meta-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--navy); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: Cambria, serif; font-weight: 700; font-size: 0.85rem; flex: 0 0 auto;
+  }
+  .meta-text { line-height: 1.35; }
+  .meta-author { font-size: 0.85rem; font-weight: 700; color: var(--ink); }
+  .meta-date { font-size: 0.78rem; color: var(--muted); }
+
+  /* ---------- Hero image with action overlay ---------- */
+  .hero-wrap {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    min-height: 200px; /* fallback for engines without aspect-ratio support */
+    margin-bottom: 1.75rem;
+    box-shadow: var(--shadow);
+    background: linear-gradient(135deg, var(--navy) 0%, #0B3D73 55%, var(--blue) 100%);
+  }
+  .hero-decor {
+    position: absolute; border-radius: 50%; background: rgba(255,255,255,0.08);
+  }
+  .hero-decor.h1 { width: 220px; height: 220px; top: -90px; right: -60px; }
+  .hero-decor.h2 { width: 140px; height: 140px; bottom: -60px; left: -30px; background: rgba(255,255,255,0.06); }
+  .hero-caption {
+    position: absolute; left: 1.25rem; bottom: 1.1rem; right: 1.25rem;
+    color: #fff;
+  }
+  .hero-caption .tag {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #CFE9FB; margin-bottom: 0.3rem;
+  }
+  .hero-caption .headline {
+    font-family: Cambria, serif; font-weight: 700; font-size: 1.05rem;
+  }
+  .hero-action {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(3,45,96,0.15);
+    cursor: pointer; border: none; padding: 0; width: 100%;
+  }
+  .play-btn {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: rgba(255,255,255,0.95);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    transition: transform 0.2s ease;
+  }
+  .hero-action:hover .play-btn { transform: scale(1.06); }
+  .play-btn svg { width: 26px; height: 26px; fill: var(--yt); margin-left: 4px; }
+  .hero-action-label {
+    position: absolute; top: 1rem; right: 1rem; z-index: 2;
+    background: rgba(0,0,0,0.4); color: #fff;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.03em;
+    padding: 0.35rem 0.7rem; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 0.35rem;
+  }
+  .hero-action-label svg { width: 12px; height: 12px; fill: #fff; }
+  .hero-caption { z-index: 2; pointer-events: none; }
+
+  /* ---------- Article body ---------- */
+  .post-body { font-size: 1rem; line-height: 1.75; color: var(--ink); }
+  .post-body p { margin: 0 0 1.1rem; }
+  .post-body h2 {
+    font-family: Cambria, serif; font-size: 1.35rem; font-weight: 700;
+    color: var(--navy); margin: 2rem 0 0.9rem;
+  }
+  :root[data-theme="dark"] .post-body h2,
+  :root[data-theme="dark"] .post-body h3,
+  :root[data-theme="dark"] h1.post-title { color: var(--ink); }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .post-body h2,
+    :root:not([data-theme="light"]) .post-body h3,
+    :root:not([data-theme="light"]) h1.post-title,
+    :root:not([data-theme="light"]) .topbar-brand,
+    :root:not([data-theme="light"]) .post-body code,
+    :root:not([data-theme="light"]) .video-section-head h3 { color: var(--ink); }
+  }
+  .post-body h3 {
+    font-size: 1.05rem; font-weight: 700; color: var(--navy); margin: 1.5rem 0 0.6rem;
+  }
+  .post-body ul, .post-body ol { padding-left: 1.3rem; margin: 0 0 1.1rem; }
+  .post-body li { margin-bottom: 0.45rem; }
+  .post-body li::marker { color: var(--blue); }
+  .post-body code {
+    background: var(--sky); color: var(--navy);
+    padding: 0.12rem 0.4rem; border-radius: 5px; font-size: 0.88em;
+  }
+  .post-body pre {
+    background: var(--navy); color: #E7F2FA;
+    border-radius: 10px; padding: 1rem 1.1rem; overflow-x: auto;
+    font-size: 0.85rem; line-height: 1.6; margin: 0 0 1.3rem;
+  }
+  .post-body pre code { background: none; color: inherit; padding: 0; }
+  .post-body blockquote {
+    margin: 0 0 1.3rem; padding: 0.2rem 0 0.2rem 1rem;
+    border-left: 3px solid var(--blue); color: var(--muted); font-style: italic;
+  }
+
+  /* ---------- Cloud cards ---------- */
+  .cloud-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0.8rem; margin: 0 0 1.3rem;
+  }
+  .cloud-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 0.9rem 1rem; box-shadow: var(--shadow);
+  }
+  .cloud-card strong { display: block; color: var(--navy); font-size: 0.95rem; margin-bottom: 0.2rem; }
+  :root[data-theme="dark"] .cloud-card strong { color: var(--ink); }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .cloud-card strong { color: var(--ink); }
+  }
+  .cloud-card span { font-size: 0.85rem; color: var(--muted); line-height: 1.5; display: block; }
+
+  /* ---------- Related video section ---------- */
+  .video-section {
+    margin: 2.4rem 0; padding: 1.5rem;
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 16px; box-shadow: var(--shadow);
+  }
+  .video-section-head {
+    display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem;
+  }
+  .video-section-head .yt-mark {
+    width: 34px; height: 34px; border-radius: 9px; background: var(--yt);
+    display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  }
+  .video-section-head .yt-mark svg { width: 17px; height: 17px; fill: #fff; }
+  .video-section-head h3 { margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--navy); }
+  :root[data-theme="dark"] .video-section-head h3 { color: var(--ink); }
+  .video-section-head p { margin: 0.1rem 0 0; font-size: 0.8rem; color: var(--muted); }
+
+  .video-frame-wrap {
+    position: relative; width: 100%; aspect-ratio: 16 / 9;
+    min-height: 200px; /* fallback for engines without aspect-ratio support */
+    border-radius: 12px; overflow: hidden; background: #000;
+  }
+  .video-frame-wrap iframe {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+  .video-unavailable {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 0.6rem; background: var(--sky); color: var(--muted); text-align: center; padding: 1rem;
+  }
+  .video-unavailable svg { width: 28px; height: 28px; fill: var(--muted); }
+  .video-unavailable span { font-size: 0.85rem; font-weight: 600; }
+
+  .watch-yt-link {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    margin-top: 1rem; background: var(--yt); color: #fff; text-decoration: none;
+    font-size: 0.82rem; font-weight: 700; padding: 0.55rem 1rem; border-radius: 8px;
+  }
+  .watch-yt-link svg { width: 15px; height: 15px; fill: #fff; }
+
+  /* ---------- Author box / CTA back ---------- */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 2.2rem 0; }
+
+  .back-cta-row { text-align: center; margin: 2rem 0 0.5rem; }
+  .back-cta {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--navy); color: #fff; text-decoration: none;
+    font-weight: 700; font-size: 0.88rem;
+    padding: 0.75rem 1.4rem; border-radius: 999px; border: none; cursor: pointer;
+    font-family: inherit;
+  }
+  .back-cta svg { width: 15px; height: 15px; fill: none; stroke: #fff; stroke-width: 2.4; }
+  .back-cta:active { transform: scale(0.98); }
+
+  /* ---------- Footer (brand) ---------- */
+  footer.brand-footer {
+    background: linear-gradient(135deg, var(--navy) 0%, #0B3D73 100%);
+    color: #CFE9FB; padding: 2rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    text-align: center;
+  }
+  footer.brand-footer .fname {
+    font-family: Cambria, serif; font-weight: 700; color: #fff; font-size: 1rem; margin-bottom: 0.3rem;
+  }
+  footer.brand-footer p { margin: 0; font-size: 0.78rem; color: #8AA9C2; }
+
+  @media (max-width: 480px) {
+    .play-btn { width: 60px; height: 60px; }
+    .play-btn svg { width: 22px; height: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= Top bar ================= -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <!-- EDIT: point this to your blog listing page -->
+    <button class="back-btn" type="button" onclick="location.href='blogs.html'">
+      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      Back to Blog
+    </button>
+    <div class="topbar-brand">
+      <span class="mark">G</span>
+      GCloudUp Tech
+    </div>
+  </div>
+</div>
+
+<main>
+  <span class="category-chip">Salesforce Basics</span>
+  <h1 class="post-title">What is Salesforce? A Complete Beginner's Guide</h1>
+
+  <div class="meta-row">
+    <div class="meta-avatar">G</div>
+    <div class="meta-text">
+      <div class="meta-author">GCloudUp Tech</div>
+      <!-- EDIT: set the real posted date -->
+      <div class="meta-date">Posted on <span id="postedDate">September 20, 2026</span></div>
+    </div>
+  </div>
+
+  <!-- ================= Hero image with click-to-watch action ================= -->
+  <div class="hero-wrap">
+    <div class="hero-decor h1"></div>
+    <div class="hero-decor h2"></div>
+    <span class="hero-action-label">
+      <svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.6L21 9.3l-5 4.8L17.4 21 12 17.4 6.6 21 8 14.1l-5-4.8 6.4-.7z"/></svg>
+      Featured
+    </span>
+    <div class="hero-caption">
+      <!-- EDIT: set the correct session number -->
+      <div class="tag">Session 1 · Live Series</div>
+      <div class="headline">What is Salesforce? — Complete Beginner Guide</div>
+    </div>
+    <!-- Clicking the image scrolls to the related video below -->
+    <button class="hero-action" type="button" onclick="jumpToVideo()" aria-label="Play related video">
+      <span class="play-btn">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </span>
+    </button>
+  </div>
+
+  <!-- ================= Article body ================= -->
+  <article class="post-body">
+    <p>
+      If you're starting a career in the Salesforce ecosystem, the first question is the simplest one:
+      what actually <em>is</em> Salesforce? In this guide we'll answer it in plain language — what it does,
+      who uses it, and how the pieces fit together — so the rest of your learning journey makes sense.
+    </p>
+
+    <h2>Salesforce in one sentence</h2>
+    <p>
+      Salesforce is a cloud-based platform that helps companies manage their customers — every conversation,
+      deal, support request, and marketing campaign — in one place. This category of software is called
+      <strong>CRM</strong>, short for Customer Relationship Management.
+    </p>
+    <p>
+      Because it runs in the cloud, there's nothing to install or maintain on your own servers. You log in
+      from a browser or the mobile app, and Salesforce takes care of hosting, security, and upgrades.
+    </p>
+
+    <h2>What problem does it solve?</h2>
+    <p>
+      Imagine a growing company that tracks leads in a spreadsheet, support tickets in email, and
+      contracts in shared folders. Nobody sees the full picture of a customer. Salesforce brings all of that
+      into a single system, so a salesperson, a support agent, and a marketer are all looking at the same
+      customer record.
+    </p>
+    <ul>
+      <li>Sales teams track leads, opportunities, and forecasts</li>
+      <li>Support teams resolve cases faster with full customer history</li>
+      <li>Marketing teams run campaigns and measure what works</li>
+      <li>Managers get live dashboards instead of manual reports</li>
+    </ul>
+
+    <h2>The main Salesforce products (Clouds)</h2>
+    <p>Salesforce is sold as a set of products called <strong>Clouds</strong>. You don't need all of them — companies pick what fits their business:</p>
+    <div class="cloud-grid">
+      <div class="cloud-card"><strong>Sales Cloud</strong><span>Leads, accounts, opportunities, and sales forecasting.</span></div>
+      <div class="cloud-card"><strong>Service Cloud</strong><span>Case management and customer support.</span></div>
+      <div class="cloud-card"><strong>Marketing Cloud</strong><span>Email, journeys, and campaign automation.</span></div>
+      <div class="cloud-card"><strong>Commerce Cloud</strong><span>Online stores and digital shopping experiences.</span></div>
+      <div class="cloud-card"><strong>Experience Cloud</strong><span>Portals and communities for customers and partners.</span></div>
+      <div class="cloud-card"><strong>Analytics (Tableau)</strong><span>Reports, dashboards, and data visualization.</span></div>
+    </div>
+
+    <h2>More than a CRM: the platform</h2>
+    <p>
+      Salesforce is also a <strong>platform</strong> you can customize. Beyond the ready-made Clouds, you can
+      build your own objects, fields, screens, and automations to match how your business really works.
+      There are two ways to do that:
+    </p>
+    <ul>
+      <li><strong>Declarative (clicks, not code)</strong> — Flow, page layouts, validation rules, and reports</li>
+      <li><strong>Programmatic (code)</strong> — Apex, Lightning Web Components, and APIs</li>
+    </ul>
+    <p>
+      Most beginners start declaratively, which is why many people enter Salesforce as an Admin without
+      writing any code.
+    </p>
+
+    <h2>Core building blocks you'll meet first</h2>
+    <ol>
+      <li><strong>Objects</strong> — the tables that store data, such as Account, Contact, and Opportunity</li>
+      <li><strong>Fields</strong> — the columns inside an object, like Phone or Amount</li>
+      <li><strong>Records</strong> — the individual rows, like one specific customer</li>
+      <li><strong>Apps</strong> — a group of tabs and objects arranged for a particular job</li>
+      <li><strong>Automation</strong> — rules and flows that do repetitive work for you</li>
+    </ol>
+
+    <blockquote>
+      You don't have to learn all of Salesforce at once. Start with objects, fields, and records — everything
+      else builds on them.
+    </blockquote>
+
+    <h3>A quick look at data in Salesforce</h3>
+    <p>Salesforce has its own query language, SOQL, which looks very similar to SQL. Here's a simple example that reads a few accounts:</p>
+    <pre><code>SELECT Id, Name, Industry
+FROM Account
+WHERE Industry = 'Technology'
+LIMIT 5</code></pre>
+
+    <h2>Who uses Salesforce, and which careers does it open?</h2>
+    <p>
+      Companies of every size — from startups to global enterprises — run on Salesforce, which is why the
+      skills are in steady demand. Common roles include:
+    </p>
+    <ul>
+      <li><strong>Administrator</strong> — configures and maintains the org</li>
+      <li><strong>Developer</strong> — builds custom logic and interfaces with code</li>
+      <li><strong>Business Analyst / Consultant</strong> — turns business needs into Salesforce solutions</li>
+      <li><strong>Architect</strong> — designs the overall solution and data model</li>
+    </ul>
+
+    <h2>What's next?</h2>
+    <p>
+      Now that you know what Salesforce is, the next step is to get hands-on. Create a free Developer
+      Edition org, click around the Sales app, and explore an Account record. In the next session we go
+      deeper into the building blocks of the platform.
+    </p>
+    <p>
+      We walk through everything above — with a live demo of the Salesforce interface — in the full
+      recording below.
+    </p>
+  </article>
+
+  <!-- ================= Related YouTube video ================= -->
+  <div class="video-section" id="videoSection">
+    <div class="video-section-head">
+      <span class="yt-mark">
+        <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+      </span>
+      <div>
+        <h3>Watch the live session</h3>
+        <p>Session 1 · What is Salesforce?</p>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         EDIT HERE: set the real YouTube video ID in the script below
+         (YOUTUBE_VIDEO_ID). Leave it empty ("") to show the
+         "not available yet" state.
+         ============================================================ -->
+    <div class="video-frame-wrap" id="videoFrameWrap"></div>
+
+    <a class="watch-yt-link" id="watchLink" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
+      <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+      Open on YouTube
+    </a>
+  </div>
+
+  <hr class="divider">
+
+  <div class="back-cta-row">
+    <!-- EDIT: point this to your blog listing page -->
+    <button class="back-cta" type="button" onclick="location.href='blogs.html'">
+      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      Back to Blog Main Page
+    </button>
+  </div>
+</main>
+
+<footer class="brand-footer">
+  <div class="fname">GCloudUp Tech</div>
+  <p>© <span id="footerYear"></span> GCloudUp Tech. All rights reserved.</p>
+</footer>
+
+<script>
+document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+/* Set the real YouTube video ID here once the recording is live */
+const YOUTUBE_VIDEO_ID = ""; // e.g. "dQw4w9WgXcQ"
+
+function isRealId(id) {
+  return !!(id && id.trim() && !/SESSION_\d+_ID/i.test(id));
+}
+
+const videoWrapEl = document.getElementById('videoFrameWrap');
+const watchLinkEl = document.getElementById('watchLink');
+
+if (isRealId(YOUTUBE_VIDEO_ID)) {
+  const iframe = document.createElement('iframe');
+  iframe.src = 'https://www.youtube.com/embed/' + YOUTUBE_VIDEO_ID;
+  iframe.title = 'Session video';
+  iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+  iframe.allowFullscreen = true;
+  videoWrapEl.appendChild(iframe);
+
+  watchLinkEl.href = 'https://www.youtube.com/watch?v=' + YOUTUBE_VIDEO_ID;
+  watchLinkEl.style.display = 'inline-flex';
+} else {
+  videoWrapEl.innerHTML =
+    '<div class="video-unavailable">' +
+      '<svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>' +
+      '<span>Video not available yet — check back soon</span>' +
+    '</div>';
+}
+
+function jumpToVideo() {
+  document.getElementById('videoSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+</script>
+
+</body>
+</html>

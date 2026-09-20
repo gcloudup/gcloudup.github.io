@@ -136,50 +136,51 @@
       margin: auto;
     }
 
-    /* ---- Top row: Subscribe + label ---- */
+    /* ---- ADD THIS BLOCK ---- */
     .vid-top-row {
       display: flex;
       align-items: center;
       gap: 12px;
       flex-wrap: wrap;
-
       margin-bottom: 15px;
     }
 
     .yt-subscribe-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-
-      padding: 8px 16px 8px 12px;
-
+      display: inline-block !important;
+      vertical-align: middle;
+      width: auto !important;
+      max-width: max-content;
+      padding: 8px 16px 8px 34px;
+      position: relative;
       border-radius: 30px;
-
       background: #ff0000;
-
-      color: #ffffff;
-
+      color: #ffffff !important;
       font-size: 13px;
       font-weight: 800;
-
       letter-spacing: 0.3px;
-
       box-shadow: 0 4px 14px rgba(255, 0, 0, 0.28);
-
       transition: 0.2s;
+      border: none;
+      cursor: pointer;
+      line-height: 20px;
+      white-space: nowrap;
+    }
+
+    .yt-subscribe-btn svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      margin-top: -8px;
+      width: 16px;
+      height: 16px;
+      fill: #ffffff;
     }
 
     .yt-subscribe-btn:hover {
       background: #e60000;
       transform: translateY(-1px);
     }
-
-    .yt-subscribe-btn svg {
-      width: 16px;
-      height: 16px;
-      fill: #ffffff;
-      flex-shrink: 0;
-    }
+    /* ---- END BLOCK ---- */
 
     .vid-label {
       display: inline-block;
@@ -545,6 +546,18 @@
         text-align: center;
       }
 
+      /* ---- ADD THESE TWO RULES ---- */
+      .yt-subscribe-btn {
+        width: 100% !important;
+        text-align: center;
+        padding-left: 34px;
+      }
+
+      .vid-top-row {
+        width: 100%;
+      }
+      /* ---- END ---- */
+
     }
 
   </style>
@@ -624,10 +637,9 @@
 
       <div class="vid-top-row">
 
-        <!-- EDIT: replace with your real channel URL -->
-        
+        <a
           class="yt-subscribe-btn"
-          href="https://www.youtube.com/@GCloudUp?sub_confirmation=1"
+          href="https://www.youtube.com/@GCloudUpLnTD?sub_confirmation=1"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -682,7 +694,7 @@
 
       <article class="vid-card">
 
-        
+        <a
           href="https://www.youtube.com/watch?v=d7A-qh3l46A"
           target="_blank"
           rel="noopener noreferrer"
@@ -720,7 +732,7 @@
             Understand Salesforce, CRM and the Salesforce platform.
           </p>
 
-          
+          <a
             href="https://www.youtube.com/watch?v=d7A-qh3l46A"
             target="_blank"
             class="vid-watch"
@@ -738,7 +750,7 @@
 
       <article class="vid-card">
 
-        
+        <a
           href="https://youtu.be/INyIGahVeEY"
           target="_blank"
           rel="noopener noreferrer"
@@ -776,7 +788,7 @@
             Learn important Salesforce Admin concepts from scratch.
           </p>
 
-          
+          <a
             href="https://youtu.be/INyIGahVeEY"
             target="_blank"
             class="vid-watch"
@@ -794,7 +806,7 @@
 
       <article class="vid-card">
 
-        
+        <a
           href="https://youtu.be/f0IoGJ1YPLU"
           target="_blank"
           rel="noopener noreferrer"
@@ -832,7 +844,7 @@
             Explore Client App Manager, MCP, Claude AI, Integration and development concepts.
           </p>
 
-          
+          <a
             href="https://www.youtube.com/@GCloudUp"
             target="_blank"
             class="vid-watch"
@@ -850,7 +862,7 @@
 
       <article class="vid-card">
 
-        
+        <a
           href="https://youtu.be/zBGsDPEU9P8"
           target="_blank"
           rel="noopener noreferrer"
@@ -888,7 +900,7 @@
             Understand Agentforce, AI concepts and the future of Salesforce.
           </p>
 
-          
+          <a
             href="https://youtu.be/zBGsDPEU9P8"
             target="_blank"
             class="vid-watch"
@@ -906,7 +918,7 @@
 
       <article class="vid-card">
 
-        
+        <a
           href="https://youtu.be/8CwnNKLP-qE"
           target="_blank"
           rel="noopener noreferrer"
@@ -945,7 +957,7 @@
 In this video, you'll learn everything you need to know about Salesforce Agentforce, Salesforce's AI-powered digital workforce.
           </p>
 
-          
+          <a
             href="https://youtu.be/8CwnNKLP-qE"
             target="_blank"
             class="vid-watch"
@@ -963,7 +975,7 @@ In this video, you'll learn everything you need to know about Salesforce Agentfo
 
       <article class="vid-card">
 
-        
+        <a
           href="https://youtu.be/qClKSHksrYE"
           target="_blank"
           rel="noopener noreferrer"
@@ -1001,7 +1013,7 @@ In this video, you'll learn everything you need to know about Salesforce Agentfo
             Follow a step-by-step roadmap from beginner to Salesforce professional.
           </p>
 
-          
+          <a
             href="https://youtu.be/qClKSHksrYE"
             target="_blank"
             class="vid-watch"
@@ -1036,7 +1048,7 @@ In this video, you'll learn everything you need to know about Salesforce Agentfo
       </div>
 
 
-      
+      <a
         href="https://www.youtube.com/@GCloudUpLnTD"
         target="_blank"
         class="vid-cta-button"

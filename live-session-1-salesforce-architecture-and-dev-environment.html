@@ -128,6 +128,17 @@
   .cta svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.4; }
   .hint { margin-top: 1.4rem; font-size: 0.8rem; color: #9FC2DC; }
 
+  .yt-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin-top: 1.2rem; }
+.yt-link {
+  display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;
+  font-weight: 700; font-size: 0.85rem; padding: 0.6rem 1.1rem; border-radius: 999px;
+}
+.yt-link svg { width: 16px; height: 16px; fill: currentColor; }
+.yt-link.watch { background: #FF0000; color: #fff; }
+.yt-link.subscribe { background: rgba(255,255,255,0.14); color: #fff; border: 2px solid rgba(255,255,255,0.6); }
+.yt-link.subscribe:hover { background: #fff; color: #FF0000; }
+.yt-soon { color: #CFE9FB; font-size: 0.85rem; }
+
   /* ---------- Cards / grids ---------- */
   .grid { display: grid; gap: 0.85rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
   .card {
@@ -360,6 +371,17 @@
           Start session
           <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
         </button>
+        <div class="yt-row">
+  <a class="yt-link watch" id="watchLink" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
+    <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+    Watch the recording
+  </a>
+  <span class="yt-soon" id="watchSoon">Recording coming soon</span>
+  <a class="yt-link subscribe" href="https://www.youtube.com/@GCloudUp?sub_confirmation=1" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.4-1.8h-4.8A2.5 2.5 0 0 0 12 22zm7-6.5V11a7 7 0 0 0-5.5-6.8V3.5a1.5 1.5 0 0 0-3 0v.7A7 7 0 0 0 5 11v4.5l-2 2V19h18v-1.5z"/></svg>
+    Subscribe on YouTube
+  </a>
+</div>
         <div class="hint">Use ← → keys, swipe, or the buttons below. Press O for all slides, N for notes, F for full screen.</div>
       </div>
     </section>
@@ -859,6 +881,15 @@ System.debug('Accounts found: ' + accs.size());</code></pre>
   renderQ();
 
   /* ---------- Start ---------- */
+  /* ---------- YouTube recording link ---------- */
+  var YOUTUBE_VIDEO_ID = ""; // paste the video ID here once the recording is live, e.g. "abc123XYZ_0"
+  if (YOUTUBE_VIDEO_ID && YOUTUBE_VIDEO_ID.trim()) {
+    var wl = $('#watchLink');
+    wl.href = 'https://www.youtube.com/watch?v=' + YOUTUBE_VIDEO_ID.trim();
+    wl.style.display = 'inline-flex';
+    $('#watchSoon').style.display = 'none';
+  }
+  
   var start = parseInt((location.hash || '').replace('#', ''), 10);
   go(isNaN(start) ? 0 : start - 1);
 })();

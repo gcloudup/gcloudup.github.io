@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Live Session 1: Salesforce Architecture &amp; Dev Environment — GCloudUp Tech</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  :root {
+    --navy: #032D60;
+    --blue: #00A1E0;
+    --sky: #E8F4FC;
+    --coral: #FF6B4A;
+    --gold: #FFB75D;
+    --green: #2E9E6B;
+    --ink: #0B2A45;
+    --muted: #5B7A94;
+    --card-bg: #FFFFFF;
+    --page-bg: #F6FAFD;
+    --border: #E1EBF3;
+    --head: #032D60;
+    --shadow: 0 4px 18px rgba(3,45,96,0.07);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --card-bg: #0E2A47; --page-bg: #071C33; --ink: #E7F2FA; --head: #E7F2FA;
+      --muted: #9FC2DC; --border: #163A5C; --sky: #0E3357;
+      --shadow: 0 4px 18px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --card-bg: #0E2A47; --page-bg: #071C33; --ink: #E7F2FA; --head: #E7F2FA;
+    --muted: #9FC2DC; --border: #163A5C; --sky: #0E3357;
+    --shadow: 0 4px 18px rgba(0,0,0,0.35);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); height: 100%; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; height: 100%; overflow: hidden;
+    font-family: Calibri, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    background: var(--page-bg); color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font-family: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+  /* ---------- App shell ---------- */
+  .app { height: 100%; display: flex; flex-direction: column; min-height: 0; }
+  .bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+    padding: 0.6rem 1rem; background: var(--card-bg); flex: 0 0 auto;
+  }
+  .bar.top { border-bottom: 1px solid var(--border); }
+  .bar.bottom { border-top: 1px solid var(--border); }
+  .brand {
+    display: flex; align-items: center; gap: 0.5rem; min-width: 0;
+    font-family: Cambria, serif; font-weight: 700; font-size: 0.92rem; color: var(--head);
+  }
+  .brand .mark {
+    width: 26px; height: 26px; border-radius: 7px; background: var(--blue); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex: 0 0 auto;
+  }
+  .brand .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brand .sub { color: var(--muted); font-family: Calibri, sans-serif; font-weight: 600; font-size: 0.8rem; }
+  .tools { display: flex; gap: 0.4rem; flex: 0 0 auto; }
+  .iconbtn {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    background: var(--sky); color: var(--blue); border: none; cursor: pointer;
+    font-weight: 700; font-size: 0.78rem; padding: 0.45rem 0.7rem; border-radius: 8px;
+  }
+  .iconbtn.on { background: var(--blue); color: #fff; }
+  .iconbtn svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .progress { height: 4px; background: var(--border); flex: 0 0 auto; }
+  .progress span { display: block; height: 100%; width: 0; background: var(--blue); transition: width 0.25s ease; }
+
+  .stage { position: relative; flex: 1 1 auto; min-height: 0; }
+  .slide {
+    display: none; position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden;
+    padding: clamp(1rem, 3.5vw, 2.75rem);
+  }
+  .slide.active { display: flex; animation: fadein 0.28s ease; }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .slide.active { animation: none; }
+    .progress span, .layer, .fnode { transition: none !important; }
+  }
+  .slide-inner { margin: auto; width: 100%; max-width: 1020px; }
+
+  /* ---------- Type ---------- */
+  .chip {
+    display: inline-block; background: var(--sky); color: var(--blue);
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 0.3rem 0.7rem; border-radius: 999px; margin-bottom: 0.8rem;
+  }
+  h1, h2, h3, h4 { font-family: Cambria, Georgia, serif; color: var(--head); margin: 0; }
+  h1 { font-size: clamp(1.9rem, 6vw, 3.4rem); line-height: 1.15; }
+  h2 { font-size: clamp(1.4rem, 3.8vw, 2.3rem); line-height: 1.2; margin-bottom: 0.7rem; }
+  h3 { font-size: clamp(1.05rem, 2.2vw, 1.3rem); margin-bottom: 0.3rem; }
+  h4 { font-size: 1.05rem; margin-bottom: 0.3rem; }
+  p { margin: 0 0 0.9rem; }
+  .lead { font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.6; color: var(--muted); max-width: 62ch; margin-bottom: 1.2rem; }
+  .body { font-size: clamp(0.95rem, 1.7vw, 1.1rem); line-height: 1.65; }
+  ul.tick { list-style: none; padding: 0; margin: 0 0 1rem; }
+  ul.tick li { position: relative; padding-left: 1.5rem; margin-bottom: 0.5rem; line-height: 1.55; }
+  ul.tick li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--blue); }
+  code { background: var(--sky); color: var(--head); padding: 0.1rem 0.4rem; border-radius: 5px; font-size: 0.9em; }
+
+  /* ---------- Title slide ---------- */
+  .slide.hero {
+    background: linear-gradient(135deg, #032D60 0%, #0B3D73 55%, #00A1E0 100%);
+    color: #fff; overflow: hidden;
+  }
+  .slide.hero h1, .slide.hero .lead { color: #fff; }
+  .slide.hero .lead { color: #CFE9FB; }
+  .slide.hero .chip { background: rgba(255,255,255,0.14); color: #CFE9FB; }
+  .hero-decor { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.08); pointer-events: none; }
+  .hero-decor.a { width: 340px; height: 340px; top: -130px; right: -90px; }
+  .hero-decor.b { width: 220px; height: 220px; bottom: -90px; left: -50px; background: rgba(255,255,255,0.06); }
+  .hero .slide-inner { position: relative; }
+  .cta {
+    display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;
+    background: #fff; color: #032D60; border: none; cursor: pointer; font-weight: 700;
+    font-size: 0.95rem; padding: 0.75rem 1.4rem; border-radius: 999px;
+  }
+  .cta svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.4; }
+  .hint { margin-top: 1.4rem; font-size: 0.8rem; color: #9FC2DC; }
+
+  /* ---------- Cards / grids ---------- */
+  .grid { display: grid; gap: 0.85rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .card {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
+    padding: 1rem 1.1rem; box-shadow: var(--shadow);
+  }
+  .card p { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.55; }
+  button.card { text-align: left; cursor: pointer; width: 100%; }
+  button.card:hover { border-color: var(--blue); }
+  .agenda .num {
+    width: 32px; height: 32px; border-radius: 50%; background: var(--blue); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; margin-bottom: 0.6rem;
+  }
+  .agenda h3 { font-size: 1.1rem; }
+  .card .badge {
+    display: inline-block; font-size: 0.72rem; font-weight: 700; color: var(--blue);
+    background: var(--sky); border-radius: 999px; padding: 0.15rem 0.55rem; margin-bottom: 0.5rem;
+  }
+  .card.accent-coral { border-top: 4px solid var(--coral); }
+  .card.accent-blue { border-top: 4px solid var(--blue); }
+  .card.accent-gold { border-top: 4px solid var(--gold); }
+  .card.accent-green { border-top: 4px solid var(--green); }
+  .big { font-family: Cambria, serif; font-size: clamp(1.6rem, 4vw, 2.3rem); font-weight: 700; color: var(--blue); line-height: 1.1; }
+
+  /* ---------- Architecture layers ---------- */
+  .split { display: grid; gap: 1rem; grid-template-columns: 1.1fr 1fr; align-items: start; }
+  @media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
+  .layers { display: flex; flex-direction: column; gap: 0.45rem; }
+  .layer {
+    text-align: left; cursor: pointer; border: 1px solid var(--border); border-radius: 10px;
+    padding: 0.7rem 0.9rem; font-weight: 700; font-size: 0.95rem;
+    background: rgba(0,161,224,var(--a)); transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .layer:hover { transform: translateX(3px); }
+  .layer.on { border-color: var(--blue); box-shadow: inset 4px 0 0 var(--blue); }
+  .layer small { display: block; font-weight: 400; color: var(--muted); font-size: 0.8rem; }
+  .info { min-height: 150px; }
+  .info h4 { color: var(--blue); }
+  .info p { color: var(--ink); font-size: 0.98rem; line-height: 1.6; margin: 0; }
+
+  /* ---------- Request flow ---------- */
+  .flow { display: flex; align-items: stretch; gap: 0.4rem; flex-wrap: wrap; margin: 1rem 0; }
+  .fnode {
+    flex: 1 1 130px; text-align: center; cursor: pointer; padding: 0.8rem 0.5rem;
+    border: 2px solid var(--border); border-radius: 12px; background: var(--card-bg);
+    font-weight: 700; font-size: 0.92rem; transition: all 0.2s ease; position: relative;
+  }
+  .fnode small { display: block; color: var(--muted); font-weight: 400; font-size: 0.78rem; margin-top: 0.15rem; }
+  .fnode.done { border-color: var(--blue); background: var(--sky); }
+  .fnode.now { border-color: var(--coral); background: var(--sky); transform: translateY(-3px); }
+  .caption {
+    background: var(--sky); border-left: 4px solid var(--blue); border-radius: 8px;
+    padding: 0.8rem 1rem; line-height: 1.55; min-height: 3.6rem;
+  }
+  .row { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin-top: 0.8rem; }
+  .btn {
+    background: var(--blue); color: #fff; border: none; border-radius: 8px; cursor: pointer;
+    font-weight: 700; font-size: 0.85rem; padding: 0.55rem 1rem;
+  }
+  .btn.ghost { background: var(--sky); color: var(--blue); }
+
+  /* ---------- Tabs ---------- */
+  .tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
+  .tab {
+    background: var(--sky); color: var(--blue); border: none; border-radius: 999px; cursor: pointer;
+    font-weight: 700; font-size: 0.88rem; padding: 0.5rem 1rem;
+  }
+  .tab.on { background: var(--blue); color: #fff; }
+  .panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.3rem; box-shadow: var(--shadow); }
+  .panel[hidden] { display: none; }
+  .panel dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1rem; }
+  .panel dt { font-weight: 700; color: var(--blue); }
+  .panel dd { margin: 0; line-height: 1.55; }
+  @media (max-width: 520px) { .panel dl { grid-template-columns: 1fr; gap: 0.1rem; } .panel dd { margin-bottom: 0.6rem; } }
+
+  /* ---------- Table ---------- */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; background: var(--card-bg); box-shadow: var(--shadow); }
+  table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 0.95rem; }
+  th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
+  th { background: var(--navy); color: #fff; font-size: 0.82rem; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--sky); }
+  td:first-child { font-weight: 700; color: var(--head); }
+
+  /* ---------- Lifecycle ---------- */
+  .life { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: stretch; margin: 1rem 0; }
+  .life .step {
+    flex: 1 1 170px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+    padding: 0.8rem 0.9rem; position: relative; box-shadow: var(--shadow);
+  }
+  .life .step b { display: block; color: var(--head); font-size: 0.98rem; }
+  .life .step span { color: var(--muted); font-size: 0.85rem; line-height: 1.45; display: block; margin-top: 0.2rem; }
+  .life .step.prod { border-color: var(--coral); }
+  .life .arrow { align-self: center; color: var(--blue); font-weight: 700; font-size: 1.2rem; }
+  @media (max-width: 760px) { .life .arrow { display: none; } }
+
+  /* ---------- Tools (details) ---------- */
+  details.tool {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+    margin-bottom: 0.55rem; box-shadow: var(--shadow);
+  }
+  details.tool summary { cursor: pointer; padding: 0.8rem 1rem; font-weight: 700; list-style: none; display: flex; justify-content: space-between; gap: 0.6rem; }
+  details.tool summary::-webkit-details-marker { display: none; }
+  details.tool summary::after { content: "+"; color: var(--blue); font-size: 1.2rem; line-height: 1; }
+  details.tool[open] summary::after { content: "–"; }
+  details.tool .d { padding: 0 1rem 0.9rem; color: var(--muted); line-height: 1.6; font-size: 0.95rem; }
+  details.tool .d b { color: var(--ink); }
+
+  /* ---------- Checklist ---------- */
+  .checklist { list-style: none; padding: 0; margin: 0 0 0.8rem; }
+  .checklist li { margin-bottom: 0.45rem; }
+  .checklist label {
+    display: flex; gap: 0.7rem; align-items: flex-start; cursor: pointer;
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.7rem 0.9rem; line-height: 1.5;
+  }
+  .checklist input { width: 20px; height: 20px; accent-color: var(--blue); margin-top: 0.1rem; flex: 0 0 auto; }
+  .checklist input:checked + span { text-decoration: line-through; color: var(--muted); }
+  .checklist small { display: block; color: var(--muted); }
+  .meter { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .meter span { display: block; height: 100%; width: 0; background: var(--green); transition: width 0.25s ease; }
+  .meter-label { font-size: 0.85rem; color: var(--muted); margin-top: 0.35rem; font-weight: 700; }
+
+  /* ---------- Code / commands ---------- */
+  .cmd {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
+    background: var(--navy); color: #E7F2FA; border-radius: 10px; padding: 0.6rem 0.6rem 0.6rem 1rem; margin-bottom: 0.5rem;
+  }
+  .cmd code { background: none; color: inherit; padding: 0; font-size: 0.9rem; overflow-x: auto; white-space: nowrap; }
+  .cmd .why { display: block; color: #8AA9C2; font-size: 0.78rem; font-family: Calibri, sans-serif; margin-top: 0.15rem; white-space: normal; }
+  .copy {
+    background: rgba(255,255,255,0.14); color: #fff; border: none; border-radius: 7px; cursor: pointer;
+    font-weight: 700; font-size: 0.75rem; padding: 0.4rem 0.7rem; flex: 0 0 auto;
+  }
+  .copy.ok { background: var(--green); }
+  pre.code {
+    background: var(--navy); color: #E7F2FA; border-radius: 10px; padding: 1rem 1.1rem; overflow-x: auto;
+    font-size: 0.9rem; line-height: 1.6; margin: 0 0 0.6rem;
+  }
+  pre.code code { background: none; color: inherit; padding: 0; }
+
+  /* ---------- Quiz ---------- */
+  .qtext { font-family: Cambria, serif; font-size: clamp(1.1rem, 2.4vw, 1.4rem); color: var(--head); margin-bottom: 0.9rem; }
+  .opt {
+    display: block; width: 100%; text-align: left; cursor: pointer; margin-bottom: 0.5rem;
+    background: var(--card-bg); border: 2px solid var(--border); border-radius: 10px;
+    padding: 0.7rem 1rem; font-size: 0.98rem; line-height: 1.45;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--blue); }
+  .opt.right { border-color: var(--green); background: rgba(46,158,107,0.12); }
+  .opt.wrong { border-color: var(--coral); background: rgba(255,107,74,0.12); }
+  .opt:disabled { cursor: default; }
+  .feedback { min-height: 2.6rem; line-height: 1.5; color: var(--muted); }
+  .score { font-family: Cambria, serif; font-size: 2rem; color: var(--blue); }
+
+  /* ---------- Notes and overview ---------- */
+  .notes {
+    display: none; flex: 0 0 auto; max-height: 26%; overflow-y: auto; padding: 0.7rem 1rem;
+    background: var(--sky); border-top: 1px solid var(--border); font-size: 0.92rem; line-height: 1.55;
+  }
+  .notes.open { display: block; }
+  .notes b { color: var(--blue); }
+  .overview {
+    position: absolute; inset: 0; z-index: 20; background: var(--page-bg); overflow-y: auto;
+    padding: 1.2rem; display: none;
+  }
+  .overview.open { display: block; }
+  .overview h2 { margin-bottom: 1rem; }
+  .ov-grid { display: grid; gap: 0.7rem; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+  .ov-item {
+    text-align: left; cursor: pointer; background: var(--card-bg); border: 2px solid var(--border);
+    border-radius: 12px; padding: 0.8rem 0.9rem; font-size: 0.9rem; font-weight: 700; line-height: 1.35;
+  }
+  .ov-item small { display: block; color: var(--blue); margin-bottom: 0.2rem; }
+  .ov-item.cur { border-color: var(--blue); background: var(--sky); }
+
+  /* ---------- Bottom nav ---------- */
+  .nav { display: flex; align-items: center; gap: 0.6rem; }
+  .navbtn {
+    display: inline-flex; align-items: center; gap: 0.4rem; background: var(--navy); color: #fff; border: none;
+    border-radius: 999px; cursor: pointer; font-weight: 700; font-size: 0.85rem; padding: 0.55rem 1.1rem;
+  }
+  .navbtn:disabled { opacity: 0.35; cursor: default; }
+  .navbtn svg { width: 14px; height: 14px; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  .counter { font-weight: 700; font-size: 0.88rem; color: var(--muted); min-width: 4.5rem; text-align: center; }
+  .keys { color: var(--muted); font-size: 0.75rem; }
+  @media (max-width: 720px) { .keys, .brand .sub { display: none; } .iconbtn .lbl { display: none; } }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ================= Top bar ================= -->
+  <header class="bar top">
+    <div class="brand">
+      <span class="mark">G</span>
+      <span class="name">GCloudUp Tech <span class="sub">· Live Session 1</span></span>
+    </div>
+    <div class="tools">
+      <button class="iconbtn" id="btnOverview" type="button" aria-label="Show all slides">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        <span class="lbl">Slides</span>
+      </button>
+      <button class="iconbtn" id="btnNotes" type="button" aria-label="Toggle speaker notes" aria-pressed="false">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/></svg>
+        <span class="lbl">Notes</span>
+      </button>
+      <button class="iconbtn" id="btnTheme" type="button" aria-label="Toggle light and dark theme">
+        <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <span class="lbl">Theme</span>
+      </button>
+      <button class="iconbtn" id="btnFull" type="button" aria-label="Toggle fullscreen">
+        <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+        <span class="lbl">Full screen</span>
+      </button>
+    </div>
+  </header>
+  <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+
+  <!-- ================= Slides ================= -->
+  <main class="stage" id="stage">
+
+    <!-- 1. Title -->
+    <section class="slide hero" data-title="Title" data-notes="Welcome everyone. Today is Session 1: how Salesforce is built under the hood, the org types you will work in, and getting your own dev environment running by the end of the session.">
+      <div class="hero-decor a"></div><div class="hero-decor b"></div>
+      <div class="slide-inner">
+        <span class="chip">Live Session 1</span>
+        <h1>Salesforce Architecture &amp; Dev Environment</h1>
+        <p class="lead">How the platform is built, where you build on it, and the tools you need to start developing.</p>
+        <button class="cta" type="button" data-next>
+          Start session
+          <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="hint">Use ← → keys, swipe, or the buttons below. Press O for all slides, N for notes, F for full screen.</div>
+      </div>
+    </section>
+
+    <!-- 2. Agenda -->
+    <section class="slide" data-title="Agenda" data-notes="Four topics today. Each card is clickable if you want to jump straight to a topic during Q&A.">
+      <div class="slide-inner agenda">
+        <span class="chip">Agenda</span>
+        <h2>What we'll cover today</h2>
+        <div class="grid">
+          <button class="card" type="button" data-goto="2"><div class="num">1</div><h3>Salesforce architecture</h3><p>Layers, multi-tenancy, metadata and governor limits.</p></button>
+          <button class="card" type="button" data-goto="6"><div class="num">2</div><h3>Orgs &amp; environments</h3><p>Production, Developer Edition, sandboxes and scratch orgs.</p></button>
+          <button class="card" type="button" data-goto="9"><div class="num">3</div><h3>Developer tools</h3><p>Setup, Developer Console, VS Code, Salesforce CLI.</p></button>
+          <button class="card" type="button" data-goto="11"><div class="num">4</div><h3>Set up your dev environment</h3><p>Hands-on: install, connect and run your first code.</p></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Architecture layers -->
+    <section class="slide" data-title="Architecture at a glance" data-notes="Click each layer. Stress that as a developer you mostly work in the middle layers: logic, data and UI. The infrastructure at the bottom is Salesforce's job.">
+      <div class="slide-inner">
+        <span class="chip">Topic 1 · Architecture</span>
+        <h2>The platform at a glance</h2>
+        <p class="body">Click a layer to see what lives there.</p>
+        <div class="split">
+          <div class="layers" id="layers">
+            <button class="layer on" type="button" style="--a:.06" data-name="Apps &amp; Clouds" data-info="The products people use every day: Sales Cloud, Service Cloud, Marketing Cloud, Experience Cloud, plus custom apps you build for your own business."><small>Top</small>Apps &amp; Clouds</button>
+            <button class="layer" type="button" style="--a:.10" data-name="User interface" data-info="What users see and click: Lightning pages, Lightning Web Components, the mobile app and, in older orgs, Visualforce pages."><small>What users see</small>User interface</button>
+            <button class="layer" type="button" style="--a:.14" data-name="Logic &amp; automation" data-info="Business rules that run on your data: Flow, validation rules, approval processes, and code in Apex classes and triggers."><small>What happens</small>Logic &amp; automation</button>
+            <button class="layer" type="button" style="--a:.18" data-name="Data &amp; metadata" data-info="Objects, fields, records and relationships, plus the security model (profiles, permission sets, sharing rules) that controls who sees what."><small>What is stored</small>Data &amp; metadata</button>
+            <button class="layer" type="button" style="--a:.22" data-name="APIs &amp; integration" data-info="How other systems talk to Salesforce: REST and SOAP APIs, Bulk API, Platform Events, and integration tools such as MuleSoft."><small>How systems connect</small>APIs &amp; integration</button>
+            <button class="layer" type="button" style="--a:.26" data-name="Platform infrastructure" data-info="The shared, multi-tenant cloud underneath everything, running on Hyperforce, Salesforce's public cloud architecture. Salesforce manages servers, databases, backups and upgrades."><small>Managed by Salesforce</small>Platform infrastructure</button>
+          </div>
+          <div class="card info" id="layerInfo" aria-live="polite">
+            <h4 id="layerTitle">Apps &amp; Clouds</h4>
+            <p id="layerText">The products people use every day: Sales Cloud, Service Cloud, Marketing Cloud, Experience Cloud, plus custom apps you build for your own business.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Multi-tenancy -->
+    <section class="slide" data-title="Multi-tenancy" data-notes="Use the apartment building analogy. Point out that upgrades happen for everyone at once, three times a year, which is why the platform is so consistent.">
+      <div class="slide-inner">
+        <span class="chip">Topic 1 · Architecture</span>
+        <h2>Multi-tenancy: one building, many apartments</h2>
+        <p class="lead">Many customers (tenants) share the same infrastructure and code, while each customer's data and configuration stays private.</p>
+        <div class="grid">
+          <div class="card accent-blue"><h3>Shared building</h3><p>Servers, databases and the platform code are shared, so Salesforce upgrades everyone at once. There are three major releases a year.</p></div>
+          <div class="card accent-green"><h3>Private apartment</h3><p>Your org is isolated. Each record and setting is tied to your org, so other customers never see your data.</p></div>
+          <div class="card accent-gold"><h3>Shared utilities</h3><p>Because resources are shared, no one may hog them. Governor limits keep every tenant fair.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Metadata + governor limits -->
+    <section class="slide" data-title="Metadata &amp; governor limits" data-notes="Metadata is the big idea: your customizations are stored as data about your app, and the runtime engine reads it. That's also why deployments move metadata between orgs. Limits shown are per synchronous transaction.">
+      <div class="slide-inner">
+        <span class="chip">Topic 1 · Architecture</span>
+        <h2>Metadata-driven and governed</h2>
+        <p class="body">Objects, fields, page layouts, flows and Apex classes are all <strong>metadata</strong>. The platform's runtime engine reads that metadata to build screens, enforce rules and run your logic. When you deploy, you are moving metadata from one org to another.</p>
+        <h3 style="margin-top:1rem">Governor limits (per synchronous transaction)</h3>
+        <div class="grid">
+          <div class="card"><div class="big">100</div><p>SOQL queries</p></div>
+          <div class="card"><div class="big">150</div><p>DML statements (insert, update, delete)</p></div>
+          <div class="card"><div class="big">10 s</div><p>CPU time</p></div>
+          <div class="card"><div class="big">50,000</div><p>Records returned by SOQL</p></div>
+        </div>
+        <p class="body" style="margin-top:0.9rem">Asynchronous code, such as batch or queueable Apex, gets higher limits.</p>
+      </div>
+    </section>
+
+    <!-- 6. Request flow -->
+    <section class="slide" data-title="How a request flows" data-notes="Press Play flow, or click any step. Walk through what happens when a user clicks Save on a record.">
+      <div class="slide-inner">
+        <span class="chip">Topic 1 · Architecture</span>
+        <h2>What happens when a user clicks Save?</h2>
+        <div class="flow" id="flow">
+          <button class="fnode" type="button" data-cap="The user clicks Save on a record page in the browser or the mobile app."><b>1. User</b><small>Clicks Save</small></button>
+          <button class="fnode" type="button" data-cap="The Lightning UI sends the request to the platform, together with the user's session and permissions."><b>2. UI</b><small>Lightning page</small></button>
+          <button class="fnode" type="button" data-cap="The platform checks security first: does this user have access to this object, field and record?"><b>3. Security</b><small>Profiles, sharing</small></button>
+          <button class="fnode" type="button" data-cap="Validation rules, Flows and Apex triggers run in a set order, all within governor limits."><b>4. Logic</b><small>Rules, Flow, Apex</small></button>
+          <button class="fnode" type="button" data-cap="The record is saved to the database and the updated screen is returned to the user."><b>5. Database</b><small>Save and respond</small></button>
+        </div>
+        <div class="caption" id="flowCap" aria-live="polite">Press <b>Play flow</b> or click a step.</div>
+        <div class="row">
+          <button class="btn" type="button" id="flowPlay">Play flow</button>
+          <button class="btn ghost" type="button" id="flowReset">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Orgs tabs -->
+    <section class="slide" data-title="What is an org?" data-notes="An org is your own private Salesforce instance. Click through each type and mention which one everyone in the session will use today: Developer Edition.">
+      <div class="slide-inner">
+        <span class="chip">Topic 2 · Orgs &amp; environments</span>
+        <h2>What is an org?</h2>
+        <p class="body">An <strong>org</strong> is your own private Salesforce environment, with its own data, users and customizations. There are several kinds.</p>
+        <div class="tabgroup">
+          <div class="tabs" role="tablist">
+            <button class="tab on" type="button" role="tab" data-tab="prod">Production</button>
+            <button class="tab" type="button" role="tab" data-tab="dev">Developer Edition</button>
+            <button class="tab" type="button" role="tab" data-tab="sbx">Sandbox</button>
+            <button class="tab" type="button" role="tab" data-tab="scr">Scratch org</button>
+          </div>
+          <div class="panel" data-panel="prod"><dl><dt>What</dt><dd>The live org where real users and real customer data live.</dd><dt>Use it for</dt><dd>Running the business. Never build or test directly here.</dd></dl></div>
+          <div class="panel" data-panel="dev" hidden><dl><dt>What</dt><dd>A free, full-featured org for learning and experimenting, with sample data and no link to production.</dd><dt>Use it for</dt><dd>Practice, tutorials, Trailhead and personal projects. This is the org we use today.</dd></dl></div>
+          <div class="panel" data-panel="sbx" hidden><dl><dt>What</dt><dd>A copy of your production org, created from production.</dd><dt>Use it for</dt><dd>Developing, testing and training away from live data, before deploying to production.</dd></dl></div>
+          <div class="panel" data-panel="scr" hidden><dl><dt>What</dt><dd>A short-lived, disposable org created from a configuration file using the Salesforce CLI. It lasts 7 days by default and up to 30.</dd><dt>Use it for</dt><dd>Source-driven development, automated testing and CI pipelines.</dd></dl></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Sandbox table -->
+    <section class="slide" data-title="Sandbox types" data-notes="Only a quick look. The key idea: the bigger the sandbox, the more real data it holds and the longer you wait between refreshes.">
+      <div class="slide-inner">
+        <span class="chip">Topic 2 · Orgs &amp; environments</span>
+        <h2>Sandbox types compared</h2>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Type</th><th>What it copies</th><th>Data storage</th><th>Refresh interval</th></tr></thead>
+            <tbody>
+              <tr><td>Developer</td><td>Metadata only</td><td>200 MB</td><td>1 day</td></tr>
+              <tr><td>Developer Pro</td><td>Metadata only</td><td>1 GB</td><td>1 day</td></tr>
+              <tr><td>Partial Copy</td><td>Metadata and a sample of data</td><td>5 GB</td><td>5 days</td></tr>
+              <tr><td>Full</td><td>Metadata and all data</td><td>Same as production</td><td>29 days</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="body" style="margin-top:0.9rem">The sandboxes available to you depend on your Salesforce edition and licenses.</p>
+      </div>
+    </section>
+
+    <!-- 9. Lifecycle -->
+    <section class="slide" data-title="Development lifecycle" data-notes="This is the standard path a change takes. Changes only reach production after they have been built and tested in lower environments.">
+      <div class="slide-inner">
+        <span class="chip">Topic 2 · Orgs &amp; environments</span>
+        <h2>The path from idea to production</h2>
+        <div class="life">
+          <div class="step"><b>Developer sandbox</b><span>Build and unit test your change.</span></div>
+          <div class="arrow">→</div>
+          <div class="step"><b>QA / integration</b><span>Test with more data alongside other changes.</span></div>
+          <div class="arrow">→</div>
+          <div class="step"><b>UAT / staging</b><span>Business users confirm it works, often in a Full sandbox.</span></div>
+          <div class="arrow">→</div>
+          <div class="step prod"><b>Production</b><span>Go live for real users.</span></div>
+        </div>
+        <p class="body">Changes move between environments using <strong>change sets</strong>, the <strong>Salesforce CLI</strong> or <strong>DevOps Center</strong>. Rule of thumb: always build in a sandbox or scratch org, never directly in production.</p>
+      </div>
+    </section>
+
+    <!-- 10. Tools -->
+    <section class="slide" data-title="Developer tools" data-notes="Expand each tool in turn. The professional setup is VS Code plus the Salesforce CLI. The Developer Console is handy for quick tests.">
+      <div class="slide-inner">
+        <span class="chip">Topic 3 · Developer tools</span>
+        <h2>Your toolbox</h2>
+        <p class="body">Click a tool to learn what it is for.</p>
+        <details class="tool" open><summary>Setup</summary><div class="d"><b>What:</b> The browser-based admin area. <b>Best for:</b> creating objects, fields, users and flows without code.</div></details>
+        <details class="tool"><summary>Developer Console</summary><div class="d"><b>What:</b> A lightweight IDE inside Salesforce. <b>Best for:</b> running quick Apex, testing SOQL queries and reading debug logs.</div></details>
+        <details class="tool"><summary>VS Code + Salesforce Extension Pack</summary><div class="d"><b>What:</b> The main professional editor for Apex and Lightning Web Components. <b>Best for:</b> everyday development, source control and deploying to orgs.</div></details>
+        <details class="tool"><summary>Salesforce CLI (sf)</summary><div class="d"><b>What:</b> A command-line tool. <b>Best for:</b> creating orgs, retrieving and deploying metadata, running tests and automating pipelines.</div></details>
+        <details class="tool"><summary>Code Builder</summary><div class="d"><b>What:</b> VS Code in the browser with the Salesforce tooling already set up. <b>Best for:</b> developing with nothing to install locally. Availability depends on your edition.</div></details>
+      </div>
+    </section>
+
+    <!-- 11. Declarative vs programmatic -->
+    <section class="slide" data-title="Clicks vs code" data-notes="Keep this simple: always try declarative first because it is faster and easier to maintain. Use code when clicks cannot do the job.">
+      <div class="slide-inner">
+        <span class="chip">Topic 3 · Developer tools</span>
+        <h2>Clicks or code?</h2>
+        <p class="body">There are two ways to build on Salesforce. Pick a side to compare.</p>
+        <div class="tabgroup">
+          <div class="tabs" role="tablist">
+            <button class="tab on" type="button" role="tab" data-tab="decl">Declarative (clicks)</button>
+            <button class="tab" type="button" role="tab" data-tab="prog">Programmatic (code)</button>
+          </div>
+          <div class="panel" data-panel="decl"><dl><dt>Tools</dt><dd>Flow, validation rules, formula fields, page layouts, reports and dashboards.</dd><dt>Strengths</dt><dd>Fast to build, admin-friendly and easy to maintain.</dd><dt>Choose it when</dt><dd>The requirement can be met with built-in features. This is the default choice.</dd></dl></div>
+          <div class="panel" data-panel="prog" hidden><dl><dt>Tools</dt><dd>Apex classes and triggers, Lightning Web Components, REST callouts.</dd><dt>Strengths</dt><dd>Full flexibility for complex logic, custom interfaces and integrations.</dd><dt>Choose it when</dt><dd>Clicks cannot handle the logic, scale or user experience you need.</dd></dl></div>
+        </div>
+        <p class="body" style="margin-top:0.9rem"><strong>Rule of thumb: clicks before code.</strong></p>
+      </div>
+    </section>
+
+    <!-- 12. Checklist -->
+    <section class="slide" data-title="Setup checklist" data-notes="Give the group a few minutes and tick items off as you go. Everyone should finish the Developer Edition sign-up before we move on.">
+      <div class="slide-inner">
+        <span class="chip">Topic 4 · Dev environment</span>
+        <h2>Set up your environment</h2>
+        <ul class="checklist" id="checklist">
+          <li><label><input type="checkbox"><span>Sign up for a free Developer Edition org<small>developer.salesforce.com/signup</small></span></label></li>
+          <li><label><input type="checkbox"><span>Log in and open Setup once, to confirm it works</span></label></li>
+          <li><label><input type="checkbox"><span>Install Visual Studio Code</span></label></li>
+          <li><label><input type="checkbox"><span>Install a JDK (Java 17 or 21), needed by the Apex tooling</span></label></li>
+          <li><label><input type="checkbox"><span>Install the Salesforce CLI</span></label></li>
+          <li><label><input type="checkbox"><span>Install the Salesforce Extension Pack in VS Code</span></label></li>
+        </ul>
+        <div class="meter"><span id="meterFill"></span></div>
+        <div class="meter-label" id="meterLabel">0 of 6 done</div>
+      </div>
+    </section>
+
+    <!-- 13. CLI commands -->
+    <section class="slide" data-title="CLI commands" data-notes="Copy each command and run it live. Point out that alias lets you refer to the org by a short name afterwards.">
+      <div class="slide-inner">
+        <span class="chip">Topic 4 · Dev environment</span>
+        <h2>Connect and create a project</h2>
+        <p class="body">Open the VS Code terminal and run these in order. Use the Copy button on each line.</p>
+        <div class="cmd"><div><code>sf --version</code><span class="why">Check the CLI is installed</span></div><button class="copy" type="button">Copy</button></div>
+        <div class="cmd"><div><code>sf org login web --alias mydevorg</code><span class="why">Log in to your Developer Edition org in the browser</span></div><button class="copy" type="button">Copy</button></div>
+        <div class="cmd"><div><code>sf org list</code><span class="why">See the orgs you have connected</span></div><button class="copy" type="button">Copy</button></div>
+        <div class="cmd"><div><code>sf project generate --name my-first-project</code><span class="why">Create a new Salesforce project folder</span></div><button class="copy" type="button">Copy</button></div>
+        <div class="cmd"><div><code>sf org open --target-org mydevorg</code><span class="why">Open the org in your browser</span></div><button class="copy" type="button">Copy</button></div>
+      </div>
+    </section>
+
+    <!-- 14. Hello Apex -->
+    <section class="slide" data-title="Your first Apex" data-notes="Open the Developer Console, choose Debug, then Open Execute Anonymous Apex Window. Paste, tick Open Log, and run. Show them the debug line in the log.">
+      <div class="slide-inner">
+        <span class="chip">Topic 4 · Dev environment</span>
+        <h2>Run your first Apex</h2>
+        <ol class="body" style="padding-left:1.2rem">
+          <li>In your org, click the gear icon and open <strong>Developer Console</strong>.</li>
+          <li>Choose <strong>Debug</strong>, then <strong>Open Execute Anonymous Apex Window</strong>.</li>
+          <li>Paste the code below, tick <strong>Open Log</strong> and click <strong>Execute</strong>.</li>
+        </ol>
+        <pre class="code" id="apexCode"><code>System.debug('Hello, Salesforce!');
+
+List&lt;Account&gt; accs = [SELECT Id, Name FROM Account LIMIT 3];
+System.debug('Accounts found: ' + accs.size());</code></pre>
+        <button class="btn copy-block" type="button" id="copyApex">Copy code</button>
+        <p class="body" style="margin-top:0.8rem">In the log, filter by <code>USER_DEBUG</code> to see your output.</p>
+      </div>
+    </section>
+
+    <!-- 15. Quiz -->
+    <section class="slide" data-title="Quick knowledge check" data-notes="Let the audience answer in chat before you reveal each answer.">
+      <div class="slide-inner">
+        <span class="chip">Knowledge check</span>
+        <div id="quiz"></div>
+      </div>
+    </section>
+
+    <!-- 16. Recap -->
+    <section class="slide" data-title="Recap" data-notes="Recap in one line per topic, then open the floor for questions. Point people to the blog for the recording and written guide.">
+      <div class="slide-inner">
+        <span class="chip">Recap</span>
+        <h2>Key takeaways</h2>
+        <div class="grid">
+          <div class="card accent-blue"><h3>1. Architecture</h3><p>Multi-tenant and metadata-driven, with governor limits to keep everyone fair.</p></div>
+          <div class="card accent-green"><h3>2. Orgs</h3><p>Build in a Developer Edition, sandbox or scratch org. Production is for real users.</p></div>
+          <div class="card accent-gold"><h3>3. Tools</h3><p>Setup for clicks. VS Code and the Salesforce CLI for code.</p></div>
+          <div class="card accent-coral"><h3>4. Your setup</h3><p>Developer Edition org, VS Code, CLI, and your first Apex run.</p></div>
+        </div>
+        <div class="row" style="margin-top:1.2rem">
+          <button class="btn" type="button" data-goto="0">Back to start</button>
+          <button class="btn ghost" type="button" data-goto="1">Open agenda</button>
+          <!-- EDIT: point this to your blog listing page -->
+          <button class="btn ghost" type="button" onclick="location.href='blogs.html'">Back to Blog</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Overview overlay -->
+    <div class="overview" id="overview" aria-hidden="true">
+      <h2>All slides</h2>
+      <div class="ov-grid" id="ovGrid"></div>
+    </div>
+  </main>
+
+  <div class="notes" id="notes" aria-live="polite"></div>
+
+  <!-- ================= Bottom nav ================= -->
+  <footer class="bar bottom">
+    <span class="keys">← → to move · O slides · N notes · F full screen</span>
+    <div class="nav">
+      <button class="navbtn" id="prev" type="button" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg> Prev
+      </button>
+      <span class="counter" id="counter">1 / 16</span>
+      <button class="navbtn" id="next" type="button" aria-label="Next slide">
+        Next <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  var slides = $$('.slide');
+  var cur = 0;
+  var notesEl = $('#notes'), overview = $('#overview');
+
+  /* ---------- Navigation ---------- */
+  function go(n) {
+    n = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, i) { s.classList.toggle('active', i === n); });
+    cur = n;
+    slides[n].scrollTop = 0;
+    $('#counter').textContent = (n + 1) + ' / ' + slides.length;
+    $('#bar').style.width = ((n + 1) / slides.length * 100) + '%';
+    $('#prev').disabled = n === 0;
+    $('#next').disabled = n === slides.length - 1;
+    notesEl.innerHTML = '<b>Speaker notes:</b> ' + (slides[n].getAttribute('data-notes') || 'No notes for this slide.');
+    closeOverview();
+    try { history.replaceState(null, '', '#' + (n + 1)); } catch (e) {}
+  }
+  $('#prev').addEventListener('click', function () { go(cur - 1); });
+  $('#next').addEventListener('click', function () { go(cur + 1); });
+  $$('[data-next]').forEach(function (b) { b.addEventListener('click', function () { go(cur + 1); }); });
+  $$('[data-goto]').forEach(function (b) { b.addEventListener('click', function () { go(parseInt(b.getAttribute('data-goto'), 10)); }); });
+
+  document.addEventListener('keydown', function (e) {
+    var t = e.target;
+    var onControl = t && t.closest && t.closest('button, summary, a, input');
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { go(cur + 1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { go(cur - 1); e.preventDefault(); }
+    else if (e.key === ' ' && !onControl) { go(cur + 1); e.preventDefault(); }
+    else if (e.key === 'Home') { go(0); }
+    else if (e.key === 'End') { go(slides.length - 1); }
+    else if (e.key === 'Escape') { closeOverview(); }
+    else if (e.key === 'o' || e.key === 'O') { toggleOverview(); }
+    else if (e.key === 'n' || e.key === 'N') { toggleNotes(); }
+    else if (e.key === 'f' || e.key === 'F') { toggleFull(); }
+  });
+
+  /* Swipe */
+  var sx = null, sy = null;
+  $('#stage').addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  $('#stage').addEventListener('touchend', function (e) {
+    if (sx === null) return;
+    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) > 70 && Math.abs(dy) < 50) { go(dx < 0 ? cur + 1 : cur - 1); }
+    sx = sy = null;
+  }, { passive: true });
+
+  /* ---------- Overview ---------- */
+  var ovGrid = $('#ovGrid');
+  slides.forEach(function (s, i) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'ov-item';
+    b.innerHTML = '<small>Slide ' + (i + 1) + '</small>' + s.getAttribute('data-title');
+    b.addEventListener('click', function () { go(i); });
+    ovGrid.appendChild(b);
+  });
+  function openOverview() {
+    $$('.ov-item').forEach(function (b, i) { b.classList.toggle('cur', i === cur); });
+    overview.classList.add('open'); overview.setAttribute('aria-hidden', 'false');
+    $('#btnOverview').classList.add('on');
+  }
+  function closeOverview() {
+    overview.classList.remove('open'); overview.setAttribute('aria-hidden', 'true');
+    $('#btnOverview').classList.remove('on');
+  }
+  function toggleOverview() { overview.classList.contains('open') ? closeOverview() : openOverview(); }
+  $('#btnOverview').addEventListener('click', toggleOverview);
+
+  /* ---------- Notes ---------- */
+  function toggleNotes() {
+    var open = notesEl.classList.toggle('open');
+    $('#btnNotes').classList.toggle('on', open);
+    $('#btnNotes').setAttribute('aria-pressed', open);
+  }
+  $('#btnNotes').addEventListener('click', toggleNotes);
+
+  /* ---------- Theme ---------- */
+  $('#btnTheme').addEventListener('click', function () {
+    var root = document.documentElement;
+    var dark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+  });
+
+  /* ---------- Fullscreen ---------- */
+  function toggleFull() {
+    try {
+      if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); }
+      else { document.exitFullscreen(); }
+    } catch (e) {}
+  }
+  if (!document.documentElement.requestFullscreen) { $('#btnFull').style.display = 'none'; }
+  $('#btnFull').addEventListener('click', toggleFull);
+
+  /* ---------- Architecture layers ---------- */
+  $$('.layer').forEach(function (l) {
+    l.addEventListener('click', function () {
+      $$('.layer').forEach(function (x) { x.classList.toggle('on', x === l); });
+      $('#layerTitle').innerHTML = l.getAttribute('data-name');
+      $('#layerText').textContent = l.getAttribute('data-info');
+    });
+  });
+
+  /* ---------- Request flow ---------- */
+  var nodes = $$('.fnode'), flowTimer = null, flowIdx = -1;
+  function setFlow(i) {
+    flowIdx = i;
+    nodes.forEach(function (n, k) {
+      n.classList.toggle('done', k < i);
+      n.classList.toggle('now', k === i);
+    });
+    $('#flowCap').textContent = i >= 0 ? nodes[i].getAttribute('data-cap') : 'Press Play flow or click a step.';
+  }
+  function stopFlow() { if (flowTimer) { clearInterval(flowTimer); flowTimer = null; $('#flowPlay').textContent = 'Play flow'; } }
+  nodes.forEach(function (n, i) { n.addEventListener('click', function () { stopFlow(); setFlow(i); }); });
+  $('#flowPlay').addEventListener('click', function () {
+    if (flowTimer) { stopFlow(); return; }
+    if (flowIdx >= nodes.length - 1) setFlow(-1);
+    $('#flowPlay').textContent = 'Pause';
+    setFlow(flowIdx + 1);
+    flowTimer = setInterval(function () {
+      if (flowIdx >= nodes.length - 1) { stopFlow(); return; }
+      setFlow(flowIdx + 1);
+    }, 1800);
+  });
+  $('#flowReset').addEventListener('click', function () { stopFlow(); setFlow(-1); });
+
+  /* ---------- Tabs ---------- */
+  $$('.tabgroup').forEach(function (g) {
+    var btns = $$('[data-tab]', g), panels = $$('[data-panel]', g);
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        btns.forEach(function (x) { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', x === b); });
+        panels.forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== b.getAttribute('data-tab'); });
+      });
+    });
+  });
+
+  /* ---------- Checklist ---------- */
+  var boxes = $$('#checklist input');
+  function updateMeter() {
+    var done = boxes.filter(function (b) { return b.checked; }).length;
+    $('#meterFill').style.width = (done / boxes.length * 100) + '%';
+    $('#meterLabel').textContent = done + ' of ' + boxes.length + ' done' + (done === boxes.length ? ' — you are ready!' : '');
+  }
+  boxes.forEach(function (b) { b.addEventListener('change', updateMeter); });
+
+  /* ---------- Copy ---------- */
+  function copyText(text, btn, label) {
+    function ok() { var old = label; btn.textContent = 'Copied!'; btn.classList.add('ok'); setTimeout(function () { btn.textContent = old; btn.classList.remove('ok'); }, 1400); }
+    function fallback() {
+      var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); ok(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(ok, fallback); }
+    else { fallback(); }
+  }
+  $$('.cmd .copy').forEach(function (b) {
+    b.addEventListener('click', function () { copyText($('code', b.parentNode).textContent, b, 'Copy'); });
+  });
+  $('#copyApex').addEventListener('click', function () { copyText($('#apexCode code').textContent, $('#copyApex'), 'Copy code'); });
+
+  /* ---------- Quiz ---------- */
+  var questions = [
+    { q: 'What lets many customers share the same infrastructure while keeping their data private?',
+      o: ['Multi-tenant architecture', 'A dedicated server per customer', 'On-premise hosting', 'Change sets'], a: 0,
+      why: 'Multi-tenancy shares the platform while isolating each org\'s data and configuration.' },
+    { q: 'Which environment is best for free, hands-on learning?',
+      o: ['Production org', 'Full sandbox', 'Developer Edition org', 'Partial Copy sandbox'], a: 2,
+      why: 'A Developer Edition org is free and disconnected from any live customer data.' },
+    { q: 'Why do governor limits exist?',
+      o: ['To make Apex run slower', 'To keep shared resources fair for every tenant', 'To limit how many users you can add', 'To stop you from deploying'], a: 1,
+      why: 'Limits stop any one tenant from using more than its fair share of shared resources.' }
+  ];
+  var qi = 0, score = 0, quizEl = $('#quiz');
+  function renderQ() {
+    if (qi >= questions.length) {
+      quizEl.innerHTML = '<h2>Quiz complete</h2><div class="score">' + score + ' / ' + questions.length + '</div>' +
+        '<p class="body">' + (score === questions.length ? 'Perfect score. You are ready for the next session.' : 'Good effort. Revisit the topics you missed using the Slides button.') + '</p>' +
+        '<button class="btn" type="button" id="qRetry">Try again</button>';
+      $('#qRetry').addEventListener('click', function () { qi = 0; score = 0; renderQ(); });
+      return;
+    }
+    var q = questions[qi];
+    var h = '<div class="meter-label">Question ' + (qi + 1) + ' of ' + questions.length + '</div><div class="qtext">' + q.q + '</div>';
+    q.o.forEach(function (t, i) { h += '<button class="opt" type="button" data-i="' + i + '">' + t + '</button>'; });
+    h += '<div class="feedback" id="fb" aria-live="polite"></div><div class="row"><button class="btn" type="button" id="qNext" style="display:none">' + (qi === questions.length - 1 ? 'See score' : 'Next question') + '</button></div>';
+    quizEl.innerHTML = h;
+    $$('.opt', quizEl).forEach(function (b) {
+      b.addEventListener('click', function () {
+        var pick = parseInt(b.getAttribute('data-i'), 10);
+        $$('.opt', quizEl).forEach(function (x, i) {
+          x.disabled = true;
+          if (i === q.a) x.classList.add('right');
+          else if (i === pick) x.classList.add('wrong');
+        });
+        if (pick === q.a) score++;
+        $('#fb').textContent = (pick === q.a ? 'Correct. ' : 'Not quite. ') + q.why;
+        $('#qNext').style.display = 'inline-block';
+      });
+    });
+    $('#qNext').addEventListener('click', function () { qi++; renderQ(); });
+  }
+  renderQ();
+
+  /* ---------- Start ---------- */
+  var start = parseInt((location.hash || '').replace('#', ''), 10);
+  go(isNaN(start) ? 0 : start - 1);
+})();
+</script>
+</body>
+</html>

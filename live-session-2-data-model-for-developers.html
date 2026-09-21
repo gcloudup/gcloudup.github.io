@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Live Session 2: Data Model for Developers — GCloudUp Tech</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  :root {
+    --navy: #032D60;
+    --blue: #00A1E0;
+    --sky: #E8F4FC;
+    --coral: #FF6B4A;
+    --gold: #FFB75D;
+    --green: #2E9E6B;
+    --ink: #0B2A45;
+    --muted: #5B7A94;
+    --card-bg: #FFFFFF;
+    --page-bg: #F6FAFD;
+    --border: #E1EBF3;
+    --head: #032D60;
+    --shadow: 0 4px 18px rgba(3,45,96,0.07);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --card-bg: #0E2A47; --page-bg: #071C33; --ink: #E7F2FA; --head: #E7F2FA;
+      --muted: #9FC2DC; --border: #163A5C; --sky: #0E3357;
+      --shadow: 0 4px 18px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --card-bg: #0E2A47; --page-bg: #071C33; --ink: #E7F2FA; --head: #E7F2FA;
+    --muted: #9FC2DC; --border: #163A5C; --sky: #0E3357;
+    --shadow: 0 4px 18px rgba(0,0,0,0.35);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); height: 100%; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; height: 100%; overflow: hidden;
+    font-family: Calibri, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    background: var(--page-bg); color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font-family: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+  /* ---------- App shell ---------- */
+  .app { height: 100%; display: flex; flex-direction: column; min-height: 0; }
+  .bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+    padding: 0.6rem 1rem; background: var(--card-bg); flex: 0 0 auto;
+  }
+  .bar.top { border-bottom: 1px solid var(--border); }
+  .bar.bottom { border-top: 1px solid var(--border); }
+  .brand {
+    display: flex; align-items: center; gap: 0.5rem; min-width: 0;
+    font-family: Cambria, serif; font-weight: 700; font-size: 0.92rem; color: var(--head);
+  }
+  .brand .mark {
+    width: 26px; height: 26px; border-radius: 7px; background: var(--blue); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex: 0 0 auto;
+  }
+  .brand .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brand .sub { color: var(--muted); font-family: Calibri, sans-serif; font-weight: 600; font-size: 0.8rem; }
+  .tools { display: flex; gap: 0.4rem; flex: 0 0 auto; }
+  .iconbtn {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    background: var(--sky); color: var(--blue); border: none; cursor: pointer;
+    font-weight: 700; font-size: 0.78rem; padding: 0.45rem 0.7rem; border-radius: 8px;
+  }
+  .iconbtn.on { background: var(--blue); color: #fff; }
+  .iconbtn svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .progress { height: 4px; background: var(--border); flex: 0 0 auto; }
+  .progress span { display: block; height: 100%; width: 0; background: var(--blue); transition: width 0.25s ease; }
+
+  .stage { position: relative; flex: 1 1 auto; min-height: 0; }
+  .slide {
+    display: none; position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden;
+    padding: clamp(1rem, 3.5vw, 2.75rem);
+  }
+  .slide.active { display: flex; animation: fadein 0.28s ease; }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .slide.active { animation: none; }
+    .progress span, .scn, .erd-node { transition: none !important; }
+  }
+  .slide-inner { margin: auto; width: 100%; max-width: 1020px; }
+
+  /* ---------- Type ---------- */
+  .chip {
+    display: inline-block; background: var(--sky); color: var(--blue);
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 0.3rem 0.7rem; border-radius: 999px; margin-bottom: 0.8rem;
+  }
+  h1, h2, h3, h4 { font-family: Cambria, Georgia, serif; color: var(--head); margin: 0; }
+  h1 { font-size: clamp(1.9rem, 6vw, 3.4rem); line-height: 1.15; }
+  h2 { font-size: clamp(1.4rem, 3.8vw, 2.3rem); line-height: 1.2; margin-bottom: 0.7rem; }
+  h3 { font-size: clamp(1.05rem, 2.2vw, 1.3rem); margin-bottom: 0.3rem; }
+  h4 { font-size: 1.05rem; margin-bottom: 0.3rem; }
+  p { margin: 0 0 0.9rem; }
+  .lead { font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.6; color: var(--muted); max-width: 62ch; margin-bottom: 1.2rem; }
+  .body { font-size: clamp(0.95rem, 1.7vw, 1.1rem); line-height: 1.65; }
+  code { background: var(--sky); color: var(--head); padding: 0.1rem 0.4rem; border-radius: 5px; font-size: 0.9em; }
+
+  /* ---------- Title slide ---------- */
+  .slide.hero {
+    background: linear-gradient(135deg, #032D60 0%, #0B3D73 55%, #00A1E0 100%);
+    color: #fff; overflow: hidden;
+  }
+  .slide.hero h1, .slide.hero .lead { color: #fff; }
+  .slide.hero .lead { color: #CFE9FB; }
+  .slide.hero .chip { background: rgba(255,255,255,0.14); color: #CFE9FB; }
+  .hero-decor { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.08); pointer-events: none; }
+  .hero-decor.a { width: 340px; height: 340px; top: -130px; right: -90px; }
+  .hero-decor.b { width: 220px; height: 220px; bottom: -90px; left: -50px; background: rgba(255,255,255,0.06); }
+  .hero .slide-inner { position: relative; }
+  .cta {
+    display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;
+    background: #fff; color: #032D60; border: none; cursor: pointer; font-weight: 700;
+    font-size: 0.95rem; padding: 0.75rem 1.4rem; border-radius: 999px;
+  }
+  .cta svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.4; }
+  .hint { margin-top: 1.4rem; font-size: 0.8rem; color: #9FC2DC; }
+
+  .yt-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin-top: 1.2rem; }
+  .yt-link {
+    display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;
+    font-weight: 700; font-size: 0.85rem; padding: 0.6rem 1.1rem; border-radius: 999px;
+  }
+  .yt-link svg { width: 16px; height: 16px; fill: currentColor; }
+  .yt-link.watch { background: #FF0000; color: #fff; }
+  .yt-link.subscribe { background: rgba(255,255,255,0.14); color: #fff; border: 2px solid rgba(255,255,255,0.6); }
+  .yt-link.subscribe:hover { background: #fff; color: #FF0000; }
+  .yt-soon { color: #CFE9FB; font-size: 0.85rem; }
+
+  /* ---------- Cards / grids ---------- */
+  .grid { display: grid; gap: 0.85rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .card {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
+    padding: 1rem 1.1rem; box-shadow: var(--shadow);
+  }
+  .card p { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.55; }
+  button.card { text-align: left; cursor: pointer; width: 100%; }
+  button.card:hover { border-color: var(--blue); }
+  .agenda .num {
+    width: 32px; height: 32px; border-radius: 50%; background: var(--blue); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; margin-bottom: 0.6rem;
+  }
+  .agenda h3 { font-size: 1.1rem; }
+  .card.accent-coral { border-top: 4px solid var(--coral); }
+  .card.accent-blue { border-top: 4px solid var(--blue); }
+  .card.accent-gold { border-top: 4px solid var(--gold); }
+  .card.accent-green { border-top: 4px solid var(--green); }
+  .row { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin-top: 0.8rem; }
+  .btn {
+    background: var(--blue); color: #fff; border: none; border-radius: 8px; cursor: pointer;
+    font-weight: 700; font-size: 0.85rem; padding: 0.55rem 1rem;
+  }
+  .btn.ghost { background: var(--sky); color: var(--blue); }
+  a.btn { text-decoration: none; display: inline-block; }
+  .btn.subscribe { background: #FF0000; color: #fff; }
+  .btn.ok { background: var(--green); color: #fff; }
+
+  /* ---------- Tabs ---------- */
+  .tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
+  .tab {
+    background: var(--sky); color: var(--blue); border: none; border-radius: 999px; cursor: pointer;
+    font-weight: 700; font-size: 0.88rem; padding: 0.5rem 1rem;
+  }
+  .tab.on { background: var(--blue); color: #fff; }
+  .panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.3rem; box-shadow: var(--shadow); }
+  .panel[hidden] { display: none; }
+  .panel dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1rem; }
+  .panel dt { font-weight: 700; color: var(--blue); }
+  .panel dd { margin: 0; line-height: 1.55; }
+  @media (max-width: 520px) { .panel dl { grid-template-columns: 1fr; gap: 0.1rem; } .panel dd { margin-bottom: 0.6rem; } }
+
+  /* ---------- Table ---------- */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; background: var(--card-bg); box-shadow: var(--shadow); }
+  table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 0.95rem; }
+  th, td { text-align: left; padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--navy); color: #fff; font-size: 0.82rem; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--sky); }
+  td:first-child { font-weight: 700; color: var(--head); }
+
+  /* ---------- Code ---------- */
+  .cmd {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
+    background: var(--navy); color: #E7F2FA; border-radius: 10px; padding: 0.6rem 0.6rem 0.6rem 1rem; margin-bottom: 0.5rem;
+  }
+  .cmd code { background: none; color: inherit; padding: 0; font-size: 0.9rem; overflow-x: auto; white-space: nowrap; }
+  .cmd .why { display: block; color: #8AA9C2; font-size: 0.78rem; font-family: Calibri, sans-serif; margin-top: 0.15rem; white-space: normal; }
+  .copy {
+    background: rgba(255,255,255,0.14); color: #fff; border: none; border-radius: 7px; cursor: pointer;
+    font-weight: 700; font-size: 0.75rem; padding: 0.4rem 0.7rem; flex: 0 0 auto;
+  }
+  .copy.ok { background: var(--green); }
+  pre.code {
+    background: var(--navy); color: #E7F2FA; border-radius: 10px; padding: 1rem 1.1rem; overflow-x: auto;
+    font-size: 0.88rem; line-height: 1.6; margin: 0 0 0.6rem;
+  }
+  pre.code code { background: none; color: inherit; padding: 0; }
+  .note { color: var(--muted); font-size: 0.9rem; line-height: 1.55; margin: 0.4rem 0 0; }
+
+  /* ---------- Schema Builder mini ERD ---------- */
+  .erd { display: grid; grid-template-columns: minmax(120px, 0.8fr) 56px minmax(150px, 1fr); gap: 0; align-items: center; margin: 0.6rem 0 0.9rem; }
+  .erd-parent {
+    background: var(--navy); color: #fff; border-radius: 12px; padding: 1rem; text-align: center; font-weight: 700;
+    font-family: Cambria, serif; font-size: 1.1rem;
+  }
+  .erd-parent small { display: block; font-family: Calibri, sans-serif; font-weight: 400; opacity: 0.8; font-size: 0.78rem; margin-top: 0.2rem; }
+  .erd-line { text-align: center; color: var(--blue); font-weight: 700; font-size: 0.8rem; }
+  .erd-line::before { content: ""; display: block; height: 2px; background: var(--blue); margin: 0 0 0.25rem; }
+  .erd-kids { display: flex; flex-direction: column; gap: 0.5rem; }
+  .erd-node {
+    text-align: left; cursor: pointer; background: var(--card-bg); border: 2px solid var(--border); border-radius: 10px;
+    padding: 0.6rem 0.9rem; font-weight: 700; transition: border-color 0.15s ease;
+  }
+  .erd-node:hover { border-color: var(--blue); }
+  .erd-node.on { border-color: var(--blue); background: var(--sky); }
+  .erd-info { background: var(--sky); border-left: 4px solid var(--blue); border-radius: 8px; padding: 0.8rem 1rem; line-height: 1.6; min-height: 5rem; }
+  .steps { margin: 0 0 0.6rem; padding-left: 1.2rem; line-height: 1.6; }
+
+  /* ---------- API name builder ---------- */
+  .builder { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.3rem; box-shadow: var(--shadow); }
+  .builder label { display: block; font-weight: 700; margin-bottom: 0.35rem; color: var(--head); }
+  .builder input[type="text"] {
+    width: 100%; padding: 0.7rem 0.9rem; font-size: 1rem; font-family: inherit; color: var(--ink);
+    background: var(--page-bg); border: 2px solid var(--border); border-radius: 10px;
+  }
+  .builder input[type="text"]:focus { border-color: var(--blue); outline: none; }
+  .outs { display: grid; gap: 0.6rem; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin-top: 0.9rem; }
+  .out { background: var(--navy); color: #E7F2FA; border-radius: 10px; padding: 0.7rem 1rem; }
+  .out small { display: block; color: #8AA9C2; font-size: 0.75rem; margin-bottom: 0.15rem; }
+  .out code { background: none; color: inherit; padding: 0; font-size: 1rem; word-break: break-all; }
+  .chips { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.7rem; }
+
+  /* ---------- Decision guide ---------- */
+  .split { display: grid; gap: 1rem; grid-template-columns: 1.15fr 1fr; align-items: start; }
+  @media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
+  .scns { display: flex; flex-direction: column; gap: 0.45rem; }
+  .scn {
+    text-align: left; cursor: pointer; border: 1px solid var(--border); border-radius: 10px;
+    padding: 0.65rem 0.9rem; font-size: 0.93rem; line-height: 1.4; background: var(--card-bg);
+    transition: border-color 0.15s ease;
+  }
+  .scn:hover { border-color: var(--blue); }
+  .scn.on { border-color: var(--blue); box-shadow: inset 4px 0 0 var(--blue); background: var(--sky); }
+  .result { min-height: 170px; }
+  .badge {
+    display: inline-block; font-weight: 700; font-size: 0.8rem; color: #fff; border-radius: 999px;
+    padding: 0.25rem 0.75rem; margin-bottom: 0.6rem;
+  }
+  .badge.flow { background: var(--blue); }
+  .badge.apex { background: var(--coral); }
+  .badge.lwc { background: #C98A1B; }
+  .badge.both { background: var(--green); }
+  .result p { color: var(--ink); font-size: 0.97rem; line-height: 1.6; margin: 0; }
+
+  /* ---------- Quiz ---------- */
+  .qtext { font-family: Cambria, serif; font-size: clamp(1.1rem, 2.4vw, 1.4rem); color: var(--head); margin-bottom: 0.9rem; }
+  .opt {
+    display: block; width: 100%; text-align: left; cursor: pointer; margin-bottom: 0.5rem;
+    background: var(--card-bg); border: 2px solid var(--border); border-radius: 10px;
+    padding: 0.7rem 1rem; font-size: 0.98rem; line-height: 1.45;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--blue); }
+  .opt.right { border-color: var(--green); background: rgba(46,158,107,0.12); }
+  .opt.wrong { border-color: var(--coral); background: rgba(255,107,74,0.12); }
+  .opt:disabled { cursor: default; }
+  .feedback { min-height: 2.6rem; line-height: 1.5; color: var(--muted); }
+  .score { font-family: Cambria, serif; font-size: 2rem; color: var(--blue); }
+  .meter-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.35rem; font-weight: 700; }
+
+  /* ---------- Notes and overview ---------- */
+  .notes {
+    display: none; flex: 0 0 auto; max-height: 26%; overflow-y: auto; padding: 0.7rem 1rem;
+    background: var(--sky); border-top: 1px solid var(--border); font-size: 0.92rem; line-height: 1.55;
+  }
+  .notes.open { display: block; }
+  .notes b { color: var(--blue); }
+  .overview {
+    position: absolute; inset: 0; z-index: 20; background: var(--page-bg); overflow-y: auto;
+    padding: 1.2rem; display: none;
+  }
+  .overview.open { display: block; }
+  .overview h2 { margin-bottom: 1rem; }
+  .ov-grid { display: grid; gap: 0.7rem; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+  .ov-item {
+    text-align: left; cursor: pointer; background: var(--card-bg); border: 2px solid var(--border);
+    border-radius: 12px; padding: 0.8rem 0.9rem; font-size: 0.9rem; font-weight: 700; line-height: 1.35;
+  }
+  .ov-item small { display: block; color: var(--blue); margin-bottom: 0.2rem; }
+  .ov-item.cur { border-color: var(--blue); background: var(--sky); }
+
+  /* ---------- Bottom nav ---------- */
+  .nav { display: flex; align-items: center; gap: 0.6rem; }
+  .navbtn {
+    display: inline-flex; align-items: center; gap: 0.4rem; background: var(--navy); color: #fff; border: none;
+    border-radius: 999px; cursor: pointer; font-weight: 700; font-size: 0.85rem; padding: 0.55rem 1.1rem;
+  }
+  .navbtn:disabled { opacity: 0.35; cursor: default; }
+  .navbtn svg { width: 14px; height: 14px; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  .counter { font-weight: 700; font-size: 0.88rem; color: var(--muted); min-width: 4.5rem; text-align: center; }
+  .keys { color: var(--muted); font-size: 0.75rem; }
+  @media (max-width: 720px) { .keys, .brand .sub { display: none; } .iconbtn .lbl { display: none; } }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ================= Top bar ================= -->
+  <header class="bar top">
+    <div class="brand">
+      <span class="mark">G</span>
+      <span class="name">GCloudUp Tech <span class="sub">· Live Session 2</span></span>
+    </div>
+    <div class="tools">
+      <button class="iconbtn" id="btnOverview" type="button" aria-label="Show all slides">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        <span class="lbl">Slides</span>
+      </button>
+      <button class="iconbtn" id="btnNotes" type="button" aria-label="Toggle speaker notes" aria-pressed="false">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/></svg>
+        <span class="lbl">Notes</span>
+      </button>
+      <button class="iconbtn" id="btnTheme" type="button" aria-label="Toggle light and dark theme">
+        <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <span class="lbl">Theme</span>
+      </button>
+      <button class="iconbtn" id="btnFull" type="button" aria-label="Toggle fullscreen">
+        <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+        <span class="lbl">Full screen</span>
+      </button>
+    </div>
+  </header>
+  <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+
+  <!-- ================= Slides ================= -->
+  <main class="stage" id="stage">
+
+    <!-- 1. Title -->
+    <section class="slide hero" data-title="Title" data-notes="Welcome back. Quick link to Session 1: we covered architecture, orgs and getting the dev environment set up. Today we look at the data model through a developer's eyes, and finish with when to use Flow and when to use code.">
+      <div class="hero-decor a"></div><div class="hero-decor b"></div>
+      <div class="slide-inner">
+        <span class="chip">Live Session 2</span>
+        <h1>Data Model for Developers</h1>
+        <p class="lead">Objects, fields and relationships as code sees them, how to find the right API names, and when to choose Flow or code.</p>
+        <button class="cta" type="button" data-next>
+          Start session
+          <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="yt-row">
+          <a class="yt-link watch" id="watchLink" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
+            <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+            Watch the recording
+          </a>
+          <span class="yt-soon" id="watchSoon">Recording coming soon</span>
+          <a class="yt-link subscribe" href="https://www.youtube.com/@GCloudUp?sub_confirmation=1" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.4-1.8h-4.8A2.5 2.5 0 0 0 12 22zm7-6.5V11a7 7 0 0 0-5.5-6.8V3.5a1.5 1.5 0 0 0-3 0v.7A7 7 0 0 0 5 11v4.5l-2 2V19h18v-1.5z"/></svg>
+            Subscribe on YouTube
+          </a>
+        </div>
+        <div class="hint">Use ← → keys, swipe, or the buttons below. Press O for all slides, N for notes, F for full screen.</div>
+      </div>
+    </section>
+
+    <!-- 2. Agenda -->
+    <section class="slide" data-title="Agenda" data-notes="Three topics today. Cards are clickable if you want to jump to a topic during Q&A.">
+      <div class="slide-inner agenda">
+        <span class="chip">Agenda</span>
+        <h2>What we'll cover today</h2>
+        <div class="grid">
+          <button class="card" type="button" data-goto="2"><div class="num">1</div><h3>Objects, fields &amp; relationships</h3><p>A recap from a developer's point of view: suffixes, Apex types and SOQL relationships.</p></button>
+          <button class="card" type="button" data-goto="6"><div class="num">2</div><h3>Schema Builder &amp; API names</h3><p>Visualize the model and find the exact names your code needs.</p></button>
+          <button class="card" type="button" data-goto="10"><div class="num">3</div><h3>Flow vs programmatic</h3><p>A practical guide to choosing between declarative and code.</p></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Objects and suffixes -->
+    <section class="slide" data-title="Objects and API name suffixes" data-notes="In code, every object is an SObject type. The suffix in the API name tells you what kind of thing it is. Standard objects have no suffix.">
+      <div class="slide-inner">
+        <span class="chip">Topic 1 · Objects, fields, relationships</span>
+        <h2>Objects: what code sees</h2>
+        <p class="body">Every object is an <strong>SObject</strong> type in Apex. Standard objects such as <code>Account</code> have no suffix. The suffix on a custom API name tells you what you are dealing with.</p>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Suffix</th><th>Meaning</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td>(none)</td><td>Standard object or standard field</td><td><code>Account</code>, <code>Contact.Email</code></td></tr>
+              <tr><td>__c</td><td>Custom object or custom field</td><td><code>Invoice__c</code>, <code>Loyalty_Tier__c</code></td></tr>
+              <tr><td>__r</td><td>Relationship name of a custom lookup, used to reach the parent</td><td><code>Customer__r.Name</code></td></tr>
+              <tr><td>__mdt</td><td>Custom metadata type</td><td><code>Setting__mdt</code></td></tr>
+              <tr><td>__x</td><td>External object</td><td><code>Order__x</code></td></tr>
+              <tr><td>__e</td><td>Platform event</td><td><code>Order_Event__e</code></td></tr>
+              <tr><td>__b</td><td>Big object</td><td><code>Archive__b</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Field types -->
+    <section class="slide" data-title="Field types and Apex types" data-notes="A quick mapping to keep in your head. Highlight Decimal for currency and the semicolon separated multi-select picklist, which trips up beginners.">
+      <div class="slide-inner">
+        <span class="chip">Topic 1 · Objects, fields, relationships</span>
+        <h2>Fields: which Apex type do you get?</h2>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Salesforce field type</th><th>Apex type</th></tr></thead>
+            <tbody>
+              <tr><td>Text, Text Area, Email, Phone, URL, Auto Number</td><td><code>String</code></td></tr>
+              <tr><td>Picklist</td><td><code>String</code></td></tr>
+              <tr><td>Multi-select Picklist</td><td><code>String</code>, values separated by semicolons</td></tr>
+              <tr><td>Number, Currency, Percent</td><td><code>Decimal</code></td></tr>
+              <tr><td>Checkbox</td><td><code>Boolean</code></td></tr>
+              <tr><td>Date</td><td><code>Date</code></td></tr>
+              <tr><td>Date/Time</td><td><code>Datetime</code></td></tr>
+              <tr><td>Lookup, Master-Detail</td><td><code>Id</code></td></tr>
+              <tr><td>Formula</td><td>Read-only, matches its return type</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Tip: use <code>Decimal</code> for money, not <code>Double</code>, to avoid rounding surprises.</p>
+      </div>
+    </section>
+
+    <!-- 5. Relationships -->
+    <section class="slide" data-title="Relationships" data-notes="Choose the tab for each type. The key developer point: a master-detail child cannot exist without its parent, and it inherits sharing from the parent.">
+      <div class="slide-inner">
+        <span class="chip">Topic 1 · Objects, fields, relationships</span>
+        <h2>Relationships: the three you need</h2>
+        <div class="tabgroup">
+          <div class="tabs" role="tablist">
+            <button class="tab on" type="button" role="tab" data-tab="lk">Lookup</button>
+            <button class="tab" type="button" role="tab" data-tab="md">Master-Detail</button>
+            <button class="tab" type="button" role="tab" data-tab="mm">Many-to-many</button>
+          </div>
+          <div class="panel" data-panel="lk"><dl>
+            <dt>What</dt><dd>A loose link. The parent is optional.</dd>
+            <dt>Behavior</dt><dd>The child keeps its own owner and sharing. Deleting the parent does not delete the child by default.</dd>
+            <dt>Dev lens</dt><dd>The field holds an <code>Id</code> that can be null, so always check for null in code. Native roll-up summary fields are not available.</dd>
+          </dl></div>
+          <div class="panel" data-panel="md" hidden><dl>
+            <dt>What</dt><dd>A tight link. The parent is required.</dd>
+            <dt>Behavior</dt><dd>The child inherits owner and sharing from the parent, is deleted with it (cascade delete), and the parent can have roll-up summary fields.</dd>
+            <dt>Dev lens</dt><dd>You cannot insert a child without a parent Id. A custom object can have up to two master-detail fields.</dd>
+          </dl></div>
+          <div class="panel" data-panel="mm" hidden><dl>
+            <dt>What</dt><dd>A junction object with two master-detail fields, linking two objects together.</dd>
+            <dt>Example</dt><dd><code>Enrollment__c</code> connects <code>Student__c</code> and <code>Course__c</code>.</dd>
+            <dt>Dev lens</dt><dd>Query through the junction: <code>SELECT Student__r.Name, Course__r.Name FROM Enrollment__c</code></dd>
+          </dl></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. SOQL relationships -->
+    <section class="slide" data-title="Relationship queries in SOQL" data-notes="Child to parent uses dot notation with the parent relationship name. Parent to child uses a subquery with the plural child relationship name. Custom relationships end in __r.">
+      <div class="slide-inner">
+        <span class="chip">Topic 1 · Objects, fields, relationships</span>
+        <h2>Querying across relationships</h2>
+        <div class="tabgroup">
+          <div class="tabs" role="tablist">
+            <button class="tab on" type="button" role="tab" data-tab="c2p">Child to parent</button>
+            <button class="tab" type="button" role="tab" data-tab="p2c">Parent to child</button>
+            <button class="tab" type="button" role="tab" data-tab="cust">Custom (__r)</button>
+          </div>
+          <div class="panel" data-panel="c2p">
+            <p class="body">Use dot notation with the <strong>parent relationship name</strong>.</p>
+            <div class="copyable">
+              <pre class="code"><code>SELECT Id, LastName, Account.Name, Account.Industry
+FROM Contact
+LIMIT 5</code></pre>
+              <button class="btn copyb" type="button">Copy code</button>
+            </div>
+            <p class="note">In Apex, read it as <code>c.Account.Name</code>.</p>
+          </div>
+          <div class="panel" data-panel="p2c" hidden>
+            <p class="body">Use a subquery with the plural <strong>child relationship name</strong>.</p>
+            <div class="copyable">
+              <pre class="code"><code>SELECT Id, Name,
+       (SELECT Id, LastName FROM Contacts)
+FROM Account
+LIMIT 5</code></pre>
+              <button class="btn copyb" type="button">Copy code</button>
+            </div>
+            <p class="note">In Apex, the children come back as a list: <code>acc.Contacts</code>.</p>
+          </div>
+          <div class="panel" data-panel="cust" hidden>
+            <p class="body">For custom lookups, both names end in <code>__r</code>.</p>
+            <div class="copyable">
+              <pre class="code"><code>// Child to parent
+SELECT Id, Name, Customer__r.Name
+FROM Invoice__c
+
+// Parent to child
+SELECT Id, Name, (SELECT Id FROM Invoices__r)
+FROM Account</code></pre>
+              <button class="btn copyb" type="button">Copy code</button>
+            </div>
+            <p class="note">The child relationship name (here <code>Invoices</code>) is set on the lookup field when you create it.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Schema Builder -->
+    <section class="slide" data-title="Schema Builder" data-notes="Open Schema Builder live in your org and load Account, Contact and Opportunity to show the same picture as the mini diagram. Click an object in the diagram to see its relationship names.">
+      <div class="slide-inner">
+        <span class="chip">Topic 2 · Schema Builder &amp; API names</span>
+        <h2>Schema Builder: see your data model</h2>
+        <p class="body"><strong>Schema Builder</strong> is a visual tool in Setup. It draws your objects and relationships as a diagram, and lets you create objects, fields and relationships by drag and drop.</p>
+        <ol class="steps body">
+          <li>Open <strong>Setup</strong>, search <strong>Schema Builder</strong> and open it.</li>
+          <li>In the Objects list, tick the objects you want to see.</li>
+          <li>Use the view options to show field labels or API names.</li>
+        </ol>
+        <h3 style="margin-top:0.8rem">Try it: click an object</h3>
+        <div class="erd">
+          <div class="erd-parent">Account<small>parent</small></div>
+          <div class="erd-line">1 : N</div>
+          <div class="erd-kids" id="erdKids">
+            <button class="erd-node on" type="button" data-child="Contact" data-field="AccountId" data-parent="Account" data-children="Contacts">Contact</button>
+            <button class="erd-node" type="button" data-child="Opportunity" data-field="AccountId" data-parent="Account" data-children="Opportunities">Opportunity</button>
+            <button class="erd-node" type="button" data-child="Case" data-field="AccountId" data-parent="Account" data-children="Cases">Case</button>
+          </div>
+        </div>
+        <div class="erd-info" id="erdInfo" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- 8. API name builder -->
+    <section class="slide" data-title="Labels vs API names" data-notes="Type a label with spaces and symbols and watch the suggested API name change. Stress: labels are for people and can change, API names are for code and should not.">
+      <div class="slide-inner">
+        <span class="chip">Topic 2 · Schema Builder &amp; API names</span>
+        <h2>Labels are for people, API names are for code</h2>
+        <p class="body">The <strong>label</strong> is what users see and can change or translate. The <strong>API name</strong> is what Apex, SOQL, Flow and integrations use. Type a label to see the API name Salesforce would suggest.</p>
+        <div class="builder">
+          <label for="lblInput">Field or object label</label>
+          <input type="text" id="lblInput" value="Loyalty Tier" autocomplete="off" spellcheck="false">
+          <div class="outs">
+            <div class="out"><small>API name</small><code id="outApi">Loyalty_Tier__c</code></div>
+            <div class="out"><small>If it is a lookup field, relationship name</small><code id="outRel">Loyalty_Tier__r</code></div>
+          </div>
+          <div class="chips">
+            <button class="btn ghost" type="button" data-try="Loyalty Tier">Loyalty Tier</button>
+            <button class="btn ghost" type="button" data-try="Customer's Region (Primary)">Customer's Region (Primary)</button>
+            <button class="btn ghost" type="button" data-try="1st Contact Date">1st Contact Date</button>
+          </div>
+        </div>
+        <p class="note">Rules: letters, numbers and underscores only, starts with a letter, no spaces, no double or trailing underscores. Change an API name later and every reference to it can break.</p>
+      </div>
+    </section>
+
+    <!-- 9. Finding API names -->
+    <section class="slide" data-title="Finding API names" data-notes="Show all three ways: Object Manager in the UI, the CLI in the VS Code terminal, and describe calls in Apex.">
+      <div class="slide-inner">
+        <span class="chip">Topic 2 · Schema Builder &amp; API names</span>
+        <h2>Where to find the exact name</h2>
+        <ul class="steps body">
+          <li><strong>In Setup:</strong> Object Manager, pick the object, then <strong>Fields &amp; Relationships</strong>. The <em>Field Name</em> column is the API name.</li>
+          <li><strong>In the CLI:</strong> describe an object from the terminal.</li>
+          <li><strong>In Apex:</strong> ask the schema at runtime.</li>
+        </ul>
+        <div class="cmd"><div><code>sf sobject list --sobject custom --target-org mydevorg</code><span class="why">List the custom objects in your org</span></div><button class="copy" type="button">Copy</button></div>
+        <div class="cmd"><div><code>sf sobject describe --sobject Account --target-org mydevorg</code><span class="why">Show every field of Account with its API name and type</span></div><button class="copy" type="button">Copy</button></div>
+        <div class="copyable">
+          <pre class="code"><code>Map&lt;String, Schema.SObjectField&gt; fields =
+    Account.SObjectType.getDescribe().fields.getMap();
+System.debug(fields.keySet());</code></pre>
+          <button class="btn copyb" type="button">Copy code</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. Naming best practices -->
+    <section class="slide" data-title="Naming best practices" data-notes="Ask the audience which of these they have been bitten by. Renamed fields breaking flows and code is the classic one.">
+      <div class="slide-inner">
+        <span class="chip">Topic 2 · Schema Builder &amp; API names</span>
+        <h2>Good naming habits</h2>
+        <div class="grid">
+          <div class="card accent-blue"><h3>Choose it once</h3><p>Pick the API name carefully at creation. Renaming later can break code, flows, reports and integrations.</p></div>
+          <div class="card accent-green"><h3>Be descriptive</h3><p>Use names like <code>Renewal_Date__c</code>, not <code>Date1__c</code>. Future you will thank you.</p></div>
+          <div class="card accent-gold"><h3>Stay consistent</h3><p>Agree a convention with your team for underscores, prefixes and singular versus plural names.</p></div>
+          <div class="card accent-coral"><h3>Code uses API names</h3><p>Never depend on labels in code. Labels can be edited or translated at any time.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. Flow types -->
+    <section class="slide" data-title="Flow types" data-notes="Record-triggered is the workhorse for automation. Screen flows are for guided user interaction. Before-save is the fast way to update fields on the same record.">
+      <div class="slide-inner">
+        <span class="chip">Topic 3 · Flow vs programmatic</span>
+        <h2>Flow: the declarative automation tool</h2>
+        <p class="body"><strong>Flow</strong> is Salesforce's main tool for automation without code. Pick a type to see what it is for.</p>
+        <div class="tabgroup">
+          <div class="tabs" role="tablist">
+            <button class="tab on" type="button" role="tab" data-tab="rt">Record-triggered</button>
+            <button class="tab" type="button" role="tab" data-tab="sc">Screen</button>
+            <button class="tab" type="button" role="tab" data-tab="sh">Scheduled</button>
+            <button class="tab" type="button" role="tab" data-tab="au">Autolaunched</button>
+          </div>
+          <div class="panel" data-panel="rt"><dl><dt>Runs when</dt><dd>A record is created, updated or deleted.</dd><dt>Good for</dt><dd>Updating fields, creating related records, sending emails. A <strong>before-save</strong> flow updates the same record quickly, with no extra save step. An <strong>after-save</strong> flow can also change other records.</dd></dl></div>
+          <div class="panel" data-panel="sc" hidden><dl><dt>Runs when</dt><dd>A user starts it, from a button, page or app.</dd><dt>Good for</dt><dd>Guided wizards and forms that collect input and create or update records.</dd></dl></div>
+          <div class="panel" data-panel="sh" hidden><dl><dt>Runs when</dt><dd>On a schedule, for example every night.</dd><dt>Good for</dt><dd>Regular clean-up, reminders and updates across a set of records.</dd></dl></div>
+          <div class="panel" data-panel="au" hidden><dl><dt>Runs when</dt><dd>Another flow, Apex code or an API call starts it.</dd><dt>Good for</dt><dd>Reusable logic that other automation or code can call.</dd></dl></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. Decision guide -->
+    <section class="slide" data-title="Decision guide" data-notes="Click each scenario and let the audience guess first. The last one, invocable Apex, is the bridge: Flow for the process, Apex for the tricky part.">
+      <div class="slide-inner">
+        <span class="chip">Topic 3 · Flow vs programmatic</span>
+        <h2>What would you use?</h2>
+        <p class="body">Pick a requirement to see the recommended tool.</p>
+        <div class="split">
+          <div class="scns" id="scns"></div>
+          <div class="card result" id="result" aria-live="polite">
+            <span class="badge flow">Pick a scenario</span>
+            <p>Click a requirement on the left.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13. Comparison table -->
+    <section class="slide" data-title="Flow vs Apex compared" data-notes="No winner here. Each has strengths. Mention that Apex needs unit tests with at least 75 percent coverage to deploy to production.">
+      <div class="slide-inner">
+        <span class="chip">Topic 3 · Flow vs programmatic</span>
+        <h2>Flow and Apex compared</h2>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Area</th><th>Flow</th><th>Apex</th></tr></thead>
+            <tbody>
+              <tr><td>Speed to build</td><td>Fast, visual builder</td><td>Slower, code and review</td></tr>
+              <tr><td>Who maintains it</td><td>Admins and developers</td><td>Developers</td></tr>
+              <tr><td>Testing</td><td>Debug in Flow Builder, plus flow tests for record-triggered flows</td><td>Unit tests required, with 75% coverage to deploy to production</td></tr>
+              <tr><td>Complex logic</td><td>Good for straightforward logic</td><td>Full control: collections, maps, algorithms, error handling</td></tr>
+              <tr><td>Integrations</td><td>Simple callouts</td><td>Full flexibility for complex ones</td></tr>
+              <tr><td>Limits</td><td>Same governor limits</td><td>Same governor limits</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Rule of thumb: clicks before code, and use code when clicks cannot do the job cleanly.</p>
+      </div>
+    </section>
+
+    <!-- 14. Best practices -->
+    <section class="slide" data-title="Best practices and bulk safety" data-notes="Remind everyone of the governor limits from Session 1. The bulk-safe pattern applies to Apex and to how you think about flows: never put queries or saves inside a loop.">
+      <div class="slide-inner">
+        <span class="chip">Topic 3 · Flow vs programmatic</span>
+        <h2>Working well together</h2>
+        <div class="grid">
+          <div class="card accent-blue"><h3>Start with Flow</h3><p>Use Flow for record automation, then add code only where needed.</p></div>
+          <div class="card accent-green"><h3>Before-save for same-record updates</h3><p>They run faster because they need no extra save.</p></div>
+          <div class="card accent-gold"><h3>Keep one owner</h3><p>Avoid several flows and triggers doing overlapping work on one object. Know the order of execution.</p></div>
+          <div class="card accent-coral"><h3>Bulk-safe always</h3><p>No queries or saves inside loops, in Flow or in Apex.</p></div>
+        </div>
+        <h3 style="margin-top:1.1rem">Bulk-safe pattern in Apex</h3>
+        <div class="copyable">
+          <pre class="code"><code>// Query once, outside the loop
+Set&lt;Id&gt; accIds = new Set&lt;Id&gt;();
+for (Contact c : Trigger.new) { accIds.add(c.AccountId); }
+
+Map&lt;Id, Account&gt; accs = new Map&lt;Id, Account&gt;(
+    [SELECT Id, Name FROM Account WHERE Id IN :accIds]
+);</code></pre>
+          <button class="btn copyb" type="button">Copy code</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 15. Quiz -->
+    <section class="slide" data-title="Quick knowledge check" data-notes="Let the audience answer in chat before you reveal each answer.">
+      <div class="slide-inner">
+        <span class="chip">Knowledge check</span>
+        <div id="quiz"></div>
+      </div>
+    </section>
+
+    <!-- 16. Recap -->
+    <section class="slide" data-title="Recap" data-notes="One line per topic, then open the floor for questions. Point people to the blog for the recording.">
+      <div class="slide-inner">
+        <span class="chip">Recap</span>
+        <h2>Key takeaways</h2>
+        <div class="grid">
+          <div class="card accent-blue"><h3>1. Data model</h3><p>Know your suffixes, Apex types and relationship types. Query across relationships with dot notation and subqueries.</p></div>
+          <div class="card accent-green"><h3>2. API names</h3><p>Labels are for people. Code uses API names. Find them in Object Manager, the CLI or Apex.</p></div>
+          <div class="card accent-gold"><h3>3. Flow vs code</h3><p>Clicks before code. Use Apex for complex logic, heavy processing and custom needs.</p></div>
+        </div>
+        <div class="row" style="margin-top:1.2rem">
+          <button class="btn" type="button" data-goto="0">Back to start</button>
+          <button class="btn ghost" type="button" data-goto="1">Open agenda</button>
+          <!-- EDIT: point this to your blog listing page -->
+          <button class="btn ghost" type="button" onclick="location.href='blogs.html'">Back to Blog</button>
+          <a class="btn subscribe" href="https://www.youtube.com/@GCloudUp?sub_confirmation=1" target="_blank" rel="noopener noreferrer">Subscribe on YouTube</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Overview overlay -->
+    <div class="overview" id="overview" aria-hidden="true">
+      <h2>All slides</h2>
+      <div class="ov-grid" id="ovGrid"></div>
+    </div>
+  </main>
+
+  <div class="notes" id="notes" aria-live="polite"></div>
+
+  <!-- ================= Bottom nav ================= -->
+  <footer class="bar bottom">
+    <span class="keys">← → to move · O slides · N notes · F full screen</span>
+    <div class="nav">
+      <button class="navbtn" id="prev" type="button" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg> Prev
+      </button>
+      <span class="counter" id="counter">1 / 16</span>
+      <button class="navbtn" id="next" type="button" aria-label="Next slide">
+        Next <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  var slides = $$('.slide');
+  var cur = 0;
+  var notesEl = $('#notes'), overview = $('#overview');
+
+  /* ---------- Navigation ---------- */
+  function go(n) {
+    n = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, i) { s.classList.toggle('active', i === n); });
+    cur = n;
+    slides[n].scrollTop = 0;
+    $('#counter').textContent = (n + 1) + ' / ' + slides.length;
+    $('#bar').style.width = ((n + 1) / slides.length * 100) + '%';
+    $('#prev').disabled = n === 0;
+    $('#next').disabled = n === slides.length - 1;
+    notesEl.innerHTML = '<b>Speaker notes:</b> ' + (slides[n].getAttribute('data-notes') || 'No notes for this slide.');
+    closeOverview();
+    try { history.replaceState(null, '', '#' + (n + 1)); } catch (e) {}
+  }
+  $('#prev').addEventListener('click', function () { go(cur - 1); });
+  $('#next').addEventListener('click', function () { go(cur + 1); });
+  $$('[data-next]').forEach(function (b) { b.addEventListener('click', function () { go(cur + 1); }); });
+  $$('[data-goto]').forEach(function (b) { b.addEventListener('click', function () { go(parseInt(b.getAttribute('data-goto'), 10)); }); });
+
+  document.addEventListener('keydown', function (e) {
+    var t = e.target;
+    if (t && t.tagName === 'INPUT') return;
+    var onControl = t && t.closest && t.closest('button, summary, a, input');
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { go(cur + 1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { go(cur - 1); e.preventDefault(); }
+    else if (e.key === ' ' && !onControl) { go(cur + 1); e.preventDefault(); }
+    else if (e.key === 'Home') { go(0); }
+    else if (e.key === 'End') { go(slides.length - 1); }
+    else if (e.key === 'Escape') { closeOverview(); }
+    else if (e.key === 'o' || e.key === 'O') { toggleOverview(); }
+    else if (e.key === 'n' || e.key === 'N') { toggleNotes(); }
+    else if (e.key === 'f' || e.key === 'F') { toggleFull(); }
+  });
+
+  /* Swipe */
+  var sx = null, sy = null;
+  $('#stage').addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  $('#stage').addEventListener('touchend', function (e) {
+    if (sx === null) return;
+    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) > 70 && Math.abs(dy) < 50) { go(dx < 0 ? cur + 1 : cur - 1); }
+    sx = sy = null;
+  }, { passive: true });
+
+  /* ---------- Overview ---------- */
+  var ovGrid = $('#ovGrid');
+  slides.forEach(function (s, i) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'ov-item';
+    b.innerHTML = '<small>Slide ' + (i + 1) + '</small>' + s.getAttribute('data-title');
+    b.addEventListener('click', function () { go(i); });
+    ovGrid.appendChild(b);
+  });
+  function openOverview() {
+    $$('.ov-item').forEach(function (b, i) { b.classList.toggle('cur', i === cur); });
+    overview.classList.add('open'); overview.setAttribute('aria-hidden', 'false');
+    $('#btnOverview').classList.add('on');
+  }
+  function closeOverview() {
+    overview.classList.remove('open'); overview.setAttribute('aria-hidden', 'true');
+    $('#btnOverview').classList.remove('on');
+  }
+  function toggleOverview() { overview.classList.contains('open') ? closeOverview() : openOverview(); }
+  $('#btnOverview').addEventListener('click', toggleOverview);
+
+  /* ---------- Notes ---------- */
+  function toggleNotes() {
+    var open = notesEl.classList.toggle('open');
+    $('#btnNotes').classList.toggle('on', open);
+    $('#btnNotes').setAttribute('aria-pressed', open);
+  }
+  $('#btnNotes').addEventListener('click', toggleNotes);
+
+  /* ---------- Theme ---------- */
+  $('#btnTheme').addEventListener('click', function () {
+    var root = document.documentElement;
+    var dark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+  });
+
+  /* ---------- Fullscreen ---------- */
+  function toggleFull() {
+    try {
+      if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); }
+      else { document.exitFullscreen(); }
+    } catch (e) {}
+  }
+  if (!document.documentElement.requestFullscreen) { $('#btnFull').style.display = 'none'; }
+  $('#btnFull').addEventListener('click', toggleFull);
+
+  /* ---------- Tabs ---------- */
+  $$('.tabgroup').forEach(function (g) {
+    var btns = $$('[data-tab]', g), panels = $$('[data-panel]', g);
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        btns.forEach(function (x) { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', x === b); });
+        panels.forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== b.getAttribute('data-tab'); });
+      });
+    });
+  });
+
+  /* ---------- Copy ---------- */
+  function copyText(text, btn, label, okClass) {
+    function ok() {
+      btn.textContent = 'Copied!'; btn.classList.add(okClass);
+      setTimeout(function () { btn.textContent = label; btn.classList.remove(okClass); }, 1400);
+    }
+    function fallback() {
+      var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); ok(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(ok, fallback); }
+    else { fallback(); }
+  }
+  $$('.cmd .copy').forEach(function (b) {
+    b.addEventListener('click', function () { copyText($('code', b.parentNode).textContent, b, 'Copy', 'ok'); });
+  });
+  $$('.copyb').forEach(function (b) {
+    var label = b.textContent;
+    b.addEventListener('click', function () {
+      copyText($('pre code', b.closest('.copyable')).textContent, b, label, 'ok');
+    });
+  });
+
+  /* ---------- Schema Builder mini ERD ---------- */
+  var erdInfo = $('#erdInfo');
+  function showChild(b) {
+    $$('.erd-node').forEach(function (x) { x.classList.toggle('on', x === b); });
+    var c = b.getAttribute('data-child'), f = b.getAttribute('data-field'),
+        p = b.getAttribute('data-parent'), kids = b.getAttribute('data-children');
+    erdInfo.innerHTML =
+      '<strong>' + c + ' → ' + p + '</strong> is a lookup. ' +
+      'Lookup field: <code>' + c + '.' + f + '</code>. ' +
+      'Child to parent: <code>' + c + '.' + p + '.Name</code>. ' +
+      'Parent to child subquery: <code>(SELECT Id FROM ' + kids + ')</code>.';
+  }
+  $$('.erd-node').forEach(function (b) { b.addEventListener('click', function () { showChild(b); }); });
+  showChild($('.erd-node.on'));
+
+  /* ---------- API name builder ---------- */
+  function toApi(label) {
+    var s = label.trim().replace(/[^A-Za-z0-9]+/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '');
+    if (!s) return '';
+    if (/^[0-9]/.test(s)) s = 'X' + s;
+    return s;
+  }
+  var lbl = $('#lblInput');
+  function updateApi() {
+    var base = toApi(lbl.value);
+    $('#outApi').textContent = base ? base + '__c' : '(type a label)';
+    $('#outRel').textContent = base ? base + '__r' : '(type a label)';
+  }
+  lbl.addEventListener('input', updateApi);
+  $$('[data-try]').forEach(function (b) {
+    b.addEventListener('click', function () { lbl.value = b.getAttribute('data-try'); updateApi(); });
+  });
+  updateApi();
+
+  /* ---------- Decision guide ---------- */
+  var scenarios = [
+    { t: 'Set a field on the same record when it is saved', c: 'flow', b: 'Before-save record-triggered Flow',
+      w: 'A simple same-record update is a perfect declarative job, and before-save flows run quickly.' },
+    { t: 'Create a follow-up task when an opportunity is closed won', c: 'flow', b: 'After-save record-triggered Flow',
+      w: 'Creating related records after a change is standard Flow territory and easy for admins to maintain.' },
+    { t: 'Guide a user through a multi-step form', c: 'flow', b: 'Screen Flow',
+      w: 'Screen flows are built for guided input, with no custom UI code needed.' },
+    { t: 'Process a very large number of records every night with complex rules', c: 'apex', b: 'Batch Apex',
+      w: 'Batch Apex gives you control over chunk size, error handling and limits for heavy processing.' },
+    { t: 'Parse a complex response from an external system', c: 'apex', b: 'Apex',
+      w: 'Complex parsing, authentication and error handling are easier and safer to control in code.' },
+    { t: 'Build a highly interactive custom screen component', c: 'lwc', b: 'Lightning Web Component',
+      w: 'When you need a custom user experience beyond what screens offer, build a Lightning Web Component.' },
+    { t: 'Reuse one piece of tricky logic from both a flow and code', c: 'both', b: 'Invocable Apex action called from Flow',
+      w: 'Keep the process in Flow and put the tricky part in one Apex method that both can call.' }
+  ];
+  var scnsEl = $('#scns'), resultEl = $('#result');
+  scenarios.forEach(function (s) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'scn'; b.textContent = s.t;
+    b.addEventListener('click', function () {
+      $$('.scn', scnsEl).forEach(function (x) { x.classList.toggle('on', x === b); });
+      resultEl.innerHTML = '<span class="badge ' + s.c + '">' + s.b + '</span><p>' + s.w + '</p>';
+    });
+    scnsEl.appendChild(b);
+  });
+
+  /* ---------- Quiz ---------- */
+  var questions = [
+    { q: 'Which suffix marks the relationship name of a custom lookup in a SOQL query?',
+      o: ['__c', '__r', '__mdt', '__e'], a: 1,
+      why: '__r is used to reach the parent record, for example Customer__r.Name.' },
+    { q: 'Which relationship makes the child inherit the parent\'s sharing and delete with it?',
+      o: ['Lookup', 'Master-Detail', 'External lookup', 'None of them'], a: 1,
+      why: 'In a master-detail relationship, the child inherits sharing and is deleted with its parent.' },
+    { q: 'Why should code use API names instead of labels?',
+      o: ['Labels are longer', 'API names are stable identifiers, while labels can be edited or translated', 'Labels are not allowed in Apex', 'API names run faster'], a: 1,
+      why: 'Labels are for people and can change. API names are the stable identifiers that code depends on.' },
+    { q: 'Which is the best first choice to update a field on the same record when it is saved?',
+      o: ['A batch Apex job', 'A Lightning Web Component', 'A before-save record-triggered Flow', 'A scheduled Flow'], a: 2,
+      why: 'Before-save flows are the quick, declarative way to update the record that triggered them.' }
+  ];
+  var qi = 0, score = 0, quizEl = $('#quiz');
+  function renderQ() {
+    if (qi >= questions.length) {
+      quizEl.innerHTML = '<h2>Quiz complete</h2><div class="score">' + score + ' / ' + questions.length + '</div>' +
+        '<p class="body">' + (score === questions.length ? 'Perfect score. You have the data model down.' : 'Good effort. Revisit the topics you missed using the Slides button.') + '</p>' +
+        '<button class="btn" type="button" id="qRetry">Try again</button>';
+      $('#qRetry').addEventListener('click', function () { qi = 0; score = 0; renderQ(); });
+      return;
+    }
+    var q = questions[qi];
+    var h = '<div class="meter-label">Question ' + (qi + 1) + ' of ' + questions.length + '</div><div class="qtext">' + q.q + '</div>';
+    q.o.forEach(function (t, i) { h += '<button class="opt" type="button" data-i="' + i + '">' + t + '</button>'; });
+    h += '<div class="feedback" id="fb" aria-live="polite"></div><div class="row"><button class="btn" type="button" id="qNext" style="display:none">' + (qi === questions.length - 1 ? 'See score' : 'Next question') + '</button></div>';
+    quizEl.innerHTML = h;
+    $$('.opt', quizEl).forEach(function (b) {
+      b.addEventListener('click', function () {
+        var pick = parseInt(b.getAttribute('data-i'), 10);
+        $$('.opt', quizEl).forEach(function (x, i) {
+          x.disabled = true;
+          if (i === q.a) x.classList.add('right');
+          else if (i === pick) x.classList.add('wrong');
+        });
+        if (pick === q.a) score++;
+        $('#fb').textContent = (pick === q.a ? 'Correct. ' : 'Not quite. ') + q.why;
+        $('#qNext').style.display = 'inline-block';
+      });
+    });
+    $('#qNext').addEventListener('click', function () { qi++; renderQ(); });
+  }
+  renderQ();
+
+  /* ---------- YouTube recording link ---------- */
+  var YOUTUBE_VIDEO_ID = ""; // paste the video ID here once the recording is live, e.g. "abc123XYZ_0"
+  if (YOUTUBE_VIDEO_ID && YOUTUBE_VIDEO_ID.trim()) {
+    var wl = $('#watchLink');
+    wl.href = 'https://www.youtube.com/watch?v=' + YOUTUBE_VIDEO_ID.trim();
+    wl.style.display = 'inline-flex';
+    $('#watchSoon').style.display = 'none';
+  }
+
+  /* ---------- Start ---------- */
+  var start = parseInt((location.hash || '').replace('#', ''), 10);
+  go(isNaN(start) ? 0 : start - 1);
+})();
+</script>
+</body>
+</html>

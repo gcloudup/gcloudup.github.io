@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Live Session 3: Apex Basics I — GCloudUp Tech</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  :root {
+    --navy: #032D60;
+    --blue: #00A1E0;
+    --sky: #E8F4FC;
+    --coral: #FF6B4A;
+    --gold: #FFB75D;
+    --green: #2E9E6B;
+    --ink: #0B2A45;
+    --muted: #5B7A94;
+    --card-bg: #FFFFFF;
+    --page-bg: #F6FAFD;
+    --border: #E1EBF3;
+    --head: #032D60;
+    --shadow: 0 4px 18px rgba(3,45,96,0.07);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --card-bg: #0E2A47; --page-bg: #071C33; --ink: #E7F2FA; --head: #E7F2FA;
+      --muted: #9FC2DC; --border: #163A5C; --sky: #0E3357;
+      --shadow: 0 4px 18px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --card-bg: #0E2A47; --page-bg: #071C33; --ink: #E7F2FA; --head: #E7F2FA;
+    --muted: #9FC2DC; --border: #163A5C; --sky: #0E3357;
+    --shadow: 0 4px 18px rgba(0,0,0,0.35);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); height: 100%; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; height: 100%; overflow: hidden;
+    font-family: Calibri, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    background: var(--page-bg); color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font-family: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+  /* ---------- App shell ---------- */
+  .app { height: 100%; display: flex; flex-direction: column; min-height: 0; }
+  .bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+    padding: 0.6rem 1rem; background: var(--card-bg); flex: 0 0 auto;
+  }
+  .bar.top { border-bottom: 1px solid var(--border); }
+  .bar.bottom { border-top: 1px solid var(--border); }
+  .brand {
+    display: flex; align-items: center; gap: 0.5rem; min-width: 0;
+    font-family: Cambria, serif; font-weight: 700; font-size: 0.92rem; color: var(--head);
+  }
+  .brand .mark {
+    width: 26px; height: 26px; border-radius: 7px; background: var(--blue); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex: 0 0 auto;
+  }
+  .brand .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brand .sub { color: var(--muted); font-family: Calibri, sans-serif; font-weight: 600; font-size: 0.8rem; }
+  .tools { display: flex; gap: 0.4rem; flex: 0 0 auto; }
+  .iconbtn {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    background: var(--sky); color: var(--blue); border: none; cursor: pointer;
+    font-weight: 700; font-size: 0.78rem; padding: 0.45rem 0.7rem; border-radius: 8px;
+  }
+  .iconbtn.on { background: var(--blue); color: #fff; }
+  .iconbtn svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .progress { height: 4px; background: var(--border); flex: 0 0 auto; }
+  .progress span { display: block; height: 100%; width: 0; background: var(--blue); transition: width 0.25s ease; }
+
+  .stage { position: relative; flex: 1 1 auto; min-height: 0; }
+  .slide {
+    display: none; position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden;
+    padding: clamp(1rem, 3.5vw, 2.75rem);
+  }
+  .slide.active { display: flex; animation: fadein 0.28s ease; }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .slide.active { animation: none; }
+    .progress span, .scn { transition: none !important; }
+  }
+  .slide-inner { margin: auto; width: 100%; max-width: 1020px; }
+
+  /* ---------- Type ---------- */
+  .chip {
+    display: inline-block; background: var(--sky); color: var(--blue);
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 0.3rem 0.7rem; border-radius: 999px; margin-bottom: 0.8rem;
+  }
+  h1, h2, h3, h4 { font-family: Cambria, Georgia, serif; color: var(--head); margin: 0; }
+  h1 { font-size: clamp(1.9rem, 6vw, 3.4rem); line-height: 1.15; }
+  h2 { font-size: clamp(1.4rem, 3.8vw, 2.3rem); line-height: 1.2; margin-bottom: 0.7rem; }
+  h3 { font-size: clamp(1.05rem, 2.2vw, 1.3rem); margin-bottom: 0.3rem; }
+  h4 { font-size: 1.05rem; margin-bottom: 0.3rem; }
+  p { margin: 0 0 0.9rem; }
+  .lead { font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.6; color: var(--muted); max-width: 62ch; margin-bottom: 1.2rem; }
+  .body { font-size: clamp(0.95rem, 1.7vw, 1.1rem); line-height: 1.65; }
+  code { background: var(--sky); color: var(--head); padding: 0.1rem 0.4rem; border-radius: 5px; font-size: 0.9em; }
+
+  /* ---------- Title slide ---------- */
+  .slide.hero {
+    background: linear-gradient(135deg, #032D60 0%, #0B3D73 55%, #00A1E0 100%);
+    color: #fff; overflow: hidden;
+  }
+  .slide.hero h1, .slide.hero .lead { color: #fff; }
+  .slide.hero .lead { color: #CFE9FB; }
+  .slide.hero .chip { background: rgba(255,255,255,0.14); color: #CFE9FB; }
+  .hero-decor { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.08); pointer-events: none; }
+  .hero-decor.a { width: 340px; height: 340px; top: -130px; right: -90px; }
+  .hero-decor.b { width: 220px; height: 220px; bottom: -90px; left: -50px; background: rgba(255,255,255,0.06); }
+  .hero .slide-inner { position: relative; }
+  .cta {
+    display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;
+    background: #fff; color: #032D60; border: none; cursor: pointer; font-weight: 700;
+    font-size: 0.95rem; padding: 0.75rem 1.4rem; border-radius: 999px;
+  }
+  .cta svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.4; }
+  .hint { margin-top: 1.4rem; font-size: 0.8rem; color: #9FC2DC; }
+
+  .yt-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin-top: 1.2rem; }
+  .yt-link {
+    display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;
+    font-weight: 700; font-size: 0.85rem; padding: 0.6rem 1.1rem; border-radius: 999px;
+  }
+  .yt-link svg { width: 16px; height: 16px; fill: currentColor; }
+  .yt-link.watch { background: #FF0000; color: #fff; }
+  .yt-link.subscribe { background: rgba(255,255,255,0.14); color: #fff; border: 2px solid rgba(255,255,255,0.6); }
+  .yt-link.subscribe:hover { background: #fff; color: #FF0000; }
+  .yt-soon { color: #CFE9FB; font-size: 0.85rem; }
+
+  /* ---------- Cards / grids ---------- */
+  .grid { display: grid; gap: 0.85rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .card {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
+    padding: 1rem 1.1rem; box-shadow: var(--shadow);
+  }
+  .card p { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.55; }
+  button.card { text-align: left; cursor: pointer; width: 100%; }
+  button.card:hover { border-color: var(--blue); }
+  .agenda .num {
+    width: 32px; height: 32px; border-radius: 50%; background: var(--blue); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; margin-bottom: 0.6rem;
+  }
+  .agenda h3 { font-size: 1.1rem; }
+  .card.accent-coral { border-top: 4px solid var(--coral); }
+  .card.accent-blue { border-top: 4px solid var(--blue); }
+  .card.accent-gold { border-top: 4px solid var(--gold); }
+  .card.accent-green { border-top: 4px solid var(--green); }
+  .row { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin-top: 0.8rem; }
+  .btn {
+    background: var(--blue); color: #fff; border: none; border-radius: 8px; cursor: pointer;
+    font-weight: 700; font-size: 0.85rem; padding: 0.55rem 1rem;
+  }
+  .btn.ghost { background: var(--sky); color: var(--blue); }
+  a.btn { text-decoration: none; display: inline-block; }
+  .btn.subscribe { background: #FF0000; color: #fff; }
+  .btn.ok { background: var(--green); color: #fff; }
+
+  /* ---------- Tabs ---------- */
+  .tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
+  .tab {
+    background: var(--sky); color: var(--blue); border: none; border-radius: 999px; cursor: pointer;
+    font-weight: 700; font-size: 0.88rem; padding: 0.5rem 1rem;
+  }
+  .tab.on { background: var(--blue); color: #fff; }
+  .panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.3rem; box-shadow: var(--shadow); }
+  .panel[hidden] { display: none; }
+  .panel dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1rem; }
+  .panel dt { font-weight: 700; color: var(--blue); }
+  .panel dd { margin: 0; line-height: 1.55; }
+  @media (max-width: 520px) { .panel dl { grid-template-columns: 1fr; gap: 0.1rem; } .panel dd { margin-bottom: 0.6rem; } }
+
+  /* ---------- Table ---------- */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; background: var(--card-bg); box-shadow: var(--shadow); }
+  table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 0.95rem; }
+  th, td { text-align: left; padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--navy); color: #fff; font-size: 0.82rem; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--sky); }
+  td:first-child { font-weight: 700; color: var(--head); }
+
+  /* ---------- Code ---------- */
+  .cmd {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
+    background: var(--navy); color: #E7F2FA; border-radius: 10px; padding: 0.6rem 0.6rem 0.6rem 1rem; margin-bottom: 0.5rem;
+  }
+  .cmd code { background: none; color: inherit; padding: 0; font-size: 0.9rem; overflow-x: auto; white-space: nowrap; }
+  .cmd .why { display: block; color: #8AA9C2; font-size: 0.78rem; font-family: Calibri, sans-serif; margin-top: 0.15rem; white-space: normal; }
+  .copy {
+    background: rgba(255,255,255,0.14); color: #fff; border: none; border-radius: 7px; cursor: pointer;
+    font-weight: 700; font-size: 0.75rem; padding: 0.4rem 0.7rem; flex: 0 0 auto;
+  }
+  .copy.ok { background: var(--green); }
+  pre.code {
+    background: var(--navy); color: #E7F2FA; border-radius: 10px; padding: 1rem 1.1rem; overflow-x: auto;
+    font-size: 0.88rem; line-height: 1.6; margin: 0 0 0.6rem;
+  }
+  pre.code code { background: none; color: inherit; padding: 0; }
+  .note { color: var(--muted); font-size: 0.9rem; line-height: 1.55; margin: 0.4rem 0 0; }
+  .steps { margin: 0 0 0.6rem; padding-left: 1.2rem; line-height: 1.6; }
+
+  /* ---------- Decision guide ---------- */
+  .split { display: grid; gap: 1rem; grid-template-columns: 1.15fr 1fr; align-items: start; }
+  @media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
+  .scns { display: flex; flex-direction: column; gap: 0.45rem; }
+  .scn {
+    text-align: left; cursor: pointer; border: 1px solid var(--border); border-radius: 10px;
+    padding: 0.65rem 0.9rem; font-size: 0.93rem; line-height: 1.4; background: var(--card-bg);
+    transition: border-color 0.15s ease;
+  }
+  .scn:hover { border-color: var(--blue); }
+  .scn.on { border-color: var(--blue); box-shadow: inset 4px 0 0 var(--blue); background: var(--sky); }
+  .result { min-height: 170px; }
+  .badge {
+    display: inline-block; font-weight: 700; font-size: 0.8rem; color: #fff; border-radius: 999px;
+    padding: 0.25rem 0.75rem; margin-bottom: 0.6rem;
+  }
+  .badge.list { background: var(--blue); }
+  .badge.set { background: var(--coral); }
+  .badge.map { background: #C98A1B; }
+  .result p { color: var(--ink); font-size: 0.97rem; line-height: 1.6; margin: 0; }
+
+  /* ---------- Quiz ---------- */
+  .qtext { font-family: Cambria, serif; font-size: clamp(1.1rem, 2.4vw, 1.4rem); color: var(--head); margin-bottom: 0.9rem; }
+  .opt {
+    display: block; width: 100%; text-align: left; cursor: pointer; margin-bottom: 0.5rem;
+    background: var(--card-bg); border: 2px solid var(--border); border-radius: 10px;
+    padding: 0.7rem 1rem; font-size: 0.98rem; line-height: 1.45;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--blue); }
+  .opt.right { border-color: var(--green); background: rgba(46,158,107,0.12); }
+  .opt.wrong { border-color: var(--coral); background: rgba(255,107,74,0.12); }
+  .opt:disabled { cursor: default; }
+  .feedback { min-height: 2.6rem; line-height: 1.5; color: var(--muted); }
+  .score { font-family: Cambria, serif; font-size: 2rem; color: var(--blue); }
+  .meter-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.35rem; font-weight: 700; }
+
+  /* ---------- Notes and overview ---------- */
+  .notes {
+    display: none; flex: 0 0 auto; max-height: 26%; overflow-y: auto; padding: 0.7rem 1rem;
+    background: var(--sky); border-top: 1px solid var(--border); font-size: 0.92rem; line-height: 1.55;
+  }
+  .notes.open { display: block; }
+  .notes b { color: var(--blue); }
+  .overview {
+    position: absolute; inset: 0; z-index: 20; background: var(--page-bg); overflow-y: auto;
+    padding: 1.2rem; display: none;
+  }
+  .overview.open { display: block; }
+  .overview h2 { margin-bottom: 1rem; }
+  .ov-grid { display: grid; gap: 0.7rem; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+  .ov-item {
+    text-align: left; cursor: pointer; background: var(--card-bg); border: 2px solid var(--border);
+    border-radius: 12px; padding: 0.8rem 0.9rem; font-size: 0.9rem; font-weight: 700; line-height: 1.35;
+  }
+  .ov-item small { display: block; color: var(--blue); margin-bottom: 0.2rem; }
+  .ov-item.cur { border-color: var(--blue); background: var(--sky); }
+
+  /* ---------- Bottom nav ---------- */
+  .nav { display: flex; align-items: center; gap: 0.6rem; }
+  .navbtn {
+    display: inline-flex; align-items: center; gap: 0.4rem; background: var(--navy); color: #fff; border: none;
+    border-radius: 999px; cursor: pointer; font-weight: 700; font-size: 0.85rem; padding: 0.55rem 1.1rem;
+  }
+  .navbtn:disabled { opacity: 0.35; cursor: default; }
+  .navbtn svg { width: 14px; height: 14px; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  .counter { font-weight: 700; font-size: 0.88rem; color: var(--muted); min-width: 4.5rem; text-align: center; }
+  .keys { color: var(--muted); font-size: 0.75rem; }
+  @media (max-width: 720px) { .keys, .brand .sub { display: none; } .iconbtn .lbl { display: none; } }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ================= Top bar ================= -->
+  <header class="bar top">
+    <div class="brand">
+      <span class="mark">G</span>
+      <span class="name">GCloudUp Tech <span class="sub">· Live Session 3</span></span>
+    </div>
+    <div class="tools">
+      <button class="iconbtn" id="btnOverview" type="button" aria-label="Show all slides">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        <span class="lbl">Slides</span>
+      </button>
+      <button class="iconbtn" id="btnNotes" type="button" aria-label="Toggle speaker notes" aria-pressed="false">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/></svg>
+        <span class="lbl">Notes</span>
+      </button>
+      <button class="iconbtn" id="btnTheme" type="button" aria-label="Toggle light and dark theme">
+        <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <span class="lbl">Theme</span>
+      </button>
+      <button class="iconbtn" id="btnFull" type="button" aria-label="Toggle fullscreen">
+        <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+        <span class="lbl">Full screen</span>
+      </button>
+    </div>
+  </header>
+  <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+
+  <!-- ================= Slides ================= -->
+  <main class="stage" id="stage">
+
+    <!-- 1. Title -->
+    <section class="slide hero" data-title="Title" data-notes="Welcome back. Session 2 covered the data model through a developer's lens and when to use Flow vs code. Today we write our first real Apex: variables, control flow, the three core collections, and how classes are put together.">
+      <div class="hero-decor a"></div><div class="hero-decor b"></div>
+      <div class="slide-inner">
+        <span class="chip">Live Session 3</span>
+        <h1>Apex Basics I</h1>
+        <p class="lead">Variables, data types, operators and control flow; the List, Set and Map collections; and classes, methods, constructors and access modifiers.</p>
+        <button class="cta" type="button" data-next>
+          Start session
+          <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="yt-row">
+          <a class="yt-link watch" id="watchLink" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
+            <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+            Watch the recording
+          </a>
+          <span class="yt-soon" id="watchSoon">Recording coming soon</span>
+          <a class="yt-link subscribe" href="https://www.youtube.com/@GCloudUp?sub_confirmation=1" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.4-1.8h-4.8A2.5 2.5 0 0 0 12 22zm7-6.5V11a7 7 0 0 0-5.5-6.8V3.5a1.5 1.5 0 0 0-3 0v.7A7 7 0 0 0 5 11v4.5l-2 2V19h18v-1.5z"/></svg>
+            Subscribe on YouTube
+          </a>
+        </div>
+        <div class="hint">Use ← → keys, swipe, or the buttons below. Press O for all slides, N for notes, F for full screen.</div>
+      </div>
+    </section>
+
+    <!-- 2. Agenda -->
+    <section class="slide" data-title="Agenda" data-notes="Three topics today, building in difficulty. Cards are clickable if you want to jump to a topic during Q&A.">
+      <div class="slide-inner agenda">
+        <span class="chip">Agenda</span>
+        <h2>What we'll cover today</h2>
+        <div class="grid">
+          <button class="card" type="button" data-goto="2"><div class="num">1</div><h3>Variables, types, operators &amp; control flow</h3><p>The building blocks of every line of Apex you'll ever write.</p></button>
+          <button class="card" type="button" data-goto="5"><div class="num">2</div><h3>Collections: List, Set, Map</h3><p>How to hold and work with groups of data the right way.</p></button>
+          <button class="card" type="button" data-goto="9"><div class="num">3</div><h3>Classes, methods, constructors &amp; access modifiers</h3><p>Structuring your logic into reusable, well-scoped code.</p></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Variables and data types -->
+    <section class="slide" data-title="Variables and data types" data-notes="Apex is strongly typed: every variable is declared with a type up front. Walk through the primitive types, then mention sObject and collections come later in the session.">
+      <div class="slide-inner">
+        <span class="chip">Topic 1 · Variables, types, operators, control flow</span>
+        <h2>Variables: strongly typed, always</h2>
+        <p class="body">Every Apex variable is declared with a type, then a name, and optionally an initial value: <code>Integer age = 30;</code>. Apex will not let you put the wrong kind of value into a variable.</p>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Type</th><th>Holds</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td>Integer</td><td>Whole numbers, 32-bit</td><td><code>Integer qty = 5;</code></td></tr>
+              <tr><td>Long</td><td>Whole numbers, 64-bit, for very large values</td><td><code>Long bigNum = 3000000000L;</code></td></tr>
+              <tr><td>Decimal</td><td>Fixed-point numbers, safe for money</td><td><code>Decimal price = 19.99;</code></td></tr>
+              <tr><td>Double</td><td>Floating-point numbers</td><td><code>Double pi = 3.14159;</code></td></tr>
+              <tr><td>String</td><td>Text</td><td><code>String name = 'Rahul';</code></td></tr>
+              <tr><td>Boolean</td><td><code>true</code> or <code>false</code></td><td><code>Boolean isActive = true;</code></td></tr>
+              <tr><td>Date</td><td>Calendar date, no time</td><td><code>Date d = Date.today();</code></td></tr>
+              <tr><td>Datetime</td><td>Date and time together</td><td><code>Datetime dt = Datetime.now();</code></td></tr>
+              <tr><td>Id</td><td>A Salesforce record Id</td><td><code>Id accId = acc.Id;</code></td></tr>
+              <tr><td>sObject</td><td>Any Salesforce record (Account, custom object...)</td><td><code>Account acc = new Account();</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Tip: use <code>Decimal</code> for money, never <code>Double</code> — floating point rounding can silently produce the wrong cents.</p>
+      </div>
+    </section>
+
+    <!-- 4. Operators -->
+    <section class="slide" data-title="Operators" data-notes="Nothing exotic here, but the comparison and logical operators matter a lot once we get to control flow and later triggers. Point out == compares value, not reference, for primitives.">
+      <div class="slide-inner">
+        <span class="chip">Topic 1 · Variables, types, operators, control flow</span>
+        <h2>Operators: doing things with values</h2>
+        <div class="tabgroup">
+          <div class="tabs" role="tablist">
+            <button class="tab on" type="button" role="tab" data-tab="ar">Arithmetic</button>
+            <button class="tab" type="button" role="tab" data-tab="cp">Comparison</button>
+            <button class="tab" type="button" role="tab" data-tab="lg">Logical</button>
+          </div>
+          <div class="panel" data-panel="ar"><dl>
+            <dt><code>+ - * /</code></dt><dd>Add, subtract, multiply, divide.</dd>
+            <dt><code>%</code></dt><dd>Modulo — the remainder after division, e.g. <code>10 % 3</code> is <code>1</code>.</dd>
+            <dt><code>++ --</code></dt><dd>Increment and decrement a number by one.</dd>
+          </dl></div>
+          <div class="panel" data-panel="cp" hidden><dl>
+            <dt><code>== !=</code></dt><dd>Equal to, not equal to. For primitives this compares the value.</dd>
+            <dt><code>&gt; &lt; &gt;= &lt;=</code></dt><dd>Greater than, less than, and their "or equal to" versions.</dd>
+          </dl></div>
+          <div class="panel" data-panel="lg" hidden><dl>
+            <dt><code>&amp;&amp;</code></dt><dd>AND — both sides must be true.</dd>
+            <dt><code>||</code></dt><dd>OR — at least one side must be true.</dd>
+            <dt><code>!</code></dt><dd>NOT — flips a Boolean's value.</dd>
+          </dl></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Control flow -->
+    <section class="slide" data-title="Control flow" data-notes="These are the same shapes as most languages. The one Salesforce-specific habit to plant early: never put a SOQL query or DML inside these loops when working with a collection of records — that comes back in the bulk-safe slide later.">
+      <div class="slide-inner">
+        <span class="chip">Topic 1 · Variables, types, operators, control flow</span>
+        <h2>Control flow: making decisions and repeating</h2>
+        <div class="tabgroup">
+          <div class="tabs" role="tablist">
+            <button class="tab on" type="button" role="tab" data-tab="if">if / else</button>
+            <button class="tab" type="button" role="tab" data-tab="for">for loop</button>
+            <button class="tab" type="button" role="tab" data-tab="wh">while / do-while</button>
+            <button class="tab" type="button" role="tab" data-tab="sw">switch</button>
+          </div>
+          <div class="panel" data-panel="if">
+            <p class="body">Runs a block only if a condition is true, with an optional fallback.</p>
+            <div class="copyable">
+              <pre class="code"><code>if (score &gt;= 90) {
+    grade = 'A';
+} else if (score &gt;= 75) {
+    grade = 'B';
+} else {
+    grade = 'C';
+}</code></pre>
+              <button class="btn copyb" type="button">Copy code</button>
+            </div>
+          </div>
+          <div class="panel" data-panel="for" hidden>
+            <p class="body">The workhorse for iterating a fixed number of times, or over a collection.</p>
+            <div class="copyable">
+              <pre class="code"><code>for (Integer i = 0; i &lt; 5; i++) {
+    System.debug(i);
+}
+
+for (Account acc : accountList) {
+    System.debug(acc.Name);
+}</code></pre>
+              <button class="btn copyb" type="button">Copy code</button>
+            </div>
+          </div>
+          <div class="panel" data-panel="wh" hidden>
+            <p class="body"><code>while</code> checks the condition first; <code>do-while</code> runs the body at least once before checking.</p>
+            <div class="copyable">
+              <pre class="code"><code>Integer n = 0;
+while (n &lt; 3) {
+    System.debug(n);
+    n++;
+}
+
+Integer m = 0;
+do {
+    System.debug(m);
+    m++;
+} while (m &lt; 3);</code></pre>
+              <button class="btn copyb" type="button">Copy code</button>
+            </div>
+          </div>
+          <div class="panel" data-panel="sw" hidden>
+            <p class="body">A clean alternative to a long <code>if / else if</code> chain when checking one value against several options.</p>
+            <div class="copyable">
+              <pre class="code"><code>switch on status {
+    when 'New' {
+        System.debug('Just created');
+    }
+    when 'Closed', 'Cancelled' {
+        System.debug('No longer active');
+    }
+    when else {
+        System.debug('In progress');
+    }
+}</code></pre>
+              <button class="btn copyb" type="button">Copy code</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Collections: List -->
+    <section class="slide" data-title="Collections: List" data-notes="A List is ordered and allows duplicates, accessed by index starting at zero. Show adding, getting by index, and looping. Mention List<Account> is the type you'll see constantly from SOQL query results.">
+      <div class="slide-inner">
+        <span class="chip">Topic 2 · Collections</span>
+        <h2>List: an ordered collection</h2>
+        <p class="body">A <strong>List</strong> keeps items in the order you add them, allows duplicates, and is accessed by a numeric index starting at <code>0</code>. Every SOQL query returns a <code>List</code>.</p>
+        <div class="copyable">
+          <pre class="code"><code>List&lt;String&gt; names = new List&lt;String&gt;();
+names.add('Rahul');
+names.add('Priya');
+names.add('Rahul');          // duplicates are fine
+
+System.debug(names.size());   // 3
+System.debug(names[0]);       // Rahul
+names.remove(1);              // removes 'Priya'
+
+for (String n : names) {
+    System.debug(n);
+}</code></pre>
+          <button class="btn copyb" type="button">Copy code</button>
+        </div>
+        <p class="note">Best for: preserving order, allowing duplicates, and holding SOQL query results such as <code>List&lt;Account&gt;</code>.</p>
+      </div>
+    </section>
+
+    <!-- 7. Collections: Set -->
+    <section class="slide" data-title="Collections: Set" data-notes="A Set has no order and no duplicates — perfect for collecting unique Ids before a single bulk query. This is the pattern from Session 2's bulk-safe example.">
+      <div class="slide-inner">
+        <span class="chip">Topic 2 · Collections</span>
+        <h2>Set: unique values, no order</h2>
+        <p class="body">A <strong>Set</strong> automatically removes duplicates and has no guaranteed order. It's the natural choice when you only care whether something exists, not how many times.</p>
+        <div class="copyable">
+          <pre class="code"><code>Set&lt;Id&gt; accountIds = new Set&lt;Id&gt;();
+accountIds.add(acc1.Id);
+accountIds.add(acc2.Id);
+accountIds.add(acc1.Id);      // ignored, already present
+
+System.debug(accountIds.size());       // 2
+System.debug(accountIds.contains(acc1.Id)); // true</code></pre>
+          <button class="btn copyb" type="button">Copy code</button>
+        </div>
+        <p class="note">Best for: collecting unique Ids from a loop before running one bulk SOQL query with <code>WHERE Id IN :accountIds</code> — the single most common Set use case in Apex.</p>
+      </div>
+    </section>
+
+    <!-- 8. Collections: Map -->
+    <section class="slide" data-title="Collections: Map" data-notes="A Map pairs a unique key to a value — think of it as a lookup table in memory. This is exactly what you get back when you wrap a query result in new Map<Id, Account>(...)." >
+      <div class="slide-inner">
+        <span class="chip">Topic 2 · Collections</span>
+        <h2>Map: key-value pairs</h2>
+        <p class="body">A <strong>Map</strong> links a unique key to a value, so you can look something up instantly instead of looping to find it.</p>
+        <div class="copyable">
+          <pre class="code"><code>Map&lt;Id, Account&gt; accByid = new Map&lt;Id, Account&gt;(
+    [SELECT Id, Name FROM Account LIMIT 200]
+);
+
+Account acc = accByid.get(someId);
+Boolean exists = accByid.containsKey(someId);
+
+for (Id key : accByid.keySet()) {
+    System.debug(accByid.get(key).Name);
+}</code></pre>
+          <button class="btn copyb" type="button">Copy code</button>
+        </div>
+        <p class="note">Best for: fast lookups by Id, and for turning a query result into something you can access in O(1) instead of looping every time.</p>
+      </div>
+    </section>
+
+    <!-- 9. Which collection? decision guide -->
+    <section class="slide" data-title="Which collection do I need?" data-notes="Click each scenario and let the audience guess first. The pattern to reinforce: List for order/duplicates, Set for uniqueness, Map for lookups by key.">
+      <div class="slide-inner">
+        <span class="chip">Topic 2 · Collections</span>
+        <h2>Which collection do I need?</h2>
+        <p class="body">Pick a requirement to see the recommended collection.</p>
+        <div class="split">
+          <div class="scns" id="scns"></div>
+          <div class="card result" id="result" aria-live="polite">
+            <span class="badge list">Pick a scenario</span>
+            <p>Click a requirement on the left.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. Classes and objects -->
+    <section class="slide" data-title="Classes and objects" data-notes="A class is a blueprint; an object (instance) is what you get when you use 'new'. Point out that every Apex file you create in VS Code is a class.">
+      <div class="slide-inner">
+        <span class="chip">Topic 3 · Classes, methods, constructors, access modifiers</span>
+        <h2>Classes: blueprints for objects</h2>
+        <p class="body">A <strong>class</strong> defines the shape of something — its data (fields/properties) and behavior (methods). An <strong>object</strong> is a specific instance created from that blueprint with <code>new</code>.</p>
+        <div class="copyable">
+          <pre class="code"><code>public class SupportTicket {
+    public String subject;
+    public String priority;
+
+    public String describe() {
+        return subject + ' (' + priority + ')';
+    }
+}
+
+// Creating an instance
+SupportTicket t = new SupportTicket();
+t.subject = 'Login issue';
+t.priority = 'High';
+System.debug(t.describe());</code></pre>
+          <button class="btn copyb" type="button">Copy code</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. Methods -->
+    <section class="slide" data-title="Methods" data-notes="A method's signature is return type, name, and parameters. Static methods belong to the class itself and are called without creating an instance — this trips up beginners the most." >
+      <div class="slide-inner">
+        <span class="chip">Topic 3 · Classes, methods, constructors, access modifiers</span>
+        <h2>Methods: a class's behavior</h2>
+        <div class="tabgroup">
+          <div class="tabs" role="tablist">
+            <button class="tab on" type="button" role="tab" data-tab="inst">Instance method</button>
+            <button class="tab" type="button" role="tab" data-tab="stat">Static method</button>
+            <button class="tab" type="button" role="tab" data-tab="ret">Return types</button>
+          </div>
+          <div class="panel" data-panel="inst">
+            <p class="body">Belongs to a specific object. You must create an instance first, then call it on that instance.</p>
+            <div class="copyable">
+              <pre class="code"><code>SupportTicket t = new SupportTicket();
+t.subject = 'Login issue';
+System.debug(t.describe());  // called on t</code></pre>
+              <button class="btn copyb" type="button">Copy code</button>
+            </div>
+          </div>
+          <div class="panel" data-panel="stat" hidden>
+            <p class="body">Belongs to the class itself, not to any one instance. Call it directly on the class name — no <code>new</code> needed.</p>
+            <div class="copyable">
+              <pre class="code"><code>public class MathHelper {
+    public static Integer square(Integer n) {
+        return n * n;
+    }
+}
+
+Integer result = MathHelper.square(5); // 25, no 'new' needed</code></pre>
+              <button class="btn copyb" type="button">Copy code</button>
+            </div>
+          </div>
+          <div class="panel" data-panel="ret" hidden>
+            <p class="body">A method either returns a value of a declared type, or returns nothing with <code>void</code>.</p>
+            <div class="copyable">
+              <pre class="code"><code>public Integer add(Integer a, Integer b) {
+    return a + b;         // must return an Integer
+}
+
+public void logMessage(String msg) {
+    System.debug(msg);    // returns nothing
+}</code></pre>
+              <button class="btn copyb" type="button">Copy code</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. Constructors -->
+    <section class="slide" data-title="Constructors" data-notes="A constructor has the same name as the class and no return type. If you write no constructor at all, Apex gives you a free no-argument one — but as soon as you add any constructor of your own, that free one disappears." >
+      <div class="slide-inner">
+        <span class="chip">Topic 3 · Classes, methods, constructors, access modifiers</span>
+        <h2>Constructors: setting up a new object</h2>
+        <p class="body">A <strong>constructor</strong> runs automatically when you create an object with <code>new</code>. It has the same name as the class and no return type — its job is to set the object up correctly from the start.</p>
+        <div class="copyable">
+          <pre class="code"><code>public class SupportTicket {
+    public String subject;
+    public String priority;
+
+    // Custom constructor
+    public SupportTicket(String subject, String priority) {
+        this.subject = subject;
+        this.priority = priority;
+    }
+}
+
+// No more no-argument new SupportTicket() — you must pass both values
+SupportTicket t = new SupportTicket('Login issue', 'High');</code></pre>
+          <button class="btn copyb" type="button">Copy code</button>
+        </div>
+        <p class="note">You can define more than one constructor with different parameters — this is called <strong>constructor overloading</strong>.</p>
+      </div>
+    </section>
+
+    <!-- 13. Access modifiers -->
+    <section class="slide" data-title="Access modifiers" data-notes="private is the default if you write nothing. global is rare and mostly for managed packages — most beginner code should never need it. with sharing/without sharing control record-level security, not code visibility, and are set on the class itself." >
+      <div class="slide-inner">
+        <span class="chip">Topic 3 · Classes, methods, constructors, access modifiers</span>
+        <h2>Access modifiers: who can see what</h2>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Modifier</th><th>Visible from</th></tr></thead>
+            <tbody>
+              <tr><td>private</td><td>The same class only. This is the default if you write nothing.</td></tr>
+              <tr><td>public</td><td>Anywhere in the same application/namespace.</td></tr>
+              <tr><td>protected</td><td>The same class and any classes that extend it.</td></tr>
+              <tr><td>global</td><td>Anywhere, including other namespaces and managed packages. Rarely needed as a beginner.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Separately, <code>with sharing</code> and <code>without sharing</code> on a class control whether the current user's record-level sharing rules are enforced — that's about data access, not code visibility, and we'll cover it properly in the Security session.</p>
+      </div>
+    </section>
+
+    <!-- 14. Best practices -->
+    <section class="slide" data-title="Good habits from day one" data-notes="These habits prevent the most common beginner bugs and set up good instincts for triggers and bulk-safe code later in the series.">
+      <div class="slide-inner">
+        <span class="chip">Wrapping up</span>
+        <h2>Good habits from day one</h2>
+        <div class="grid">
+          <div class="card accent-blue"><h3>Name things clearly</h3><p>Prefer <code>customerEmail</code> over <code>x</code>. You'll read code far more often than you write it.</p></div>
+          <div class="card accent-green"><h3>Default to private</h3><p>Start every field and method as private, and only widen access when something outside the class genuinely needs it.</p></div>
+          <div class="card accent-gold"><h3>Pick the right collection</h3><p>List for order, Set for uniqueness, Map for lookups — choosing correctly avoids a lot of extra code later.</p></div>
+          <div class="card accent-coral"><h3>Keep methods focused</h3><p>One method, one job. It makes testing and debugging far easier once we reach Apex Triggers.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 15. Quiz -->
+    <section class="slide" data-title="Quick knowledge check" data-notes="Let the audience answer in chat before you reveal each answer.">
+      <div class="slide-inner">
+        <span class="chip">Knowledge check</span>
+        <div id="quiz"></div>
+      </div>
+    </section>
+
+    <!-- 16. Recap -->
+    <section class="slide" data-title="Recap" data-notes="One line per topic, then open the floor for questions. Point people to the blog for the recording, and tease Session 4: SOQL and SOSL.">
+      <div class="slide-inner">
+        <span class="chip">Recap</span>
+        <h2>Key takeaways</h2>
+        <div class="grid">
+          <div class="card accent-blue"><h3>1. Foundations</h3><p>Apex is strongly typed. Variables, operators and control flow are the same shapes you'll use in every class you write.</p></div>
+          <div class="card accent-green"><h3>2. Collections</h3><p>List for order and duplicates, Set for uniqueness, Map for key-based lookups. Pick based on what you need to guarantee.</p></div>
+          <div class="card accent-gold"><h3>3. Classes</h3><p>Classes are blueprints, objects are instances. Constructors set objects up correctly, and access modifiers control who can see what.</p></div>
+        </div>
+        <div class="row" style="margin-top:1.2rem">
+          <button class="btn" type="button" data-goto="0">Back to start</button>
+          <button class="btn ghost" type="button" data-goto="1">Open agenda</button>
+          <!-- EDIT: point this to your blog listing page -->
+          <button class="btn ghost" type="button" onclick="location.href='blogs.html'">Back to Blog</button>
+          <a class="btn subscribe" href="https://www.youtube.com/@GCloudUp?sub_confirmation=1" target="_blank" rel="noopener noreferrer">Subscribe on YouTube</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Overview overlay -->
+    <div class="overview" id="overview" aria-hidden="true">
+      <h2>All slides</h2>
+      <div class="ov-grid" id="ovGrid"></div>
+    </div>
+  </main>
+
+  <div class="notes" id="notes" aria-live="polite"></div>
+
+  <!-- ================= Bottom nav ================= -->
+  <footer class="bar bottom">
+    <span class="keys">← → to move · O slides · N notes · F full screen</span>
+    <div class="nav">
+      <button class="navbtn" id="prev" type="button" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg> Prev
+      </button>
+      <span class="counter" id="counter">1 / 16</span>
+      <button class="navbtn" id="next" type="button" aria-label="Next slide">
+        Next <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  var slides = $$('.slide');
+  var cur = 0;
+  var notesEl = $('#notes'), overview = $('#overview');
+
+  /* ---------- Navigation ---------- */
+  function go(n) {
+    n = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, i) { s.classList.toggle('active', i === n); });
+    cur = n;
+    slides[n].scrollTop = 0;
+    $('#counter').textContent = (n + 1) + ' / ' + slides.length;
+    $('#bar').style.width = ((n + 1) / slides.length * 100) + '%';
+    $('#prev').disabled = n === 0;
+    $('#next').disabled = n === slides.length - 1;
+    notesEl.innerHTML = '<b>Speaker notes:</b> ' + (slides[n].getAttribute('data-notes') || 'No notes for this slide.');
+    closeOverview();
+    try { history.replaceState(null, '', '#' + (n + 1)); } catch (e) {}
+  }
+  $('#prev').addEventListener('click', function () { go(cur - 1); });
+  $('#next').addEventListener('click', function () { go(cur + 1); });
+  $$('[data-next]').forEach(function (b) { b.addEventListener('click', function () { go(cur + 1); }); });
+  $$('[data-goto]').forEach(function (b) { b.addEventListener('click', function () { go(parseInt(b.getAttribute('data-goto'), 10)); }); });
+
+  document.addEventListener('keydown', function (e) {
+    var t = e.target;
+    if (t && t.tagName === 'INPUT') return;
+    var onControl = t && t.closest && t.closest('button, summary, a, input');
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { go(cur + 1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { go(cur - 1); e.preventDefault(); }
+    else if (e.key === ' ' && !onControl) { go(cur + 1); e.preventDefault(); }
+    else if (e.key === 'Home') { go(0); }
+    else if (e.key === 'End') { go(slides.length - 1); }
+    else if (e.key === 'Escape') { closeOverview(); }
+    else if (e.key === 'o' || e.key === 'O') { toggleOverview(); }
+    else if (e.key === 'n' || e.key === 'N') { toggleNotes(); }
+    else if (e.key === 'f' || e.key === 'F') { toggleFull(); }
+  });
+
+  /* Swipe */
+  var sx = null, sy = null;
+  $('#stage').addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  $('#stage').addEventListener('touchend', function (e) {
+    if (sx === null) return;
+    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) > 70 && Math.abs(dy) < 50) { go(dx < 0 ? cur + 1 : cur - 1); }
+    sx = sy = null;
+  }, { passive: true });
+
+  /* ---------- Overview ---------- */
+  var ovGrid = $('#ovGrid');
+  slides.forEach(function (s, i) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'ov-item';
+    b.innerHTML = '<small>Slide ' + (i + 1) + '</small>' + s.getAttribute('data-title');
+    b.addEventListener('click', function () { go(i); });
+    ovGrid.appendChild(b);
+  });
+  function openOverview() {
+    $$('.ov-item').forEach(function (b, i) { b.classList.toggle('cur', i === cur); });
+    overview.classList.add('open'); overview.setAttribute('aria-hidden', 'false');
+    $('#btnOverview').classList.add('on');
+  }
+  function closeOverview() {
+    overview.classList.remove('open'); overview.setAttribute('aria-hidden', 'true');
+    $('#btnOverview').classList.remove('on');
+  }
+  function toggleOverview() { overview.classList.contains('open') ? closeOverview() : openOverview(); }
+  $('#btnOverview').addEventListener('click', toggleOverview);
+
+  /* ---------- Notes ---------- */
+  function toggleNotes() {
+    var open = notesEl.classList.toggle('open');
+    $('#btnNotes').classList.toggle('on', open);
+    $('#btnNotes').setAttribute('aria-pressed', open);
+  }
+  $('#btnNotes').addEventListener('click', toggleNotes);
+
+  /* ---------- Theme ---------- */
+  $('#btnTheme').addEventListener('click', function () {
+    var root = document.documentElement;
+    var dark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+  });
+
+  /* ---------- Fullscreen ---------- */
+  function toggleFull() {
+    try {
+      if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); }
+      else { document.exitFullscreen(); }
+    } catch (e) {}
+  }
+  if (!document.documentElement.requestFullscreen) { $('#btnFull').style.display = 'none'; }
+  $('#btnFull').addEventListener('click', toggleFull);
+
+  /* ---------- Tabs ---------- */
+  $$('.tabgroup').forEach(function (g) {
+    var btns = $$('[data-tab]', g), panels = $$('[data-panel]', g);
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        btns.forEach(function (x) { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', x === b); });
+        panels.forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== b.getAttribute('data-tab'); });
+      });
+    });
+  });
+
+  /* ---------- Copy ---------- */
+  function copyText(text, btn, label, okClass) {
+    function ok() {
+      btn.textContent = 'Copied!'; btn.classList.add(okClass);
+      setTimeout(function () { btn.textContent = label; btn.classList.remove(okClass); }, 1400);
+    }
+    function fallback() {
+      var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); ok(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(ok, fallback); }
+    else { fallback(); }
+  }
+  $$('.cmd .copy').forEach(function (b) {
+    b.addEventListener('click', function () { copyText($('code', b.parentNode).textContent, b, 'Copy', 'ok'); });
+  });
+  $$('.copyb').forEach(function (b) {
+    var label = b.textContent;
+    b.addEventListener('click', function () {
+      copyText($('pre code', b.closest('.copyable')).textContent, b, label, 'ok');
+    });
+  });
+
+  /* ---------- Which collection? decision guide ---------- */
+  var scenarios = [
+    { t: 'Store the results of a SOQL query, in the order returned', c: 'list', b: 'List',
+      w: 'SOQL always returns a List, and a List preserves the order records came back in.' },
+    { t: 'Keep every Contact email a Case has been sent to, without repeats', c: 'set', b: 'Set',
+      w: 'You only care whether an email has already been used, not how many times — a Set removes duplicates automatically.' },
+    { t: 'Collect unique Account Ids from a loop before one bulk SOQL query', c: 'set', b: 'Set<Id>',
+      w: 'This is the classic bulk-safe pattern: gather unique Ids in a Set, then query once with WHERE Id IN :theSet.' },
+    { t: 'Look up an Account\'s Name instantly by its Id, many times', c: 'map', b: 'Map<Id, Account>',
+      w: 'A Map gives you near-instant lookups by key instead of looping through a List every time you need one record.' },
+    { t: 'Allow the same customer name to appear more than once in a report list', c: 'list', b: 'List',
+      w: 'Duplicates are allowed and order matters for a report — that is exactly what a List is for.' },
+    { t: 'Check quickly whether a given Case Id has already been processed', c: 'set', b: 'Set<Id>',
+      w: 'A Set\'s contains() check is fast and is built exactly for "have I seen this before?" logic.' }
+  ];
+  var scnsEl = $('#scns'), resultEl = $('#result');
+  scenarios.forEach(function (s) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'scn'; b.textContent = s.t;
+    b.addEventListener('click', function () {
+      $$('.scn', scnsEl).forEach(function (x) { x.classList.toggle('on', x === b); });
+      resultEl.innerHTML = '<span class="badge ' + s.c + '">' + s.b + '</span><p>' + s.w + '</p>';
+    });
+    scnsEl.appendChild(b);
+  });
+
+  /* ---------- Quiz ---------- */
+  var questions = [
+    { q: 'Which type should you use to store a monetary value safely?',
+      o: ['Double', 'Decimal', 'Long', 'String'], a: 1,
+      why: 'Decimal is fixed-point and avoids the rounding surprises that Double can introduce with money.' },
+    { q: 'Which collection removes duplicate values automatically?',
+      o: ['List', 'Set', 'Map', 'Array'], a: 1,
+      why: 'A Set only keeps unique values — adding a duplicate is silently ignored.' },
+    { q: 'What happens to the automatic no-argument constructor once you write your own custom constructor?',
+      o: ['Nothing, both are always available', 'It is removed — you must define one yourself if you still need it', 'It becomes private', 'It only works in tests'], a: 1,
+      why: 'As soon as you add any constructor of your own, Apex stops providing the free no-argument one automatically.' },
+    { q: 'Which access modifier is the default when you write no modifier at all?',
+      o: ['public', 'global', 'private', 'protected'], a: 2,
+      why: 'If you omit an access modifier, Apex treats the member as private by default.' },
+    { q: 'You need to look up an Account by Id many times inside a method. What is the best choice?',
+      o: ['Loop through a List each time', 'Use a Map<Id, Account>', 'Use a Set<Id>', 'Run a new SOQL query each time'], a: 1,
+      why: 'A Map keyed by Id gives near-instant lookups instead of repeatedly looping or re-querying.' }
+  ];
+  var qi = 0, score = 0, quizEl = $('#quiz');
+  function renderQ() {
+    if (qi >= questions.length) {
+      quizEl.innerHTML = '<h2>Quiz complete</h2><div class="score">' + score + ' / ' + questions.length + '</div>' +
+        '<p class="body">' + (score === questions.length ? 'Perfect score. You have Apex Basics I down cold.' : 'Good effort. Revisit the topics you missed using the Slides button.') + '</p>' +
+        '<button class="btn" type="button" id="qRetry">Try again</button>';
+      $('#qRetry').addEventListener('click', function () { qi = 0; score = 0; renderQ(); });
+      return;
+    }
+    var q = questions[qi];
+    var h = '<div class="meter-label">Question ' + (qi + 1) + ' of ' + questions.length + '</div><div class="qtext">' + q.q + '</div>';
+    q.o.forEach(function (t, i) { h += '<button class="opt" type="button" data-i="' + i + '">' + t + '</button>'; });
+    h += '<div class="feedback" id="fb" aria-live="polite"></div><div class="row"><button class="btn" type="button" id="qNext" style="display:none">' + (qi === questions.length - 1 ? 'See score' : 'Next question') + '</button></div>';
+    quizEl.innerHTML = h;
+    $$('.opt', quizEl).forEach(function (b) {
+      b.addEventListener('click', function () {
+        var pick = parseInt(b.getAttribute('data-i'), 10);
+        $$('.opt', quizEl).forEach(function (x, i) {
+          x.disabled = true;
+          if (i === q.a) x.classList.add('right');
+          else if (i === pick) x.classList.add('wrong');
+        });
+        if (pick === q.a) score++;
+        $('#fb').textContent = (pick === q.a ? 'Correct. ' : 'Not quite. ') + q.why;
+        $('#qNext').style.display = 'inline-block';
+      });
+    });
+    $('#qNext').addEventListener('click', function () { qi++; renderQ(); });
+  }
+  renderQ();
+
+  /* ---------- YouTube recording link ---------- */
+  var YOUTUBE_VIDEO_ID = ""; // paste the video ID here once the recording is live, e.g. "abc123XYZ_0"
+  if (YOUTUBE_VIDEO_ID && YOUTUBE_VIDEO_ID.trim()) {
+    var wl = $('#watchLink');
+    wl.href = 'https://www.youtube.com/watch?v=' + YOUTUBE_VIDEO_ID.trim();
+    wl.style.display = 'inline-flex';
+    $('#watchSoon').style.display = 'none';
+  }
+
+  /* ---------- Start ---------- */
+  var start = parseInt((location.hash || '').replace('#', ''), 10);
+  go(isNaN(start) ? 0 : start - 1);
+})();
+</script>
+</body>
+</html>

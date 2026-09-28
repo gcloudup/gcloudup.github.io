@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Live Session 4: Apex Basics II — SOQL &amp; SOSL — GCloudUp Tech</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--navy:#032D60;--blue:#00A1E0;--sky:#E8F4FC;--coral:#FF6B4A;--gold:#FFB75D;--green:#2E9E6B;--ink:#0B2A45;--muted:#5B7A94;--card-bg:#fff;--page-bg:#F6FAFD;--border:#E1EBF3;--head:#032D60;--shadow:0 4px 18px rgba(3,45,96,.07);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--card-bg:#0E2A47;--page-bg:#071C33;--ink:#E7F2FA;--head:#E7F2FA;--muted:#9FC2DC;--border:#163A5C;--sky:#0E3357;--shadow:0 4px 18px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--card-bg:#0E2A47;--page-bg:#071C33;--ink:#E7F2FA;--head:#E7F2FA;--muted:#9FC2DC;--border:#163A5C;--sky:#0E3357;--shadow:0 4px 18px rgba(0,0,0,.35)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*{box-sizing:border-box}
+body{margin:0;height:100%;overflow:hidden;font-family:Calibri,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--page-bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+button{font-family:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.app{height:100%;display:flex;flex-direction:column;min-height:0}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.6rem 1rem;background:var(--card-bg);flex:0 0 auto}
+.bar.top{border-bottom:1px solid var(--border)}.bar.bottom{border-top:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:.5rem;min-width:0;font-family:Cambria,serif;font-weight:700;font-size:.92rem;color:var(--head)}
+.brand .mark{width:26px;height:26px;border-radius:7px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex:0 0 auto}
+.brand .name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand .sub{color:var(--muted);font-family:Calibri,sans-serif;font-weight:600;font-size:.8rem}
+.tools{display:flex;gap:.4rem;flex:0 0 auto}
+.iconbtn{display:inline-flex;align-items:center;gap:.35rem;background:var(--sky);color:var(--blue);border:none;cursor:pointer;font-weight:700;font-size:.78rem;padding:.45rem .7rem;border-radius:8px}
+.iconbtn.on{background:var(--blue);color:#fff}
+.iconbtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.progress{height:4px;background:var(--border);flex:0 0 auto}
+.progress span{display:block;height:100%;width:0;background:var(--blue);transition:width .25s ease}
+.stage{position:relative;flex:1 1 auto;min-height:0}
+.slide{display:none;position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding:clamp(1rem,3.5vw,2.75rem)}
+.slide.active{display:flex;animation:fadein .28s ease}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.slide.active{animation:none}.progress span{transition:none}}
+.slide-inner{margin:auto;width:100%;max-width:1020px}
+.chip{display:inline-block;background:var(--sky);color:var(--blue);font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:.3rem .7rem;border-radius:999px;margin-bottom:.8rem}
+h1,h2,h3{font-family:Cambria,Georgia,serif;color:var(--head);margin:0}
+h1{font-size:clamp(1.9rem,6vw,3.4rem);line-height:1.15}
+h2{font-size:clamp(1.4rem,3.8vw,2.3rem);line-height:1.2;margin-bottom:.7rem}
+h3{font-size:clamp(1.05rem,2.2vw,1.3rem);margin-bottom:.3rem}
+p{margin:0 0 .9rem}
+.lead{font-size:clamp(1rem,2vw,1.25rem);line-height:1.6;color:var(--muted);max-width:62ch;margin-bottom:1.2rem}
+.body{font-size:clamp(.95rem,1.7vw,1.1rem);line-height:1.65}
+code{background:var(--sky);color:var(--head);padding:.1rem .4rem;border-radius:5px;font-size:.9em}
+.slide.hero{background:linear-gradient(135deg,#032D60 0%,#0B3D73 55%,#00A1E0 100%);color:#fff;overflow:hidden}
+.slide.hero h1,.slide.hero .lead{color:#fff}.slide.hero .lead{color:#CFE9FB}
+.slide.hero .chip{background:rgba(255,255,255,.14);color:#CFE9FB}
+.hero-decor{position:absolute;border-radius:50%;background:rgba(255,255,255,.08);pointer-events:none}
+.hero-decor.a{width:340px;height:340px;top:-130px;right:-90px}.hero-decor.b{width:220px;height:220px;bottom:-90px;left:-50px;background:rgba(255,255,255,.06)}
+.hero .slide-inner{position:relative}
+.cta{display:inline-flex;align-items:center;gap:.5rem;margin-top:.5rem;background:#fff;color:#032D60;border:none;cursor:pointer;font-weight:700;font-size:.95rem;padding:.75rem 1.4rem;border-radius:999px}
+.cta svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4}
+.hint{margin-top:1.4rem;font-size:.8rem;color:#9FC2DC}
+.yt-row{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;margin-top:1.2rem}
+.yt-link{display:inline-flex;align-items:center;gap:.5rem;text-decoration:none;font-weight:700;font-size:.85rem;padding:.6rem 1.1rem;border-radius:999px}
+.yt-link svg{width:16px;height:16px;fill:currentColor}
+.yt-link.watch{background:#FF0000;color:#fff}
+.yt-link.subscribe{background:rgba(255,255,255,.14);color:#fff;border:2px solid rgba(255,255,255,.6)}
+.yt-link.subscribe:hover{background:#fff;color:#FF0000}
+.yt-soon{color:#CFE9FB;font-size:.85rem}
+.grid{display:grid;gap:.85rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:1rem 1.1rem;box-shadow:var(--shadow)}
+.card p{margin:0;color:var(--muted);font-size:.92rem;line-height:1.55}
+button.card{text-align:left;cursor:pointer;width:100%}button.card:hover{border-color:var(--blue)}
+.agenda .num{width:32px;height:32px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;margin-bottom:.6rem}
+.agenda h3{font-size:1.1rem}
+.accent-coral{border-top:4px solid var(--coral)}.accent-blue{border-top:4px solid var(--blue)}.accent-gold{border-top:4px solid var(--gold)}.accent-green{border-top:4px solid var(--green)}
+.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-top:.8rem}
+.btn{background:var(--blue);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:.85rem;padding:.55rem 1rem}
+.btn.ghost{background:var(--sky);color:var(--blue)}
+a.btn{text-decoration:none;display:inline-block}
+.btn.subscribe{background:#FF0000;color:#fff}.btn.ok{background:var(--green);color:#fff}
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem}
+.tab{background:var(--sky);color:var(--blue);border:none;border-radius:999px;cursor:pointer;font-weight:700;font-size:.88rem;padding:.5rem 1rem}
+.tab.on{background:var(--blue);color:#fff}
+.panel{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.3rem;box-shadow:var(--shadow)}
+.panel[hidden]{display:none}
+.tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:14px;background:var(--card-bg);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.95rem}
+th,td{text-align:left;padding:.7rem 1rem;border-bottom:1px solid var(--border);vertical-align:top}
+th{background:var(--navy);color:#fff;font-size:.82rem}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--sky)}
+td:first-child{font-weight:700;color:var(--head)}
+pre.code{background:var(--navy);color:#E7F2FA;border-radius:10px;padding:1rem 1.1rem;overflow-x:auto;font-size:.88rem;line-height:1.6;margin:0 0 .6rem}
+pre.code code{background:none;color:inherit;padding:0}
+.copy-ok{background:var(--green)}
+.note{color:var(--muted);font-size:.9rem;line-height:1.55;margin:.4rem 0 0}
+.qtext{font-family:Cambria,serif;font-size:clamp(1.1rem,2.4vw,1.4rem);color:var(--head);margin-bottom:.9rem}
+.opt{display:block;width:100%;text-align:left;cursor:pointer;margin-bottom:.5rem;background:var(--card-bg);border:2px solid var(--border);border-radius:10px;padding:.7rem 1rem;font-size:.98rem;line-height:1.45}
+.opt:hover:not(:disabled){border-color:var(--blue)}
+.opt.right{border-color:var(--green);background:rgba(46,158,107,.12)}
+.opt.wrong{border-color:var(--coral);background:rgba(255,107,74,.12)}
+.opt:disabled{cursor:default}
+.feedback{min-height:2.6rem;line-height:1.5;color:var(--muted)}
+.score{font-family:Cambria,serif;font-size:2rem;color:var(--blue)}
+.meter-label{font-size:.85rem;color:var(--muted);margin-bottom:.35rem;font-weight:700}
+.notes{display:none;flex:0 0 auto;max-height:26%;overflow-y:auto;padding:.7rem 1rem;background:var(--sky);border-top:1px solid var(--border);font-size:.92rem;line-height:1.55}
+.notes.open{display:block}.notes b{color:var(--blue)}
+.overview{position:absolute;inset:0;z-index:20;background:var(--page-bg);overflow-y:auto;padding:1.2rem;display:none}
+.overview.open{display:block}.overview h2{margin-bottom:1rem}
+.ov-grid{display:grid;gap:.7rem;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+.ov-item{text-align:left;cursor:pointer;background:var(--card-bg);border:2px solid var(--border);border-radius:12px;padding:.8rem .9rem;font-size:.9rem;font-weight:700;line-height:1.35}
+.ov-item small{display:block;color:var(--blue);margin-bottom:.2rem}
+.ov-item.cur{border-color:var(--blue);background:var(--sky)}
+.nav{display:flex;align-items:center;gap:.6rem}
+.navbtn{display:inline-flex;align-items:center;gap:.4rem;background:var(--navy);color:#fff;border:none;border-radius:999px;cursor:pointer;font-weight:700;font-size:.85rem;padding:.55rem 1.1rem}
+.navbtn:disabled{opacity:.35;cursor:default}
+.navbtn svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.counter{font-weight:700;font-size:.88rem;color:var(--muted);min-width:4.5rem;text-align:center}
+.keys{color:var(--muted);font-size:.75rem}
+@media(max-width:720px){.keys,.brand .sub{display:none}.iconbtn .lbl{display:none}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="bar top">
+    <div class="brand"><span class="mark">G</span><span class="name">GCloudUp Tech <span class="sub">· Live Session 4</span></span></div>
+    <div class="tools">
+      <button class="iconbtn" id="btnOverview" type="button" aria-label="Show all slides"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span class="lbl">Slides</span></button>
+      <button class="iconbtn" id="btnNotes" type="button" aria-label="Toggle speaker notes" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/></svg><span class="lbl">Notes</span></button>
+      <button class="iconbtn" id="btnTheme" type="button" aria-label="Toggle light and dark theme"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span class="lbl">Theme</span></button>
+      <button class="iconbtn" id="btnFull" type="button" aria-label="Toggle fullscreen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span class="lbl">Full screen</span></button>
+    </div>
+  </header>
+  <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+
+  <main class="stage" id="stage">
+
+    <!-- 1. Title -->
+    <section class="slide hero" data-title="Title" data-notes="Welcome back. Session 3 covered variables, collections and classes. Today we connect Apex to data: querying with SOQL, searching with SOSL, saving changes with DML, and the governor limits that shape how we write all of it.">
+      <div class="hero-decor a"></div><div class="hero-decor b"></div>
+      <div class="slide-inner">
+        <span class="chip">Live Session 4</span>
+        <h1>Apex Basics II: SOQL &amp; SOSL</h1>
+        <p class="lead">Writing SOQL queries, parent-child and child-parent relationship queries, SOSL basics, DML statements, and a governor limits overview.</p>
+        <button class="cta" type="button" data-next>Start session <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+        <div class="yt-row">
+          <a class="yt-link watch" id="watchLink" href="#" target="_blank" rel="noopener noreferrer" style="display:none;"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>Watch the recording</a>
+          <span class="yt-soon" id="watchSoon">Recording coming soon</span>
+          <a class="yt-link subscribe" href="https://www.youtube.com/@GCloudUp?sub_confirmation=1" target="_blank" rel="noopener noreferrer">Subscribe on YouTube</a>
+        </div>
+        <div class="hint">Use ← → keys, swipe, or the buttons below. Press O for all slides, N for notes, F for full screen.</div>
+      </div>
+    </section>
+
+    <!-- 2. Agenda -->
+    <section class="slide" data-title="Agenda" data-notes="Four topics today, each building on the last. Cards are clickable if you want to jump to a topic during Q&A.">
+      <div class="slide-inner agenda">
+        <span class="chip">Agenda</span>
+        <h2>What we'll cover today</h2>
+        <div class="grid">
+          <button class="card" type="button" data-goto="2"><div class="num">1</div><h3>Writing SOQL queries</h3><p>SELECT, WHERE, ORDER BY, LIMIT, bind variables and aggregates.</p></button>
+          <button class="card" type="button" data-goto="3"><div class="num">2</div><h3>Relationship queries</h3><p>Child-to-parent with dot notation, parent-to-child with subqueries.</p></button>
+          <button class="card" type="button" data-goto="4"><div class="num">3</div><h3>SOSL basics</h3><p>Searching across several objects at once.</p></button>
+          <button class="card" type="button" data-goto="5"><div class="num">4</div><h3>DML &amp; governor limits</h3><p>Insert, update, delete, upsert, and the limits to respect.</p></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. SOQL -->
+    <section class="slide" data-title="Writing SOQL queries" data-notes="SOQL reads records from one object. Results come back as a List of sObjects. Stress the bind variable: the colon lets you use an Apex variable inside the query safely. Only queried fields can be read afterwards, otherwise you get an error.">
+      <div class="slide-inner">
+        <span class="chip">Topic 1 · SOQL</span>
+        <h2>SOQL: querying Salesforce records</h2>
+        <p class="body">SOQL (Salesforce Object Query Language) reads records from one object. In Apex you put the query in square brackets and it returns a <code>List</code> of records.</p>
+        <div class="tabgroup">
+          <div class="tabs" role="tablist">
+            <button class="tab on" type="button" role="tab" data-tab="sel">SELECT &amp; WHERE</button>
+            <button class="tab" type="button" role="tab" data-tab="ord">ORDER BY &amp; LIMIT</button>
+            <button class="tab" type="button" role="tab" data-tab="bind">Bind variables</button>
+            <button class="tab" type="button" role="tab" data-tab="agg">Aggregates</button>
+          </div>
+          <div class="panel" data-panel="sel">
+            <p class="body">Choose the fields you need, then filter with <code>WHERE</code> using <code>=</code>, <code>!=</code>, <code>LIKE</code>, <code>IN</code> and <code>AND / OR</code>.</p>
+            <div class="copyable"><pre class="code"><code>List&lt;Account&gt; accs = [
+    SELECT Id, Name, Industry
+    FROM Account
+    WHERE Industry = 'Technology' AND Name LIKE 'Acme%'
+];</code></pre><button class="btn copyb" type="button">Copy code</button></div>
+          </div>
+          <div class="panel" data-panel="ord" hidden>
+            <p class="body">Sort the results and cap how many rows come back.</p>
+            <div class="copyable"><pre class="code"><code>List&lt;Opportunity&gt; opps = [
+    SELECT Id, Name, Amount
+    FROM Opportunity
+    WHERE StageName = 'Closed Won'
+    ORDER BY Amount DESC
+    LIMIT 10
+];</code></pre><button class="btn copyb" type="button">Copy code</button></div>
+          </div>
+          <div class="panel" data-panel="bind" hidden>
+            <p class="body">A colon before a variable name passes an Apex value into the query. It is also the safe way to avoid injection.</p>
+            <div class="copyable"><pre class="code"><code>Set&lt;Id&gt; accIds = new Set&lt;Id&gt;{ acc1.Id, acc2.Id };
+String city = 'Nagpur';
+
+List&lt;Contact&gt; cons = [
+    SELECT Id, LastName FROM Contact
+    WHERE AccountId IN :accIds AND MailingCity = :city
+];</code></pre><button class="btn copyb" type="button">Copy code</button></div>
+          </div>
+          <div class="panel" data-panel="agg" hidden>
+            <p class="body">Summarise data with <code>COUNT()</code>, <code>SUM()</code>, <code>AVG()</code>, <code>MIN()</code>, <code>MAX()</code> and <code>GROUP BY</code>. These return <code>AggregateResult</code>.</p>
+            <div class="copyable"><pre class="code"><code>for (AggregateResult ar : [
+    SELECT StageName, COUNT(Id) total, SUM(Amount) amt
+    FROM Opportunity GROUP BY StageName
+]) {
+    System.debug(ar.get('StageName') + ': ' + ar.get('total'));
+}</code></pre><button class="btn copyb" type="button">Copy code</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Relationship queries -->
+    <section class="slide" data-title="Relationship queries" data-notes="Child-to-parent uses dot notation on the relationship name. Parent-to-child uses a subquery in the SELECT list, and the child relationship name is usually the plural, for example Contacts, Opportunities. Custom relationships end in __r.">
+      <div class="slide-inner">
+        <span class="chip">Topic 2 · Relationship queries</span>
+        <h2>Relationship queries: one query, related data</h2>
+        <div class="tabgroup">
+          <div class="tabs" role="tablist">
+            <button class="tab on" type="button" role="tab" data-tab="c2p">Child-to-parent</button>
+            <button class="tab" type="button" role="tab" data-tab="p2c">Parent-to-child</button>
+            <button class="tab" type="button" role="tab" data-tab="cust">Custom objects</button>
+          </div>
+          <div class="panel" data-panel="c2p">
+            <p class="body">Start from the child and reach up to the parent's fields with <strong>dot notation</strong>.</p>
+            <div class="copyable"><pre class="code"><code>List&lt;Contact&gt; cons = [
+    SELECT Id, LastName, Account.Name, Account.Owner.Name
+    FROM Contact
+];
+System.debug(cons[0].Account.Name);</code></pre><button class="btn copyb" type="button">Copy code</button></div>
+          </div>
+          <div class="panel" data-panel="p2c" hidden>
+            <p class="body">Start from the parent and pull its children with a <strong>subquery</strong> that uses the child relationship name.</p>
+            <div class="copyable"><pre class="code"><code>List&lt;Account&gt; accs = [
+    SELECT Id, Name,
+        (SELECT Id, LastName FROM Contacts)
+    FROM Account
+];
+for (Account a : accs) {
+    System.debug(a.Name + ' has ' + a.Contacts.size() + ' contacts');
+}</code></pre><button class="btn copyb" type="button">Copy code</button></div>
+          </div>
+          <div class="panel" data-panel="cust" hidden>
+            <p class="body">For custom relationships the name ends in <code>__r</code> (parent) or is the plural child relationship name ending in <code>__r</code>.</p>
+            <div class="copyable"><pre class="code"><code>// Child to parent
+SELECT Id, Project__r.Name FROM Task__c
+
+// Parent to child
+SELECT Id, (SELECT Id FROM Tasks__r) FROM Project__c</code></pre><button class="btn copyb" type="button">Copy code</button></div>
+          </div>
+        </div>
+        <p class="note">Rule of thumb: <strong>dot</strong> goes up to a parent, <strong>subquery</strong> goes down to children.</p>
+      </div>
+    </section>
+
+    <!-- 5. SOSL -->
+    <section class="slide" data-title="SOSL basics" data-notes="SOSL searches text across many objects and fields in one call. Results are a List of Lists, one inner list per object in the RETURNING clause, in the same order. Minimum search term is two characters. Max 2,000 rows returned.">
+      <div class="slide-inner">
+        <span class="chip">Topic 3 · SOSL</span>
+        <h2>SOSL: search across objects</h2>
+        <p class="body">SOSL (Salesforce Object Search Language) searches text across several objects at once. It returns a <code>List&lt;List&lt;SObject&gt;&gt;</code>, one inner list per object, in the order of your <code>RETURNING</code> clause.</p>
+        <div class="copyable"><pre class="code"><code>List&lt;List&lt;SObject&gt;&gt; results = [
+    FIND 'Acme*' IN ALL FIELDS
+    RETURNING Account(Id, Name), Contact(Id, LastName), Lead(Id, Company)
+];
+
+List&lt;Account&gt; accs = (List&lt;Account&gt;) results[0];
+List&lt;Contact&gt; cons = (List&lt;Contact&gt;) results[1];</code></pre><button class="btn copyb" type="button">Copy code</button></div>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Feature</th><th>SOQL</th><th>SOSL</th></tr></thead>
+            <tbody>
+              <tr><td>Searches</td><td>One object (plus related)</td><td>Many objects at once</td></tr>
+              <tr><td>Best when</td><td>You know the object and fields</td><td>You only know the text to find</td></tr>
+              <tr><td>Returns</td><td>List of records</td><td>List of Lists of records</td></tr>
+              <tr><td>Matching</td><td>Exact or pattern (LIKE)</td><td>Word-based text search index</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. DML -->
+    <section class="slide" data-title="DML statements" data-notes="DML changes data. Insert needs no Id, update and delete need an Id. Upsert decides insert or update using the Id or an external Id field. Always pass a whole List to one DML statement, never call DML inside a loop. Database methods with allOrNone false allow partial success.">
+      <div class="slide-inner">
+        <span class="chip">Topic 4 · DML</span>
+        <h2>DML: saving changes to the database</h2>
+        <div class="tabgroup">
+          <div class="tabs" role="tablist">
+            <button class="tab on" type="button" role="tab" data-tab="ins">insert</button>
+            <button class="tab" type="button" role="tab" data-tab="upd">update</button>
+            <button class="tab" type="button" role="tab" data-tab="del">delete</button>
+            <button class="tab" type="button" role="tab" data-tab="ups">upsert</button>
+            <button class="tab" type="button" role="tab" data-tab="dbm">Database methods</button>
+          </div>
+          <div class="panel" data-panel="ins">
+            <p class="body">Creates new records. Once inserted, the record gets its <code>Id</code>.</p>
+            <div class="copyable"><pre class="code"><code>Account acc = new Account(Name = 'Acme Corp');
+insert acc;
+System.debug(acc.Id);</code></pre><button class="btn copyb" type="button">Copy code</button></div>
+          </div>
+          <div class="panel" data-panel="upd" hidden>
+            <p class="body">Changes existing records. The record must already have an <code>Id</code>, usually from a query.</p>
+            <div class="copyable"><pre class="code"><code>Account acc = [SELECT Id, Name FROM Account LIMIT 1];
+acc.Name = 'Acme Global';
+update acc;</code></pre><button class="btn copyb" type="button">Copy code</button></div>
+          </div>
+          <div class="panel" data-panel="del" hidden>
+            <p class="body">Moves records to the Recycle Bin. Use <code>undelete</code> to restore them.</p>
+            <div class="copyable"><pre class="code"><code>List&lt;Contact&gt; old = [SELECT Id FROM Contact WHERE LastName = 'Test'];
+delete old;</code></pre><button class="btn copyb" type="button">Copy code</button></div>
+          </div>
+          <div class="panel" data-panel="ups" hidden>
+            <p class="body">Inserts or updates in one step. It matches on <code>Id</code>, or on an external Id field you name.</p>
+            <div class="copyable"><pre class="code"><code>List&lt;Account&gt; accs = new List&lt;Account&gt;{
+    new Account(Name = 'Acme', External_Id__c = 'A-100'),
+    new Account(Name = 'Globex', External_Id__c = 'G-200')
+};
+upsert accs External_Id__c;</code></pre><button class="btn copyb" type="button">Copy code</button></div>
+          </div>
+          <div class="panel" data-panel="dbm" hidden>
+            <p class="body">The <code>Database</code> class does the same jobs but with <code>allOrNone = false</code> lets good records save even if some fail.</p>
+            <div class="copyable"><pre class="code"><code>Database.SaveResult[] results = Database.insert(accs, false);
+for (Database.SaveResult sr : results) {
+    if (!sr.isSuccess()) {
+        System.debug(sr.getErrors()[0].getMessage());
+    }
+}</code></pre><button class="btn copyb" type="button">Copy code</button></div>
+          </div>
+        </div>
+        <p class="note">Always pass a whole List to one DML statement. Never put DML inside a loop.</p>
+      </div>
+    </section>
+
+    <!-- 7. Governor limits -->
+    <section class="slide" data-title="Governor limits overview" data-notes="Salesforce is multitenant, so limits stop any one transaction hogging shared resources. Limits apply per transaction. Numbers shown are for synchronous Apex. Exceeding one throws an uncatchable LimitException. The three habits: no SOQL in loops, no DML in loops, bulkify with collections.">
+      <div class="slide-inner">
+        <span class="chip">Topic 4 · Governor limits</span>
+        <h2>Governor limits: the rules of the shared platform</h2>
+        <p class="body">Salesforce is multitenant, so every transaction has hard limits. Break one and the whole transaction fails with an uncatchable exception.</p>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Limit (per transaction)</th><th>Synchronous</th></tr></thead>
+            <tbody>
+              <tr><td>SOQL queries issued</td><td>100</td></tr>
+              <tr><td>Records retrieved by SOQL</td><td>50,000</td></tr>
+              <tr><td>SOSL queries issued</td><td>20</td></tr>
+              <tr><td>DML statements issued</td><td>150</td></tr>
+              <tr><td>Records processed by DML</td><td>10,000</td></tr>
+              <tr><td>CPU time</td><td>10,000 ms</td></tr>
+              <tr><td>Heap size</td><td>6 MB</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="grid" style="margin-top:.85rem">
+          <div class="card accent-coral"><h3>No SOQL in loops</h3><p>Query once, before the loop, using a Set of Ids.</p></div>
+          <div class="card accent-gold"><h3>No DML in loops</h3><p>Add records to a List, then run one DML statement.</p></div>
+          <div class="card accent-green"><h3>Check the limits</h3><p>Use <code>Limits.getQueries()</code> to see how many you have used.</p></div>
+        </div>
+        <p class="note">Asynchronous Apex (Batch, Queueable, Future) gets higher limits for some resources, for example 200 SOQL queries, 12 MB heap and 60,000 ms CPU. Always confirm current numbers in the Apex Developer Guide.</p>
+      </div>
+    </section>
+
+    <!-- 8. Quiz -->
+    <section class="slide" data-title="Quick knowledge check" data-notes="Let the audience answer in chat before you reveal each answer.">
+      <div class="slide-inner">
+        <span class="chip">Knowledge check</span>
+        <div id="quiz"></div>
+      </div>
+    </section>
+
+    <!-- 9. Recap -->
+    <section class="slide" data-title="Recap" data-notes="One line per topic, then open the floor for questions. Point people to the blog for the recording, and tease Session 5: Apex Triggers.">
+      <div class="slide-inner">
+        <span class="chip">Recap</span>
+        <h2>Key takeaways</h2>
+        <div class="grid">
+          <div class="card accent-blue"><h3>1. SOQL</h3><p>Read records from one object with SELECT, WHERE, ORDER BY and LIMIT. Use bind variables for Apex values.</p></div>
+          <div class="card accent-green"><h3>2. Relationships</h3><p>Dot notation goes up to a parent. A subquery goes down to children.</p></div>
+          <div class="card accent-gold"><h3>3. SOSL</h3><p>Search text across many objects at once. Results are a List of Lists.</p></div>
+          <div class="card accent-coral"><h3>4. DML &amp; limits</h3><p>Insert, update, delete, upsert on whole Lists. Stay inside 100 queries and 150 DML statements.</p></div>
+        </div>
+        <div class="row" style="margin-top:1.2rem">
+          <button class="btn" type="button" data-goto="0">Back to start</button>
+          <button class="btn ghost" type="button" data-goto="1">Open agenda</button>
+          <!-- EDIT: point this to your blog listing page -->
+          <button class="btn ghost" type="button" onclick="location.href='blogs.html'">Back to Blog</button>
+          <a class="btn subscribe" href="https://www.youtube.com/@GCloudUp?sub_confirmation=1" target="_blank" rel="noopener noreferrer">Subscribe on YouTube</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="overview" id="overview" aria-hidden="true">
+      <h2>All slides</h2>
+      <div class="ov-grid" id="ovGrid"></div>
+    </div>
+  </main>
+
+  <div class="notes" id="notes" aria-live="polite"></div>
+
+  <footer class="bar bottom">
+    <span class="keys">← → to move · O slides · N notes · F full screen</span>
+    <div class="nav">
+      <button class="navbtn" id="prev" type="button" aria-label="Previous slide"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg> Prev</button>
+      <span class="counter" id="counter">1 / 9</span>
+      <button class="navbtn" id="next" type="button" aria-label="Next slide">Next <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var slides = $$('.slide'), cur = 0, notesEl = $('#notes'), overview = $('#overview');
+
+  function go(n) {
+    n = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, i) { s.classList.toggle('active', i === n); });
+    cur = n; slides[n].scrollTop = 0;
+    $('#counter').textContent = (n + 1) + ' / ' + slides.length;
+    $('#bar').style.width = ((n + 1) / slides.length * 100) + '%';
+    $('#prev').disabled = n === 0; $('#next').disabled = n === slides.length - 1;
+    notesEl.innerHTML = '<b>Speaker notes:</b> ' + (slides[n].getAttribute('data-notes') || 'No notes for this slide.');
+    closeOverview();
+    try { history.replaceState(null, '', '#' + (n + 1)); } catch (e) {}
+  }
+  $('#prev').addEventListener('click', function () { go(cur - 1); });
+  $('#next').addEventListener('click', function () { go(cur + 1); });
+  $$('[data-next]').forEach(function (b) { b.addEventListener('click', function () { go(cur + 1); }); });
+  $$('[data-goto]').forEach(function (b) { b.addEventListener('click', function () { go(parseInt(b.getAttribute('data-goto'), 10)); }); });
+
+  document.addEventListener('keydown', function (e) {
+    var t = e.target;
+    if (t && t.tagName === 'INPUT') return;
+    var onControl = t && t.closest && t.closest('button, summary, a, input');
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { go(cur + 1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { go(cur - 1); e.preventDefault(); }
+    else if (e.key === ' ' && !onControl) { go(cur + 1); e.preventDefault(); }
+    else if (e.key === 'Home') go(0);
+    else if (e.key === 'End') go(slides.length - 1);
+    else if (e.key === 'Escape') closeOverview();
+    else if (e.key === 'o' || e.key === 'O') toggleOverview();
+    else if (e.key === 'n' || e.key === 'N') toggleNotes();
+    else if (e.key === 'f' || e.key === 'F') toggleFull();
+  });
+
+  var sx = null, sy = null;
+  $('#stage').addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  $('#stage').addEventListener('touchend', function (e) {
+    if (sx === null) return;
+    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) > 70 && Math.abs(dy) < 50) go(dx < 0 ? cur + 1 : cur - 1);
+    sx = sy = null;
+  }, { passive: true });
+
+  var ovGrid = $('#ovGrid');
+  slides.forEach(function (s, i) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'ov-item';
+    b.innerHTML = '<small>Slide ' + (i + 1) + '</small>' + s.getAttribute('data-title');
+    b.addEventListener('click', function () { go(i); });
+    ovGrid.appendChild(b);
+  });
+  function openOverview() {
+    $$('.ov-item').forEach(function (b, i) { b.classList.toggle('cur', i === cur); });
+    overview.classList.add('open'); overview.setAttribute('aria-hidden', 'false'); $('#btnOverview').classList.add('on');
+  }
+  function closeOverview() {
+    overview.classList.remove('open'); overview.setAttribute('aria-hidden', 'true'); $('#btnOverview').classList.remove('on');
+  }
+  function toggleOverview() { overview.classList.contains('open') ? closeOverview() : openOverview(); }
+  $('#btnOverview').addEventListener('click', toggleOverview);
+
+  function toggleNotes() {
+    var open = notesEl.classList.toggle('open');
+    $('#btnNotes').classList.toggle('on', open); $('#btnNotes').setAttribute('aria-pressed', open);
+  }
+  $('#btnNotes').addEventListener('click', toggleNotes);
+
+  $('#btnTheme').addEventListener('click', function () {
+    var root = document.documentElement;
+    var dark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+  });
+
+  function toggleFull() {
+    try { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); } catch (e) {}
+  }
+  if (!document.documentElement.requestFullscreen) $('#btnFull').style.display = 'none';
+  $('#btnFull').addEventListener('click', toggleFull);
+
+  $$('.tabgroup').forEach(function (g) {
+    var btns = $$('[data-tab]', g), panels = $$('[data-panel]', g);
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        btns.forEach(function (x) { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', x === b); });
+        panels.forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== b.getAttribute('data-tab'); });
+      });
+    });
+  });
+
+  function copyText(text, btn, label) {
+    function ok() {
+      btn.textContent = 'Copied!'; btn.classList.add('ok');
+      setTimeout(function () { btn.textContent = label; btn.classList.remove('ok'); }, 1400);
+    }
+    function fallback() {
+      var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); ok(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, fallback);
+    else fallback();
+  }
+  $$('.copyb').forEach(function (b) {
+    var label = b.textContent;
+    b.addEventListener('click', function () { copyText($('pre code', b.closest('.copyable')).textContent, b, label); });
+  });
+
+  var questions = [
+    { q: 'Which SOQL syntax reaches up to a parent record\'s field from a Contact?',
+      o: ['Contact.Account.Name in a subquery', 'Account.Name in the SELECT list (dot notation)', 'SELECT Name FROM Account WHERE Contact', 'Contacts.Name'], a: 1,
+      why: 'Child-to-parent queries use dot notation on the relationship name, for example SELECT Account.Name FROM Contact.' },
+    { q: 'What does a SOSL query return?',
+      o: ['A single sObject', 'A List of sObjects', 'A List of Lists of sObjects', 'An AggregateResult'], a: 2,
+      why: 'SOSL returns List<List<SObject>>, one inner list per object in the RETURNING clause.' },
+    { q: 'Which DML statement inserts or updates depending on whether the record already exists?',
+      o: ['merge', 'upsert', 'undelete', 'Database.query'], a: 1,
+      why: 'upsert matches on Id or an external Id field, then inserts or updates as needed.' },
+    { q: 'In one synchronous transaction, how many SOQL queries can you issue?',
+      o: ['20', '50', '100', '150'], a: 2,
+      why: 'The synchronous limit is 100 SOQL queries. 150 is the DML statement limit.' },
+    { q: 'What is the best way to avoid hitting the DML statement limit inside a loop?',
+      o: ['Call insert on each record', 'Add records to a List and run one DML statement after the loop', 'Wrap the DML in try/catch', 'Use a Set instead'], a: 1,
+      why: 'Collecting records in a List and running one DML statement outside the loop uses a single statement for all of them.' }
+  ];
+  var qi = 0, score = 0, quizEl = $('#quiz');
+  function renderQ() {
+    if (qi >= questions.length) {
+      quizEl.innerHTML = '<h2>Quiz complete</h2><div class="score">' + score + ' / ' + questions.length + '</div>' +
+        '<p class="body">' + (score === questions.length ? 'Perfect score. You have Apex Basics II down cold.' : 'Good effort. Revisit the topics you missed using the Slides button.') + '</p>' +
+        '<button class="btn" type="button" id="qRetry">Try again</button>';
+      $('#qRetry').addEventListener('click', function () { qi = 0; score = 0; renderQ(); });
+      return;
+    }
+    var q = questions[qi];
+    var h = '<div class="meter-label">Question ' + (qi + 1) + ' of ' + questions.length + '</div><div class="qtext">' + q.q + '</div>';
+    q.o.forEach(function (t, i) { h += '<button class="opt" type="button" data-i="' + i + '">' + t + '</button>'; });
+    h += '<div class="feedback" id="fb" aria-live="polite"></div><div class="row"><button class="btn" type="button" id="qNext" style="display:none">' + (qi === questions.length - 1 ? 'See score' : 'Next question') + '</button></div>';
+    quizEl.innerHTML = h;
+    $$('.opt', quizEl).forEach(function (b) {
+      b.addEventListener('click', function () {
+        var pick = parseInt(b.getAttribute('data-i'), 10);
+        $$('.opt', quizEl).forEach(function (x, i) {
+          x.disabled = true;
+          if (i === q.a) x.classList.add('right'); else if (i === pick) x.classList.add('wrong');
+        });
+        if (pick === q.a) score++;
+        $('#fb').textContent = (pick === q.a ? 'Correct. ' : 'Not quite. ') + q.why;
+        $('#qNext').style.display = 'inline-block';
+      });
+    });
+    $('#qNext').addEventListener('click', function () { qi++; renderQ(); });
+  }
+  renderQ();
+
+  var YOUTUBE_VIDEO_ID = ""; // paste the video ID here once the recording is live
+  if (YOUTUBE_VIDEO_ID && YOUTUBE_VIDEO_ID.trim()) {
+    var wl = $('#watchLink');
+    wl.href = 'https://www.youtube.com/watch?v=' + YOUTUBE_VIDEO_ID.trim();
+    wl.style.display = 'inline-flex'; $('#watchSoon').style.display = 'none';
+  }
+
+  var start = parseInt((location.hash || '').replace('#', ''), 10);
+  go(isNaN(start) ? 0 : start - 1);
+})();
+</script>
+</body>
+</html>

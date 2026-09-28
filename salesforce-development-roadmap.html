@@ -651,12 +651,25 @@ data.forEach(function (phase, pi) {
   block.appendChild(timeline);
   roadmapEl.appendChild(block);
 });
-
+/*
 var firstCard = document.querySelector('.session-card');
 if (firstCard) {
   firstCard.classList.add('open');
   firstCard.querySelector('.session-head').setAttribute('aria-expanded', 'true');
-}
+} */
+
+var defaultSession = 3;
+
+var cards = document.querySelectorAll('.session-card');
+
+cards.forEach(function(card) {
+  var sessionNumber = card.querySelector('.session-num').textContent.trim();
+
+  if (sessionNumber === String(defaultSession)) {
+    card.classList.add('open');
+    card.querySelector('.session-head').setAttribute('aria-expanded', 'true');
+  }
+});
 
 document.querySelector('#completedStat .num').textContent = completedCount;
 </script>
